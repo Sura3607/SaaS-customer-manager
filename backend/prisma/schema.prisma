@@ -1,0 +1,178 @@
+// This is your Prisma schema file.
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Enums
+// ============================================
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+enum MessageType {
+  SMS
+  EMAIL
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+}
+
+enum LogStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  BOUNCED
+}
+
+// ============================================
+// Models
+// ============================================
+
+/// Tenant — represents a company/organization in the SaaS system
+model Tenant {
+  id          String   @id @default(cuid())
+  companyName String
+  slug        String   @unique
+  phone       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users       User[]
+  customers   Customer[]
+  messages    Message[]
+  messageLogs MessageLog[]
+  auditLogs   AuditLog[]
+
+  @@map("tenants")
+}
+
+/// User — belongs to a Tenant, can be ADMIN or STAFF
+model User {
+  id        String   @id @default(cuid())
+  email     String
+  password  String
+  fullName  String?
+  role      Role     @default(STAFF)
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  auditLogs AuditLog[]
+
+  // Email unique per tenant (not globally unique — different tenants can have same email)
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@map("users")
+}
+
+/// Customer — contact record belonging to a Tenant
+model Customer {
+  id        String   @id @default(cuid())
+  tenantId  String
+  fullName  String
+  address   String?
+  phone     String
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  messages    Message[]
+  messageLogs MessageLog[]
+
+  // Unique constraints per tenant
+  @@unique([tenantId, email])
+  @@unique([tenantId, phone])
+  @@index([tenantId])
+  @@map("customers")
+}
+
+/// Message — an SMS or Email sent to a Customer
+model Message {
+  id             String        @id @default(cuid())
+  tenantId       String
+  customerId     String
+  type           MessageType
+  content        String        @db.Text
+  subject        String?       // For email only
+  status         MessageStatus @default(PENDING)
+  recipientPhone String?       // Denormalized for logging
+  recipientEmail String?       // Denormalized for logging
+  createdAt      DateTime      @default(now())
+  sentAt         DateTime?
+
+  // Relations
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer    Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  messageLogs MessageLog[]
+
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([tenantId, type])
+  @@index([tenantId, status])
+  @@map("messages")
+}
+
+/// MessageLog — tracks delivery status updates from providers (Twilio/SendGrid webhooks)
+model MessageLog {
+  id                String    @id @default(cuid())
+  messageId         String
+  tenantId          String
+  customerId        String?
+  status            LogStatus @default(PENDING)
+  providerMessageId String?   // SID from Twilio or ID from SendGrid
+  providerResponse  Json?     // Raw provider response
+  errorReason       String?   // Reason for failure
+  timestamp         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  message  Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([messageId])
+  @@index([tenantId])
+  @@index([providerMessageId])
+  @@map("message_logs")
+}
+
+/// AuditLog — tracks user actions for compliance (optional)
+model AuditLog {
+  id           String   @id @default(cuid())
+  tenantId     String
+  userId       String
+  action       String   // "CREATE_CUSTOMER", "SEND_SMS", etc.
+  resourceType String   // "Customer", "Message", etc.
+  resourceId   String?
+  changes      Json?    // What changed
+  timestamp    DateTime @default(now())
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([tenantId, action])
+  @@map("audit_logs")
+}
