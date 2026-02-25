@@ -67,6 +67,18 @@ async function login(email, password, tenantSlug) {
   const accessToken = generateAccessToken(tokenPayload);
   const refreshToken = generateRefreshToken({ userId: user.id, tenantId: tenant.id });
 
+  // 5. Persist refresh token in DB (upsert in case of duplicate token within same second)
+  const decoded = jwt.decode(refreshToken);
+  await prisma.refreshToken.upsert({
+    where: { token: refreshToken },
+    update: { expiresAt: new Date(decoded.exp * 1000) },
+    create: {
+      token: refreshToken,
+      userId: user.id,
+      expiresAt: new Date(decoded.exp * 1000),
+    },
+  });
+
   logger.info('User logged in', { userId: user.id, tenantId: tenant.id });
 
   return {
@@ -98,6 +110,20 @@ async function refresh(token) {
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET);
 
+    // Verify token exists in DB (not revoked)
+    const storedToken = await prisma.refreshToken.findUnique({
+      where: { token },
+    });
+    if (!storedToken) {
+      throw new UnauthorizedError('Refresh token has been revoked');
+    }
+
+    // Check expiration
+    if (storedToken.expiresAt < new Date()) {
+      await prisma.refreshToken.delete({ where: { id: storedToken.id } });
+      throw new UnauthorizedError('Refresh token expired');
+    }
+
     // Make sure user still exists
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
@@ -116,6 +142,8 @@ async function refresh(token) {
     return { accessToken };
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
+      // Clean up expired token from DB
+      await prisma.refreshToken.deleteMany({ where: { token } }).catch(() => {});
       throw new UnauthorizedError('Refresh token expired');
     }
     if (err.name === 'JsonWebTokenError') {
@@ -126,9 +154,11 @@ async function refresh(token) {
 }
 
 /**
- * Logout user (client-side token discard; placeholder for token blacklist).
+ * Logout user — revoke refresh token from DB.
  */
 async function logout(userId) {
+  // Revoke all refresh tokens for this user
+  await prisma.refreshToken.deleteMany({ where: { userId } });
   logger.info('User logged out', { userId });
   return { success: true };
 }

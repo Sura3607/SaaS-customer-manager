@@ -10,6 +10,8 @@ const { errorHandler } = require('./middlewares/error.middleware');
 const logger = require('./utils/logger');
 const { recordRequest } = require('./services/health.service');
 
+const { env } = require('./config/env');
+
 // Import routes
 const healthRoutes = require('./routes/health.routes');
 const tenantRoutes = require('./routes/tenants.routes');
@@ -25,8 +27,21 @@ const app = express();
 // Global Middlewares
 // ============================================
 
-// CORS — allow cross-origin requests
-app.use(cors());
+// CORS — restrict to known origins
+const allowedOrigins = [
+  'http://localhost:5173',   // Vite dev server
+  'http://localhost:3000',   // Alt dev port
+  env.FRONTEND_URL,          // Production (CloudFront, etc.)
+].filter(Boolean);
+
+app.use(cors({
+  origin: env.NODE_ENV === 'production'
+    ? allowedOrigins
+    : true, // Allow all in development
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // Parse JSON request bodies
 app.use(express.json({ limit: '10mb' }));

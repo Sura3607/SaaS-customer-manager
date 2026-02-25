@@ -179,9 +179,11 @@ async function bulkCreateCustomers(tenantId, dataArray) {
     };
   });
 
-  const result = await prisma.customer.createMany({
-    data: prepared,
-    skipDuplicates: true,
+  const result = await prisma.$transaction(async (tx) => {
+    return tx.customer.createMany({
+      data: prepared,
+      skipDuplicates: true,
+    });
   });
 
   logger.info('Bulk customers created', { tenantId, count: result.count });
