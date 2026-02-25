@@ -4,7 +4,7 @@
  */
 
 const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const prisma = require('../config/db');
 const { generateSlug, sanitizeEmail } = require('../utils/formatters');
 const { ConflictError, NotFoundError, ValidationError } = require('../utils/errors');
@@ -28,7 +28,7 @@ async function register({ companyName, adminEmail, adminPassword, adminFullName,
   const existingSlug = await prisma.tenant.findUnique({ where: { slug } });
   if (existingSlug) {
     // Append short random suffix to avoid collision
-    slug = `${slug}-${uuidv4().slice(0, 6)}`;
+    slug = `${slug}-${crypto.randomUUID().slice(0, 6)}`;
   }
 
   // Hash password
