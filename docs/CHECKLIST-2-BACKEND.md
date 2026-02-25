@@ -830,29 +830,27 @@
 ## 📋 GIAI ĐOẠN 13: Docker & Environment (Tuần 5)
 
 ### Dockerfile for Backend
-- [ ] Create `Dockerfile`:
-  ```dockerfile
-  FROM node:18-alpine
-  WORKDIR /app
-  COPY package.json package-lock.json ./
-  RUN npm ci --only=production
-  COPY . .
-  EXPOSE 5000
-  HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD node healthcheck.js
-  CMD ["node", "src/server.js"]
-  ```
+- [x] Create `Dockerfile` (multi-stage build):
+  - [x] Stage 1 (builder): node:20-alpine, `npm ci`, `npx prisma generate`
+  - [x] Stage 2 (production): node:20-alpine, non-root user (appuser), `npm ci --omit=dev`
+  - [x] Copy Prisma Client from builder stage
+  - [x] Pre-create `/app/logs` with correct ownership
+  - [x] HEALTHCHECK via `healthcheck.js` → GET /health/liveness
+  - [x] EXPOSE 5000, CMD ["node", "src/server.js"]
+- [x] Create `.dockerignore` (node_modules, .env, logs, .git, coverage, IDE, Docker files)
 
 ### Build & Test Locally
-- [ ] `docker build -t backend:v1 .`
-- [ ] `docker run -p 5000:5000 --env-file .env backend:v1`
-- [ ] Test health: `curl http://localhost:5000/api/v1/health`
-- [ ] Test endpoints work
+- [x] `docker build -t backend:v1 .` — built successfully (768 MB, cached in ~2s)
+- [x] `docker run -p 5001:5000 -e ... backend:v1` — container started, connected to host MySQL
+- [x] Test health: GET /api/v1/health → `{ status: "ok", database: "connected" }`
+- [x] Test auth: POST /auth/login → tokens returned
+- [x] Test CRUD: GET /customers → 10 customers returned
+- [x] Docker HEALTHCHECK status: `healthy`
 
 ### Environment Variables
-- [ ] All sensitive values in .env (NOT in code)
-- [ ] Document in .env.example
-- [ ] In production, loaded from AWS Secrets Manager or ECS Task Def
+- [x] All sensitive values in .env (NOT in code)
+- [x] Document in .env.example (fixed formatting — SENDGRID keys on separate lines)
+- [ ] In production, loaded from AWS Secrets Manager or ECS Task Def (deferred — cloud deployment)
 
 ---
 
