@@ -1,0 +1,108 @@
+/**
+ * @file messages.controller.js
+ * @description Messaging controller — SMS, Email, Webhooks, Logs.
+ */
+
+const messageService = require('../services/message.service');
+
+/* ───── SMS ───── */
+
+async function sendSMS(req, res, next) {
+  try {
+    const { customerId, content } = req.body;
+    const result = await messageService.sendSMS(req.tenantId, customerId, content);
+    res.status(201).json({ success: true, message: 'SMS processed', data: result });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function sendBatchSMS(req, res, next) {
+  try {
+    const { customerIds, content } = req.body;
+    const result = await messageService.sendBatchSMS(req.tenantId, customerIds, content);
+    res.status(201).json({ success: true, message: 'Batch SMS processed', data: result });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/* ───── Email ───── */
+
+async function sendEmail(req, res, next) {
+  try {
+    const { customerId, subject, content } = req.body;
+    const result = await messageService.sendEmail(req.tenantId, customerId, subject, content);
+    res.status(201).json({ success: true, message: 'Email processed', data: result });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function sendBatchEmail(req, res, next) {
+  try {
+    const { customerIds, subject, content } = req.body;
+    const result = await messageService.sendBatchEmail(req.tenantId, customerIds, subject, content);
+    res.status(201).json({ success: true, message: 'Batch email processed', data: result });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/* ───── Logs ───── */
+
+async function getLogs(req, res, next) {
+  try {
+    const result = await messageService.getMessageLogs(req.tenantId, req.query);
+    res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getLogById(req, res, next) {
+  try {
+    const log = await messageService.getMessageLogById(req.tenantId, req.params.id);
+    res.status(200).json({ success: true, data: log });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/* ───── Webhooks (public, no auth) ───── */
+
+async function twilioWebhook(req, res, next) {
+  try {
+    // Twilio sends form-encoded data; Express parsed it via urlencoded
+    const result = await messageService.processTwilioWebhook(req.body);
+    // Must return 200 immediately — Twilio retries on non-2xx
+    res.status(200).json({ received: true, ...result });
+  } catch (error) {
+    // Still return 200 to Twilio to prevent retries, but log the error
+    console.error('Twilio webhook error:', error.message);
+    res.status(200).json({ received: true, error: error.message });
+  }
+}
+
+async function sendgridWebhook(req, res, next) {
+  try {
+    // SendGrid sends JSON array of events
+    const events = Array.isArray(req.body) ? req.body : [req.body];
+    const result = await messageService.processSendgridWebhook(events);
+    res.status(200).json({ received: true, processed: result.length });
+  } catch (error) {
+    console.error('SendGrid webhook error:', error.message);
+    res.status(200).json({ received: true, error: error.message });
+  }
+}
+
+module.exports = {
+  sendSMS,
+  sendBatchSMS,
+  sendEmail,
+  sendBatchEmail,
+  getLogs,
+  getLogById,
+  twilioWebhook,
+  sendgridWebhook,
+};
