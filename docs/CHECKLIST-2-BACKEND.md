@@ -955,3 +955,119 @@
 | W5 | Logging, error handling, Docker | Docker image builds, all tests pass | Ready to deploy? |
 | W6 | Integration testing, deployment | API deployed to AWS, tested end-to-end | Final UAT |
 
+---
+
+## 🔗 BACKEND INTEGRATION — KẾT NỐI HỆ THỐNG HOÀN CHỈNH
+
+> **Khi nào thực hiện?** Sau khi tất cả thành viên nhóm hoàn thành phần việc riêng (Frontend, Backend, DevOps, External Services).
+> **Ai chịu trách nhiệm chính?** Backend Developer phối hợp cùng cả nhóm.
+
+---
+
+### 🅰️ Kết nối với Frontend (Person 1)
+
+**Backend cần làm:**
+- [ ] Cập nhật CORS origin trong `src/app.js` cho phép Frontend URL:
+  ```js
+  app.use(cors({
+    origin: [
+      'http://localhost:5173',         // Vite dev server
+      'http://localhost:3000',         // Alt dev port
+      process.env.FRONTEND_URL         // Production URL (CloudFront)
+    ].filter(Boolean),
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
+  ```
+- [ ] Thêm `FRONTEND_URL` vào `.env` và `.env.example`
+
+**Kiểm tra chung:**
+- [ ] Frontend gọi `POST /auth/login` → nhận tokens → lưu vào localStorage/cookie
+- [ ] Frontend gọi CRUD `/customers` → hiển thị danh sách, tạo/sửa/xóa thành công
+- [ ] Frontend gọi gửi SMS/Email → hiển thị kết quả + logs
+- [ ] Error messages từ Backend hiển thị đúng trên UI (400, 401, 403, 404, 409)
+- [ ] Pagination + Search hoạt động đúng giữa Frontend ↔ Backend
+- [ ] Token refresh tự động khi access token hết hạn
+
+---
+
+### 🅱️ Kết nối với External Services (Person 4 — Twilio & SendGrid)
+
+**Backend cần làm:**
+- [ ] Nhận Twilio credentials thật từ Person 4 → cập nhật `.env`:
+  ```
+  TWILIO_ACCOUNT_SID=AC_real_sid
+  TWILIO_AUTH_TOKEN=real_auth_token
+  TWILIO_PHONE_NUMBER=+1xxxxxxxxxx
+  ```
+- [ ] Nhận SendGrid credentials thật từ Person 4 → cập nhật `.env`:
+  ```
+  SENDGRID_API_KEY=SG.real_api_key
+  SENDGRID_FROM_EMAIL=verified_email@yourdomain.com
+  SENDGRID_WEBHOOK_VERIFICATION_KEY=real_key
+  ```
+
+**Kiểm tra chung:**
+- [ ] Gửi SMS thật → nhận được trên điện thoại
+- [ ] Gửi Email thật → nhận được trong inbox
+- [ ] Twilio webhook status callback → `MessageLog.status` cập nhật (queued → sent → delivered)
+- [ ] SendGrid event webhook → `MessageLog.status` cập nhật (processed → delivered)
+- [ ] Signature verification hoạt động đúng với credentials thật
+- [ ] Batch SMS/Email gửi thành công (2-3 recipients)
+
+---
+
+### 🅲️ Kết nối với DevOps / Cloud (Person 3 — AWS)
+
+**Backend cần làm:**
+- [ ] Nhận RDS endpoint từ Person 3 → cập nhật `DATABASE_URL`:
+  ```
+  DATABASE_URL=mysql://admin:password@your-rds-endpoint.rds.amazonaws.com:3306/saas_db
+  ```
+- [ ] Chạy `npx prisma migrate deploy` trên RDS (production migration)
+- [ ] Chạy `npm run prisma:seed` để seed demo data
+- [ ] Set `NODE_ENV=production` trong ECS Task Definition
+
+**Person 3 (DevOps) cần làm:**
+- [ ] Build Docker image: `docker build -t backend:v1 ./backend`
+- [ ] Push image lên AWS ECR
+- [ ] Deploy ECS Task với env vars từ AWS Secrets Manager
+- [ ] Cấu hình ALB (Application Load Balancer) → route traffic đến ECS
+- [ ] Setup SSL certificate (ACM) cho HTTPS
+
+**Kiểm tra chung:**
+- [ ] Health check trên AWS: `GET https://api.yourdomain.com/api/v1/health` → status "ok"
+- [ ] Login + CRUD hoạt động trên production
+- [ ] Cấu hình webhook URLs trên Twilio/SendGrid dashboard:
+  - [ ] Twilio Status Callback: `https://api.yourdomain.com/api/v1/messages/twilio/webhook`
+  - [ ] SendGrid Event Webhook: `https://api.yourdomain.com/api/v1/messages/sendgrid/webhook`
+
+---
+
+### 🅳️ Deferred Tasks (chỉ làm khi deploy production)
+
+- [ ] Setup Sentry hoặc tương tự cho error tracking (cài `@sentry/node`)
+- [ ] Alert on critical errors (CloudWatch Alarms / SNS)
+- [ ] Load secrets từ AWS Secrets Manager (thay vì `.env` file)
+
+---
+
+### ✅ INTEGRATION TEST — FULL SYSTEM E2E
+
+> Chạy full flow trên môi trường production/staging để xác nhận hệ thống hoạt động hoàn chỉnh.
+
+- [ ] **Flow 1:** Register tenant → Login → Tạo customer → Gửi SMS → Xem logs → Status updated via webhook
+- [ ] **Flow 2:** Register tenant → Login → Tạo customer → Gửi Email → Xem logs → Status updated via webhook
+- [ ] **Flow 3:** Bulk create customers → Batch SMS → Batch Email → Xem logs
+- [ ] **Flow 4:** Multi-tenant isolation — Tenant A không thấy data Tenant B
+- [ ] **Flow 5:** Frontend gọi toàn bộ flow trên qua UI (không dùng Postman/cURL)
+- [ ] **Flow 6:** Docker container crash → auto-restart (ECS) → health check recover
+
+---
+
+> **⚠️ LƯU Ý QUAN TRỌNG:**
+> - Backend code **gần như KHÔNG cần thay đổi** — chỉ cập nhật `.env` + CORS origin
+> - Mọi credentials đều nằm trong `.env`, **không hardcode** trong source code
+> - Khi deploy production, **PHẢI** đổi `JWT_SECRET` thành giá trị mạnh (≥ 32 ký tự random)
+> - Kiểm tra rate limiting phù hợp production traffic (hiện tại: 100 req/15min general, 10 req/1min messaging)
