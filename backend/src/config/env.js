@@ -11,6 +11,7 @@ const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: parseInt(process.env.PORT, 10) || 5000,
   LOG_LEVEL: process.env.LOG_LEVEL || 'debug',
+  FRONTEND_URL: process.env.FRONTEND_URL || '',
 
   // Database
   DATABASE_URL: process.env.DATABASE_URL,
