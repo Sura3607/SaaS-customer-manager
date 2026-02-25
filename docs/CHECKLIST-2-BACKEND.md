@@ -801,25 +801,29 @@
 ## 📋 GIAI ĐOẠN 12: Health Check & Monitoring (Tuần 5)
 
 ### Health Check Endpoint
-- [ ] **GET /health** (public, no auth):
-  - [ ] Check app is running
-  - [ ] Check database connection
-  - [ ] Check external services (optional):
-    - [ ] Twilio API reachability
-    - [ ] SendGrid API reachability
-  - [ ] Return: `{ status: "ok", timestamp, db: "connected", services: {...} }`
-  - [ ] Return 200 OK if healthy, 503 if not
+- [x] **GET /health** (public, no auth):
+  - [x] Check app is running
+  - [x] Check database connection
+  - [x] Check external services (optional):
+    - [x] Twilio API reachability
+    - [x] SendGrid API reachability
+  - [x] Return: `{ status: "ok", timestamp, db: "connected", services: {...} }`
+  - [x] Return 200 OK if healthy, 503 if not
+- [x] **GET /health/liveness** — lightweight probe (always 200 if process alive)
+- [x] **GET /health/readiness** — DB-dependent readiness probe (200/503)
+- [x] Docker healthcheck.js script (used by HEALTHCHECK in Dockerfile)
 
 ### Metrics Endpoint (Optional)
-- [ ] **GET /metrics** (public):
-  - [ ] Return Prometheus format metrics
-  - [ ] Or just JSON with stats
-  - [ ] Include: request count, error rate, DB query time, etc.
+- [x] **GET /health/metrics** (public):
+  - [x] JSON format metrics
+  - [x] Include: request count, error rate (4xx/5xx), DB query latency
+  - [x] Include: memory (rss, heap), CPU, uptime, node version
+  - [x] In-memory counters wired into request-logging middleware (recordRequest)
 
 ### Error Tracking (Optional)
-- [ ] Setup Sentry or similar for error tracking
-- [ ] Capture unhandled exceptions
-- [ ] Alert on critical errors
+- [x] Global unhandled exception / rejection handlers (registerGlobalErrorHandlers — Phase 10)
+- [ ] Setup Sentry or similar for error tracking (deferred — cloud deployment)
+- [ ] Alert on critical errors (deferred — cloud deployment)
 
 ---
 

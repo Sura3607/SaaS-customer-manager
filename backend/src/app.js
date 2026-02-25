@@ -8,6 +8,7 @@ const cors = require('cors');
 const { generalLimiter } = require('./middlewares/ratelimit.middleware');
 const { errorHandler } = require('./middlewares/error.middleware');
 const logger = require('./utils/logger');
+const { recordRequest } = require('./services/health.service');
 
 // Import routes
 const healthRoutes = require('./routes/health.routes');
@@ -43,6 +44,10 @@ app.use((req, res, next) => {
   // Log on response finish for accurate timing
   res.on('finish', () => {
     const duration = Date.now() - start;
+
+    // Track request metrics for /health/metrics
+    recordRequest(res.statusCode);
+
     const logLevel = res.statusCode >= 500 ? 'error'
       : res.statusCode >= 400 ? 'warn'
       : 'debug';
