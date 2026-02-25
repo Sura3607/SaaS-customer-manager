@@ -1,6 +1,9 @@
 # Root level gitignore
 node_modules/
 
+# Temp files
+.commitmsg
+
 # Environment variables
 .env
 .env.*
