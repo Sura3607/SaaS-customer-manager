@@ -4,6 +4,7 @@
  */
 
 const messageService = require('../services/message.service');
+const logger = require('../utils/logger');
 
 /* ───── SMS ───── */
 
@@ -72,27 +73,28 @@ async function getLogById(req, res, next) {
 /* ───── Webhooks (public, no auth) ───── */
 
 async function twilioWebhook(req, res, next) {
+  // Respond 200 IMMEDIATELY — Twilio retries on non-2xx or timeout
+  res.status(200).json({ received: true });
+
+  // Process asynchronously (fire-and-forget)
   try {
-    // Twilio sends form-encoded data; Express parsed it via urlencoded
-    const result = await messageService.processTwilioWebhook(req.body);
-    // Must return 200 immediately — Twilio retries on non-2xx
-    res.status(200).json({ received: true, ...result });
+    await messageService.processTwilioWebhook(req.body);
   } catch (error) {
-    // Still return 200 to Twilio to prevent retries, but log the error
-    console.error('Twilio webhook error:', error.message);
-    res.status(200).json({ received: true, error: error.message });
+    // Log but don't affect the already-sent response
+    logger.error('Twilio webhook async processing failed', { error: error.message });
   }
 }
 
 async function sendgridWebhook(req, res, next) {
+  // Respond 200 IMMEDIATELY — SendGrid retries on non-2xx or timeout
+  res.status(200).json({ received: true });
+
+  // Process asynchronously (fire-and-forget)
   try {
-    // SendGrid sends JSON array of events
     const events = Array.isArray(req.body) ? req.body : [req.body];
-    const result = await messageService.processSendgridWebhook(events);
-    res.status(200).json({ received: true, processed: result.length });
+    await messageService.processSendgridWebhook(events);
   } catch (error) {
-    console.error('SendGrid webhook error:', error.message);
-    res.status(200).json({ received: true, error: error.message });
+    logger.error('SendGrid webhook async processing failed', { error: error.message });
   }
 }
 

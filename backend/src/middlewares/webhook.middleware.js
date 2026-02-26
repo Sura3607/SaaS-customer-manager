@@ -99,9 +99,13 @@ function verifySendgridSignature(req, res, next) {
       return res.status(403).json({ error: 'Missing SendGrid signature headers' });
     }
 
-    // SendGrid requires raw body for verification
-    // Express already parsed JSON body; we need the raw string
-    const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    // SendGrid requires the exact raw body bytes for ECDSA verification.
+    // req.rawBody is captured by express.json({ verify }) in app.js before parsing.
+    const rawBody = req.rawBody;
+    if (!rawBody) {
+      logger.error('SendGrid webhook: rawBody not available — verify express.json({ verify }) is configured');
+      return res.status(500).json({ error: 'Server misconfiguration: raw body not captured' });
+    }
 
     const eventWebhook = new EventWebhook();
     const ecPublicKey = eventWebhook.convertPublicKeyToECDSA(publicKey);

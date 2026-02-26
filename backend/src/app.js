@@ -44,7 +44,16 @@ app.use(cors({
 }));
 
 // Parse JSON request bodies
-app.use(express.json({ limit: '10mb' }));
+// For webhook routes: capture raw body buffer for signature verification (SendGrid ECDSA)
+app.use(express.json({
+  limit: '10mb',
+  verify: (req, _res, buf) => {
+    // Store raw buffer only for webhook routes that need signature verification
+    if (req.originalUrl && req.originalUrl.includes('/webhook')) {
+      req.rawBody = buf.toString('utf8');
+    }
+  },
+}));
 
 // Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));

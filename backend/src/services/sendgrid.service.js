@@ -89,40 +89,6 @@ async function sendEmail(toEmail, subject, content) {
 }
 
 /**
- * Send email to multiple recipients.
- * @param {string[]} emails  - Array of email addresses
- * @param {string}   subject - Email subject
- * @param {string}   content - HTML email body
- * @returns {Promise<{success: Array, failed: Array}>}
- */
-async function sendBatchEmail(emails, subject, content) {
-  if (!Array.isArray(emails) || emails.length === 0) {
-    throw new ValidationError('emails array is required');
-  }
-
-  const success = [];
-  const failed = [];
-
-  for (const email of emails) {
-    try {
-      const result = await sendEmail(email, subject, content);
-      success.push({ email, messageId: result.messageId, status: result.status });
-    } catch (error) {
-      failed.push({ email, error: error.message });
-      logger.warn('Batch email failed for address', { email, error: error.message });
-    }
-  }
-
-  logger.info('Batch email completed', {
-    total: emails.length,
-    success: success.length,
-    failed: failed.length,
-  });
-
-  return { success, failed };
-}
-
-/**
  * Parse SendGrid Event Webhook payload.
  * SendGrid sends an array of event objects.
  * @param {object[]} events - Array of SendGrid event objects
@@ -156,4 +122,4 @@ function handleWebhook(events) {
   return parsed;
 }
 
-module.exports = { sendEmail, sendBatchEmail, handleWebhook, SENDGRID_EVENT_MAP };
+module.exports = { sendEmail, handleWebhook, SENDGRID_EVENT_MAP };
