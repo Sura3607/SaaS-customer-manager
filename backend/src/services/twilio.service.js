@@ -71,35 +71,6 @@ async function sendSMS(toNumber, content) {
 }
 
 /**
- * Send SMS to multiple numbers.
- * @param {string[]} numbers - Array of phone numbers
- * @param {string} content   - SMS body
- * @returns {Promise<{success: Array, failed: Array}>}
- */
-async function sendBatchSMS(numbers, content) {
-  if (!Array.isArray(numbers) || numbers.length === 0) {
-    throw new ValidationError('numbers array is required');
-  }
-
-  const success = [];
-  const failed = [];
-
-  for (const number of numbers) {
-    try {
-      const result = await sendSMS(number, content);
-      success.push({ number, messageId: result.messageId, status: result.status });
-    } catch (error) {
-      failed.push({ number, error: error.message });
-      logger.warn('Batch SMS failed for number', { number, error: error.message });
-    }
-  }
-
-  logger.info('Batch SMS completed', { total: numbers.length, success: success.length, failed: failed.length });
-
-  return { success, failed };
-}
-
-/**
  * Parse Twilio status callback webhook payload.
  * @param {object} payload - Twilio webhook body (form-encoded parsed by Express)
  * @returns {object} Parsed data for MessageLog update
@@ -137,4 +108,4 @@ function handleWebhook(payload) {
   return mapped;
 }
 
-module.exports = { sendSMS, sendBatchSMS, handleWebhook, TWILIO_STATUS_MAP };
+module.exports = { sendSMS, handleWebhook, TWILIO_STATUS_MAP };

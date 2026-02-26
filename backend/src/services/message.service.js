@@ -11,6 +11,38 @@ const { paginatedResponse } = require('../utils/formatters');
 const { NotFoundError, ValidationError } = require('../utils/errors');
 const logger = require('../utils/logger');
 
+/* ───── Batch helper ───── */
+
+const BATCH_CHUNK_SIZE = 10; // Send up to 10 concurrently per chunk (respects provider rate limits)
+
+/**
+ * Process items in parallel chunks to balance speed and rate-limit compliance.
+ * @param {Array} items - Array of items to process
+ * @param {Function} processFn - Async function for each item, returns result
+ * @returns {Promise<{queued: number, failed: number, details: Array}>}
+ */
+async function processInChunks(items, processFn) {
+  const results = { queued: 0, failed: 0, total: items.length, details: [] };
+
+  for (let i = 0; i < items.length; i += BATCH_CHUNK_SIZE) {
+    const chunk = items.slice(i, i + BATCH_CHUNK_SIZE);
+    const settled = await Promise.allSettled(chunk.map(processFn));
+
+    for (let j = 0; j < settled.length; j++) {
+      const item = chunk[j];
+      if (settled[j].status === 'fulfilled') {
+        results.queued++;
+        results.details.push({ customerId: item.id, ...settled[j].value });
+      } else {
+        results.failed++;
+        results.details.push({ customerId: item.id, status: 'FAILED', error: settled[j].reason?.message || 'Unknown error' });
+      }
+    }
+  }
+
+  return results;
+}
+
 /* ═══════════════════════════════════════════
    SMS
    ═══════════════════════════════════════════ */
@@ -91,18 +123,9 @@ async function sendBatchSMS(tenantId, customerIds, content) {
     throw new ValidationError('Some customer IDs are invalid or do not belong to your tenant');
   }
 
-  const results = { queued: 0, failed: 0, total: customerIds.length, details: [] };
-
-  for (const customer of customers) {
-    try {
-      const result = await sendSMS(tenantId, customer.id, content);
-      results.queued++;
-      results.details.push({ customerId: customer.id, ...result });
-    } catch (err) {
-      results.failed++;
-      results.details.push({ customerId: customer.id, status: 'FAILED', error: err.message });
-    }
-  }
+  const results = await processInChunks(customers, async (customer) => {
+    return sendSMS(tenantId, customer.id, content);
+  });
 
   logger.info('Batch SMS completed', { tenantId, queued: results.queued, failed: results.failed });
   return results;
@@ -183,18 +206,9 @@ async function sendBatchEmail(tenantId, customerIds, subject, content) {
     throw new ValidationError('Some customer IDs are invalid or do not belong to your tenant');
   }
 
-  const results = { queued: 0, failed: 0, total: customerIds.length, details: [] };
-
-  for (const customer of customers) {
-    try {
-      const result = await sendEmail(tenantId, customer.id, subject, content);
-      results.queued++;
-      results.details.push({ customerId: customer.id, ...result });
-    } catch (err) {
-      results.failed++;
-      results.details.push({ customerId: customer.id, status: 'FAILED', error: err.message });
-    }
-  }
+  const results = await processInChunks(customers, async (customer) => {
+    return sendEmail(tenantId, customer.id, subject, content);
+  });
 
   logger.info('Batch email completed', { tenantId, queued: results.queued, failed: results.failed });
   return results;
