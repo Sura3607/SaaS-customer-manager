@@ -135,7 +135,7 @@
   - [ ] Check no errors: `docker-compose logs`
 - [ ] Test connectivity:
   - [ ] Frontend: http://localhost:3000 → UI loads
-  - [ ] Backend: http://localhost:5000/api/v1/health → OK response
+  - [x] Backend: http://localhost:5000/api/v1/health → OK response
   - [ ] MySQL: Connect via phpmyadmin http://localhost:8080
 - [ ] Test workflow:
   - [ ] Register tenant on Frontend → calls Backend
@@ -154,8 +154,8 @@
 ## 📋 GIAI ĐOẠN 2: AWS Account & IAM Setup (Tuần 1-2)
 
 ### AWS Account Setup
-- [ ] Login to AWS Console (or create account)
-- [ ] Verify region: `us-east-1` (or choose closest region)
+- [x] Login to AWS Console (or create account)
+- [x] Verify region: `us-east-1` (or choose closest region)
 - [ ] Enable billing alerts:
   - [ ] Billing > Billing Preferences
   - [ ] Receive Free Tier Usage Alerts: Yes
@@ -163,27 +163,27 @@
   - [ ] CloudWatch Alarm threshold: $100 (or lower)
 
 ### IAM User for CI/CD/Deployment
-- [ ] Create IAM user: `github-actions-user` (or `deployment-user`)
-- [ ] Attach policies:
-  - [ ] `AmazonEC2ContainerRegistryPowerUser` (for ECR)
-  - [ ] `AmazonECS_FullAccess` (for ECS)
-  - [ ] `AmazonRDSFullAccess` (for RDS)
-  - [ ] `AmazonS3FullAccess` (for S3)
-  - [ ] `CloudFrontFullAccess` (for CloudFront)
-  - [ ] `CloudWatchLogsFullAccess` (for CloudWatch)
-- [ ] Generate access keys:
-  - [ ] Access Key ID: `AKIA...`
-  - [ ] Secret Access Key: (save securely)
-  - [ ] Store in password manager or GitHub Secrets later
+- [x] Create IAM user: `github-actions-user` (or `deployment-user`)
+- [x] Attach policies:
+  - [x] `AmazonEC2ContainerRegistryPowerUser` (for ECR)
+  - [x] `AmazonECS_FullAccess` (for ECS)
+  - [x] `AmazonRDSFullAccess` (for RDS)
+  - [x] `AmazonS3FullAccess` (for S3)
+  - [x] `CloudFrontFullAccess` (for CloudFront)
+  - [x] `CloudWatchLogsFullAccess` (for CloudWatch)
+- [x] Generate access keys:
+  - [x] Access Key ID: `AKIA...`
+  - [x] Secret Access Key: (save securely)
+  - [x] Store in password manager or GitHub Secrets later
 
 ### IAM Role for EC2/ECS
-- [ ] Create IAM role: `ecs-task-execution-role`
-- [ ] Trust entity: ECS Tasks
-- [ ] Permissions:
-  - [ ] `AmazonECSTaskExecutionRolePolicy` (default)
-  - [ ] `AmazonSerializationPolicy` (for Secrets Manager)
-  - [ ] `CloudWatchLogsFullAccess`
-  - [ ] `AmazonEC2ContainerRegistryReadOnly`
+- [x] Create IAM role: `ecs-task-execution-role`
+- [x] Trust entity: ECS Tasks
+- [x] Permissions:
+  - [x] `AmazonECSTaskExecutionRolePolicy` (default)
+  - [x] `SecretsManagerReadWrite` (for Secrets Manager)
+  - [x] `CloudWatchLogsFullAccess`
+  - [x] `AmazonEC2ContainerRegistryReadOnly`
 
 ### Store Secrets Securely
 - [ ] Use AWS Secrets Manager (not environment variables in Git):
@@ -207,22 +207,22 @@
   - [ ] Route tables configured correctly
 
 ### Security Groups
-- [ ] **RDS Security Group** (`rds-sg`):
-  - [ ] Inbound: MySQL (3306) from Backend SG only
+- [x] **RDS Security Group** (`rds-sg`):
+  - [x] Inbound: MySQL (3306) from Backend SG only
   - [ ] Outbound: None (default allow all is OK)
-  - [ ] No public access
+  - [x] No public access
   
-- [ ] **Backend/ECS Security Group** (`backend-sg`):
-  - [ ] Inbound:
-    - [ ] HTTP (80) from ALB SG
-    - [ ] HTTPS (443) from ALB SG
+- [x] **Backend/ECS Security Group** (`backend-sg`):
+  - [x] Inbound:
+    - [x] HTTP (80) from ALB SG
+    - [x] HTTPS (443) from ALB SG
     - [ ] SSH (22) from your IP (for debugging)
   - [ ] Outbound: All traffic (to contact Twilio, SendGrid, RDS)
   
-- [ ] **ALB Security Group** (`alb-sg`):
-  - [ ] Inbound:
-    - [ ] HTTP (80) from 0.0.0.0/0 (internet)
-    - [ ] HTTPS (443) from 0.0.0.0/0 (internet)
+- [x] **ALB Security Group** (`alb-sg`):
+  - [x] Inbound:
+    - [x] HTTP (80) from 0.0.0.0/0 (internet)
+    - [x] HTTPS (443) from 0.0.0.0/0 (internet)
   - [ ] Outbound: All traffic (to backend)
   
 - [ ] **Frontend Security Group** (if separate, optional):
@@ -233,14 +233,14 @@
 ## 📋 GIAI ĐOẠN 4: Database Setup - RDS MySQL (Tuần 2)
 
 ### Create RDS MySQL Instance
-- [ ] Go to RDS > Create database
-- [ ] Engine: MySQL 8.0 (latest 8.0.x)
-- [ ] Template: Free tier (or production for real use)
-- [ ] Instance class: `db.t3.micro` (free tier) or `db.t3.small`
-- [ ] Storage:
-  - [ ] Allocated storage: 20 GB
-  - [ ] Storage type: General Purpose SSD (gp2)
-  - [ ] Enable auto scaling: No (for testing)
+- [x] Go to RDS > Create database
+- [x] Engine: MySQL 8.0 (latest 8.0.x)
+- [x] Template: Free tier (or production for real use)
+- [x] Instance class: `db.t3.micro` (free tier) or `db.t3.small`
+- [x] Storage:
+  - [x] Allocated storage: 20 GB
+  - [x] Storage type: General Purpose SSD (gp2)
+  - [x] Enable auto scaling: No (for testing)
 - [ ] High Availability:
   - [ ] Multi-AZ: No (for cost, enable for production)
   - [ ] Read replicas: No
@@ -250,15 +250,15 @@
   - [ ] Auto minor version upgrade: Yes
   - [ ] Maintenance window: sun-04:00-05:00 UTC
 - [ ] Deletion protection: Enable (prevent accidental delete)
-- [ ] DB instance identifier: `saas-mysql-instance`
-- [ ] Master username: `admin`
-- [ ] Master password: (generate strong password, save securely)
-- [ ] Database name: `saas_db`
-- [ ] VPC: Default or your custom VPC
-- [ ] Security group: RDS SG (created earlier)
-- [ ] Publicly accessible: No (only from VPC)
+- [x] DB instance identifier: `saas-mysql-instance`
+- [x] Master username: `admin`
+- [x] Master password: (generate strong password, save securely)
+- [x] Database name: `saas_db`
+- [x] VPC: Default or your custom VPC
+- [x] Security group: RDS SG (created earlier)
+- [x] Publicly accessible: No (only from VPC)
 - [ ] Enable encryption: Yes (default)
-- [ ] Create database
+- [x] Create database
 
 ### RDS Connection Details
 - [ ] Wait for instance to be "Available" (~10-15 min)
@@ -291,8 +291,8 @@
 ## 📋 GIAI ĐOẠN 5: Container Registry - ECR (Tuần 2-3)
 
 ### Create ECR Repositories
-- [ ] Go to ECR > Create repository
-- [ ] Create repo 1: `saas-backend`
+- [x] Go to ECR > Create repository
+- [x] Create repo 1: `saas-backend`
   - [ ] Tag immutability: Disable
   - [ ] Scan on push: Enable (optional, for security)
   - [ ] Image lifecycle policy: No (optional)
@@ -377,31 +377,31 @@
 - [ ] Create task definition
 
 ### Create Application Load Balancer (ALB)
-- [ ] Go to EC2 > Load Balancers > Create
-- [ ] Load balancer type: Application Load Balancer
-- [ ] Name: `saas-alb`
-- [ ] Scheme: Internet-facing
+- [x] Go to EC2 > Load Balancers > Create
+- [x] Load balancer type: Application Load Balancer
+- [x] Name: `saas-alb`
+- [x] Scheme: Internet-facing
 - [ ] IP address type: IPv4
 - [ ] VPC: Same as cluster
-- [ ] Subnets: Select public subnets (2+ for HA)
-- [ ] Security groups: ALB SG (created earlier)
+- [x] Subnets: Select public subnets (2+ for HA)
+- [x] Security groups: ALB SG (created earlier)
 - [ ] Listener (HTTP):
-  - [ ] Protocol: HTTP
-  - [ ] Port: 80
-  - [ ] Default action: Forward to target group (create new)
-    - [ ] Name: `saas-backend-tg`
-    - [ ] Protocol: HTTP
-    - [ ] Port: 5000
+  - [x] Protocol: HTTP
+  - [x] Port: 80
+  - [x] Default action: Forward to target group (create new)
+    - [x] Name: `saas-backend-tg`
+    - [x] Protocol: HTTP
+    - [x] Port: 5000
     - [ ] VPC: Same
     - [ ] Health check:
-      - [ ] Protocol: HTTP
-      - [ ] Path: `/api/v1/health`
-      - [ ] Port: 5000
+      - [x] Protocol: HTTP
+      - [x] Path: `/`
+      - [x] Port: 5000
       - [ ] Interval: 30 seconds
       - [ ] Timeout: 10 seconds
       - [ ] Healthy threshold: 2
       - [ ] Unhealthy threshold: 3
-- [ ] Create ALB
+- [x] Create ALB
 - [ ] Record ALB DNS: `saas-alb-123456.us-east-1.elb.amazonaws.com`
 
 ### Create ECS Service
@@ -843,16 +843,16 @@
 
 - [ ] Docker Compose local environment fully working
   - [ ] Frontend at http://localhost:3000
-  - [ ] Backend at http://localhost:5000
+  - [x] Backend at http://localhost:5000
   - [ ] MySQL at localhost:3306
   - [ ] Can perform end-to-end workflows
   
 - [ ] AWS Infrastructure deployed:
-  - [ ] VPC with proper subnets & security groups
-  - [ ] RDS MySQL instance running & accessible
-  - [ ] ECR repositories for Backend & Frontend
+  - [x] VPC with proper subnets & security groups
+  - [x] RDS MySQL instance running & accessible
+  - [x] ECR repositories for Backend & Frontend
   - [ ] ECS cluster & service running 2 tasks
-  - [ ] ALB routing traffic correctly
+  - [x] ALB routing traffic correctly
   - [ ] Frontend serving from S3 + CloudFront
   
 - [ ] All services working:
@@ -868,10 +868,10 @@
   - [ ] Email notifications working
   
 - [ ] Security:
-  - [ ] No public DB access (only from VPC)
+  - [x] No public DB access (only from VPC)
   - [ ] ALB requires HTTPS (or redirect HTTP to HTTPS)
   - [ ] Secrets stored in AWS Secrets Manager (not in code)
-  - [ ] IAM roles follow least-privilege principle
+  - [x] IAM roles follow least-privilege principle
   
 - [ ] Cost tracking:
   - [ ] All resources tagged
