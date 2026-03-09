@@ -1,0 +1,423 @@
+/* ============================================
+   GLOBAL STYLES & RESPONSIVE DESIGN
+   ============================================ */
+
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0d101b;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 1.5715;
+  background-color: #0d101b;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.35;
+}
+
+h1 {
+  font-size: 38px;
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+h4 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+h5 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+h6 {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+p {
+  margin: 0 0 16px 0;
+}
+
+a {
+  color: #1976d2;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #1565c0;
+  text-decoration: underline;
+}
+
+strong, b {
+  font-weight: 600;
+}
+
+code {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 12px;
+  color: #d32f2f;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Display utilities */
+.hidden { display: none !important; }
+.visible { display: block !important; }
+.invisible { visibility: hidden !important; }
+
+/* Text utilities */
+.text-center { text-align: center !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+.text-justify { text-align: justify !important; }
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-muted { color: #757575 !important; }
+.text-secondary { color: #757575 !important; }
+.text-success { color: #388e3c !important; }
+.text-danger { color: #d32f2f !important; }
+.text-warning { color: #f57c00 !important; }
+.text-info { color: #0097a7 !important; }
+
+/* Font size utilities */
+.text-xs { font-size: 12px !important; }
+.text-sm { font-size: 13px !important; }
+.text-base { font-size: 14px !important; }
+.text-lg { font-size: 16px !important; }
+.text-xl { font-size: 18px !important; }
+
+/* Font weight utilities */
+.font-light { font-weight: 300 !important; }
+.font-normal { font-weight: 400 !important; }
+.font-medium { font-weight: 500 !important; }
+.font-semibold { font-weight: 600 !important; }
+.font-bold { font-weight: 700 !important; }
+
+/* Margin utilities */
+.m-0 { margin: 0 !important; }
+.m-1 { margin: 8px !important; }
+.m-2 { margin: 12px !important; }
+.m-3 { margin: 16px !important; }
+.m-4 { margin: 24px !important; }
+
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.my-auto { margin-top: auto !important; margin-bottom: auto !important; }
+
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: 8px !important; }
+.mt-2 { margin-top: 12px !important; }
+.mt-3 { margin-top: 16px !important; }
+.mt-4 { margin-top: 24px !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: 8px !important; }
+.mb-2 { margin-bottom: 12px !important; }
+.mb-3 { margin-bottom: 16px !important; }
+.mb-4 { margin-bottom: 24px !important; }
+
+.ml-0 { margin-left: 0 !important; }
+.ml-1 { margin-left: 8px !important; }
+.ml-2 { margin-left: 12px !important; }
+.ml-3 { margin-left: 16px !important; }
+.ml-4 { margin-left: 24px !important; }
+
+.mr-0 { margin-right: 0 !important; }
+.mr-1 { margin-right: 8px !important; }
+.mr-2 { margin-right: 12px !important; }
+.mr-3 { margin-right: 16px !important; }
+.mr-4 { margin-right: 24px !important; }
+
+/* Padding utilities */
+.p-0 { padding: 0 !important; }
+.p-1 { padding: 8px !important; }
+.p-2 { padding: 12px !important; }
+.p-3 { padding: 16px !important; }
+.p-4 { padding: 24px !important; }
+
+.px-1 { padding-left: 8px !important; padding-right: 8px !important; }
+.px-2 { padding-left: 12px !important; padding-right: 12px !important; }
+.px-3 { padding-left: 16px !important; padding-right: 16px !important; }
+.px-4 { padding-left: 24px !important; padding-right: 24px !important; }
+
+.py-1 { padding-top: 8px !important; padding-bottom: 8px !important; }
+.py-2 { padding-top: 12px !important; padding-bottom: 12px !important; }
+.py-3 { padding-top: 16px !important; padding-bottom: 16px !important; }
+.py-4 { padding-top: 24px !important; padding-bottom: 24px !important; }
+
+/* Border & Shadow utilities */
+.border { border: 1px solid #e0e0e0 !important; }
+.border-top { border-top: 1px solid #e0e0e0 !important; }
+.border-bottom { border-bottom: 1px solid #e0e0e0 !important; }
+.border-left { border-left: 1px solid #e0e0e0 !important; }
+.border-right { border-right: 1px solid #e0e0e0 !important; }
+
+.rounded { border-radius: 6px !important; }
+.rounded-sm { border-radius: 4px !important; }
+.rounded-lg { border-radius: 8px !important; }
+.rounded-full { border-radius: 9999px !important; }
+
+.shadow { box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1) !important; }
+.shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important; }
+.shadow-lg { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important; }
+.shadow-none { box-shadow: none !important; }
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================
+   xs: < 576px   (Mobile)
+   sm: 576px+    (Mobile+)
+   md: 768px+    (Tablet)
+   lg: 992px+    (Desktop)
+   xl: 1200px+   (Large Desktop)
+   xxl: 1600px+  (Ultra-wide)
+   ============================================ */
+
+/* Mobile first: Base styles apply to all screens */
+
+/* Small devices (portrait phones, <= 767px) */
+@media (max-width: 767px) {
+  body {
+    font-size: 13px;
+  }
+
+  h1 { font-size: 28px; margin-bottom: 16px; }
+  h2 { font-size: 24px; margin-bottom: 14px; }
+  h3 { font-size: 20px; margin-bottom: 12px; }
+  h4 { font-size: 18px; margin-bottom: 10px; }
+
+  /* Hide desktop-only columns */
+  .hide-on-mobile { display: none !important; }
+
+  /* Responsive spacing */
+  .p-mobile { padding: 12px !important; }
+  .m-mobile { margin: 12px !important; }
+
+  /* Full width on mobile */
+  .full-width { width: 100% !important; }
+
+  /* Stack layout on mobile */
+  .stack-on-mobile { flex-direction: column !important; }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hide-on-tablet { display: none !important; }
+}
+
+/* Desktop (1024px and up) */
+@media (min-width: 1024px) {
+  .hide-on-desktop { display: none !important; }
+}
+
+/* Large screens (1200px and up) */
+@media (min-width: 1200px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  a {
+    color: #1976d2;
+    text-decoration: underline;
+  }
+
+  /* Hide interactive elements */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Page breaks */
+  .page-break { page-break-after: always; }
+
+  /* Better printing */
+  nav, footer, .sidebar { display: none !important; }
+}
+
+/* ============================================
+   DARK THEME TABLE STYLING
+   ============================================ */
+
+.dark-table-row {
+  background-color: #1a1f2e !important;
+}
+
+.dark-table-row:hover {
+  background-color: #232b3d !important;
+}
+
+/* Dark theme table header */
+.ant-table-thead > tr > th {
+  background-color: #1a1f2e !important;
+  color: #fff !important;
+  border-color: #2a3142 !important;
+}
+
+/* Dark theme table cells */
+.ant-table-tbody > tr > td {
+  border-color: #2a3142 !important;
+  color: #fff !important;
+}
+
+/* Dark theme table rows */
+.ant-table-tbody > tr {
+  background-color: #1a1f2e !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: #232b3d !important;
+}
+
+/* Text color in dark table */
+.ant-table .ant-typography {
+  color: #fff !important;
+}
+
+.ant-table .ant-typography-secondary {
+  color: #8a92a6 !important;
+}
+
+/* ============================================
+   DARK THEME FORM STYLING
+   ============================================ */
+
+/* Input styling on dark background */
+.ant-input,
+.ant-input-number,
+.ant-picker,
+.ant-select-selector,
+.ant-checkbox-wrapper label {
+  color: #fff !important;
+  background-color: #1a1f2e !important;
+  border-color: #2a3142 !important;
+}
+
+.ant-input::placeholder,
+.ant-input-number::placeholder {
+  color: #8a92a6 !important;
+}
+
+.ant-input-prefix,
+.ant-input-suffix {
+  color: #8a92a6 !important;
+}
+
+/* TextArea styling */
+.ant-input-textarea > textarea {
+  color: #fff !important;
+  background-color: #1a1f2e !important;
+  border-color: #2a3142 !important;
+}
+
+.ant-input-textarea > textarea::placeholder {
+  color: #8a92a6 !important;
+}
+
+/* Select styling */
+.ant-select-selector {
+  background-color: #1a1f2e !important;
+  border-color: #2a3142 !important;
+}
+
+.ant-select-selection-item {
+  color: #fff !important;
+}
+
+.ant-select-arrow {
+  color: #8a92a6 !important;
+}
+
+/* Form label */
+.ant-form-item-label > label {
+  color: #fff !important;
+}
+
+.ant-form-item-explain {
+  color: #8a92a6 !important;
+}
+
+/* Checkbox and Radio */
+.ant-checkbox-wrapper,
+.ant-radio-wrapper {
+  color: #fff !important;
+}
+
+.ant-checkbox-inner,
+.ant-radio-inner {
+  border-color: #2a3142 !important;
+}
+
+/* Dropdown menu styling */
+.ant-dropdown-menu {
+  background-color: #1a1f2e !important;
+  color: #fff !important;
+}
+
+.ant-dropdown-menu-item {
+  color: #fff !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: #232b3d !important;
+  color: #fff !important;
+}

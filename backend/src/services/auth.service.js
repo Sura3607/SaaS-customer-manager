@@ -187,4 +187,22 @@ async function getMe(userId) {
   return user;
 }
 
-module.exports = { login, refresh, logout, getMe };
+/**
+ * Get all users for a tenant.
+ */
+async function getUsersByTenant(tenantId) {
+  const users = await prisma.user.findMany({
+    where: { tenantId },
+    select: {
+      id: true,
+      email: true,
+      fullName: true,
+      role: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+  return users;
+}
+
+module.exports = { login, refresh, logout, getMe, getUsersByTenant };
