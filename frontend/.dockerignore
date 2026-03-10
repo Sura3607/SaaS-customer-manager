@@ -1,0 +1,68 @@
+# Dependencies
+node_modules
+npm-debug.log
+npm-error.log
+yarn-error.log
+package-lock.json
+
+# Environment files  
+.env
+.env.development
+.env.local
+.env.*.local
+
+# Version control
+.git
+.gitignore
+.github
+.gitattributes
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# Documentation and configs for dev only
+README.md
+TESTING_REPORT.md
+DOCKER_GUIDE.md
+.prettierrc
+.eslintrc
+.editorconfig
+
+# Testing and build tools
+.babelrc
+jest.config.js
+jest.setup.js
+vite.config.js
+vitest.config.js
+tsconfig.json
+
+# Test files
+src/__tests__
+src/**/*.test.js
+src/**/*.spec.js
+coverage
+
+# Build artifacts
+dist
+build
+.next
+out
+
+# Development server
+.vite
+
+# Logs
+logs
+*.log
+
+# OS files
+.DS_Store
+.env.example

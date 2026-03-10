@@ -16,6 +16,7 @@ const { env } = require('./config/env');
 const healthRoutes = require('./routes/health.routes');
 const tenantRoutes = require('./routes/tenants.routes');
 const authRoutes = require('./routes/auth.routes');
+const usersRoutes = require('./routes/users.routes');
 const customerRoutes = require('./routes/customers.routes');
 const messageRoutes = require('./routes/messages.routes');
 const logRoutes = require('./routes/logs.routes');
@@ -97,6 +98,7 @@ app.use((req, res, next) => {
 app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/tenants', tenantRoutes);
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', usersRoutes);
 app.use('/api/v1/customers', customerRoutes);
 app.use('/api/v1/messages', messageRoutes);
 app.use('/api/v1/messages', logRoutes);

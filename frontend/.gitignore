@@ -1,3 +1,13 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.DS_Store
+/.idea
+.vscode
+npm-debug.log
+yarn-error.log
 # Dependencies
 node_modules/
 npm-debug.log*

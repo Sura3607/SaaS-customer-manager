@@ -9,491 +9,494 @@
 
 ## 📋 GIAI ĐOẠN 1: Chuẩn bị & Thiết lập (Tuần 1)
 
-- [ ] Setup project React + Vite
+ - [x] Setup project React + Vite
   - [ ] `npm create vite@latest frontend -- --template react`
-  - [ ] Cài AntD: `npm install antd`
-  - [ ] Cài Axios: `npm install axios`
-  - [ ] Cài React Router: `npm install react-router-dom`
+  - [x] Cài AntD: `npm install antd`
+  - [x] Cài Axios: `npm install axios`
+  - [x] Cài React Router: `npm install react-router-dom`
   - [ ] Cài React Query (tùy chọn): `npm install @tanstack/react-query`
-- [ ] Tạo `.gitignore` (node_modules, .env, dist, build)
-- [ ] Cấu hình Vite `vite.config.js`:
-  - [ ] API proxy cho development (forward to Backend)
-  - [ ] Env variables support
-- [ ] Tạo `.env.example`:
+ - [x] Tạo `.gitignore` (node_modules, .env, dist, build)
+ - [x] Cấu hình Vite `vite.config.js`:
+  - [x] API proxy cho development (forward to Backend)
+  - [x] Env variables support
+ - [x] Tạo `.env.example`:
   ```
   VITE_API_BASE_URL=http://localhost:5000/api/v1
   VITE_APP_NAME=Customer Manager SaaS
   ```
-- [ ] Tạo thư mục cấu trúc:
-  - [ ] `src/pages/` - tất cả pages
-  - [ ] `src/components/` - reusable components
-  - [ ] `src/hooks/` - custom hooks
-  - [ ] `src/services/` - API calls
-  - [ ] `src/context/` - React context
-  - [ ] `src/styles/` - global styles
-  - [ ] `src/utils/` - helper functions
-- [ ] Cấu hình AntD theme (`src/styles/theme.js`):
-  - [ ] Color scheme (primary, secondary, success, warning, error)
-  - [ ] Typography (fonts, sizes)
-  - [ ] Component customizations
-- [ ] Tạo API service layer (`src/services/api.js`):
-  - [ ] Axios instance
-  - [ ] Base URL từ env
-  - [ ] Default headers
-  - [ ] Error handling
+ - [x] Tạo thư mục cấu trúc:
+  - [x] `src/pages/` - tất cả pages
+  - [x] `src/components/` - reusable components
+  - [x] `src/hooks/` - custom hooks
+  - [x] `src/services/` - API calls
+  - [x] `src/context/` - React context
+  - [x] `src/styles/` - global styles
+  - [x] `src/utils/` - helper functions
+ - [x] Cấu hình AntD theme (`src/styles/theme.js`):
+  - [x] Color scheme (primary, secondary, success, warning, error)
+  - [x] Typography (fonts, sizes)
+  - [x] Component customizations
+ - [x] Tạo API service layer (`src/services/api.js`):
+  - [x] Axios instance
+  - [x] Base URL từ env
+  - [x] Default headers
+  - [x] Error handling
 
 ---
 
 ## 📋 GIAI ĐOẠN 2: Xác thực & Context (Tuần 1-2)
 
-- [ ] Tạo `AuthContext.jsx` (`src/context/`)
-  - [ ] State: currentUser, tenant, tokens (accessToken, refreshToken)
-  - [ ] Methods: login, logout, register, refreshToken
-  - [ ] Persist tokens to localStorage
-- [ ] Tạo `useAuth()` hook (`src/hooks/useAuth.js`)
-  - [ ] Use context value
-  - [ ] Export user, tenant, isAuthenticated, login, logout
-- [ ] Tạo Protected Route wrapper (`src/components/PrivateRoute.jsx`)
-  - [ ] Check auth trước khi render
-  - [ ] Redirect to login nếu chưa auth
-- [ ] Setup JWT token persistence
-  - [ ] Store accessToken + refreshToken in localStorage
-  - [ ] Load on app start
-  - [ ] Clear on logout
-- [ ] Tạo API interceptor trong `src/services/api.js`:
-  - [ ] Request interceptor: Thêm token vào Authorization header
-  - [ ] Response interceptor: Handle 401 (refresh token or redirect to login)
+ - [x] Tạo `AuthContext.jsx` (`src/context/`)
+  - [x] State: currentUser, tenant, tokens (accessToken, refreshToken)
+  - [x] Methods: login, logout, register
+  - [x] Persist tokens to localStorage
+ - [x] Tạo `useAuth()` hook (`src/hooks/useAuth.js`)
+  - [x] Use context value
+  - [x] Export user, tenant, isAuthenticated, login, logout
+ - [x] Tạo Protected Route wrapper (`src/components/PrivateRoute.jsx`)
+  - [x] Check auth trước khi render
+  - [x] Redirect to login nếu chưa auth
+ - [x] Setup JWT token persistence
+  - [x] Store accessToken + refreshToken in localStorage
+  - [x] Load on app start
+  - [x] Clear on logout
+ - [x] Tạo API interceptor trong `src/services/api.js`:
+  - [x] Request interceptor: Thêm token vào Authorization header
+  - [x] Response interceptor: Handle 401 (refresh token or redirect to login)
 
 ---
 
 ## 📋 GIAI ĐOẠN 3: Trang Public (Tuần 2)
 
 ### Tenant Registration Page (`pages/TenantRegister.jsx`)
-- [ ] Form với fields:
-  - [ ] Company Name (required)
-  - [ ] Admin Email (required, email validation)
-  - [ ] Admin Password (required, min 6 chars)
-  - [ ] Phone (required, phone validation)
-- [ ] Submit button gọi API POST `/tenants/register`
-- [ ] Success: Toast notification + Navigate to Login
-- [ ] Error: Modal hoặc toast với error message
-- [ ] Loading state: Disable button, show spinner
-- [ ] Responsive: Work trên mobile, tablet, desktop
+- [x] Form với fields:
+  - [x] Company Name (required)
+  - [x] Admin Email (required, email validation)
+  - [x] Admin Password (required, min 6 chars)
+  - [x] Phone (required, phone validation)
+- [x] Submit button gọi API POST `/tenants/register`
+ - [x] Submit button gọi API POST `/tenants/register`
+- [x] Success: Toast notification + Navigate to Login
+- [x] Error: Modal hoặc toast với error message
+- [x] Loading state: Disable button, show spinner
+- [x] Responsive: Work trên mobile, tablet, desktop
 
 ### Login Page (`pages/Login.jsx`)
-- [ ] Form với fields:
-  - [ ] Email (required, email validation)
-  - [ ] Password (required)
-  - [ ] Tenant Slug (optional dropdown hoặc free input)
-- [ ] Submit button gọi API POST `/auth/login`
-- [ ] Success response:
-  - [ ] Save accessToken, refreshToken, user info to context
-  - [ ] Navigate to Dashboard
-  - [ ] Show success toast
-- [ ] Error handling:
-  - [ ] Invalid credentials → error message
-  - [ ] Invalid tenant → error message
-- [ ] "Remember me" functionality (tùy chọn, save tenant slug to localStorage)
-- [ ] Loading state, disabled submit during request
-- [ ] Responsive layout
+- [x] Form với fields:
+  - [x] Email (required, email validation)
+  - [x] Password (required)
+  - [x] Tenant Slug (optional dropdown hoặc free input)
+- [x] Submit button gọi API POST `/auth/login`
+ - [x] Submit button gọi API POST `/auth/login`
+- [x] Success response:
+  - [x] Save accessToken, refreshToken, user info to context
+  - [x] Navigate to Dashboard
+  - [x] Show success toast
+- [x] Error handling:
+  - [x] Invalid credentials → error message
+  - [x] Invalid tenant → error message
+- [x] "Remember me" functionality (tùy chọn, save tenant slug to localStorage)
+- [x] Loading state, disabled submit during request
+- [x] Responsive layout
 
 ---
 
 ## 📋 GIAI ĐOẠN 4: Layout & Navigation (Tuần 2)
 
 ### Main Layout (`components/layout/MainLayout.jsx`)
-- [ ] Header:
-  - [ ] Logo/App title (left)
-  - [ ] User info (middle - "Welcome, John Doe")
-  - [ ] Logout button (right)
-  - [ ] Responsive: Hamburger menu on mobile
-- [ ] Sidebar (Left):
-  - [ ] Navigation menu items:
-    - [ ] Dashboard (icon + text)
-    - [ ] Customers (icon + text)
-    - [ ] Messaging (icon + text)
-    - [ ] Logs (icon + text)
-    - [ ] Settings (icon + text, tùy chọn)
-  - [ ] Active menu item highlight
-  - [ ] Collapse on mobile
-- [ ] Content area (Main)
-  - [ ] Outlet for pages
-  - [ ] Padding/margins
-- [ ] Footer (tùy chọn)
-  - [ ] Copyright, version, links
+- [x] Header:
+  - [x] Logo/App title (left)
+  - [x] User info (middle - "Welcome, John Doe")
+  - [x] Logout button (right)
+  - [x] Responsive: Hamburger menu on mobile
+- [x] Sidebar (Left):
+  - [x] Navigation menu items:
+    - [x] Dashboard (icon + text)
+    - [x] Customers (icon + text)
+    - [x] Messaging (icon + text)
+    - [x] Logs (icon + text)
+    - [x] Settings (icon + text, tùy chọn)
+  - [x] Active menu item highlight
+  - [x] Collapse on mobile
+- [x] Content area (Main)
+  - [x] Outlet for pages
+  - [x] Padding/margins
+- [x] Footer (tùy chọn)
+  - [x] Copyright, version, links
 
 ### Header Component (`components/layout/Header.jsx`)
-- [ ] Display tenant name
-- [ ] Display current user email
-- [ ] Logout button with confirmation modal
-- [ ] Responsive (hamburger menu trigger on mobile)
+- [x] Display tenant name
+- [x] Display current user email
+- [x] Logout button with confirmation modal
+- [x] Responsive (hamburger menu trigger on mobile)
 
 ### Navigation Setup (`App.jsx` + React Router)
-- [ ] Setup Router with routes:
-  - [ ] `/register` - TenantRegister (public)
-  - [ ] `/login` - Login (public)
-  - [ ] `/dashboard` - Dashboard (protected)
-  - [ ] `/customers` - Customers (protected)
-  - [ ] `/customers/:id` - CustomerDetail (protected)
-  - [ ] `/messaging` - Messaging (protected)
-  - [ ] `/logs` - Logs (protected)
-  - [ ] `/settings` - Settings (protected, tùy chọn)
-  - [ ] `*` - 404 Not Found
-- [ ] PrivateRoute wrapper cho protected routes
-- [ ] Layout wrapper (MainLayout) cho protected pages
+- [x] Setup Router with routes:
+  - [x] `/register` - TenantRegister (public)
+  - [x] `/login` - Login (public)
+  - [x] `/dashboard` - Dashboard (protected)
+  - [x] `/customers` - Customers (protected)
+  - [x] `/customers/:id` - CustomerDetail (protected)
+  - [x] `/messaging` - Messaging (protected)
+  - [x] `/logs` - Logs (protected)
+  - [x] `/settings` - Settings (protected, tùy chọn)
+  - [x] `*` - 404 Not Found
+- [x] PrivateRoute wrapper cho protected routes
+- [x] Layout wrapper (MainLayout) cho protected pages
 
 ---
 
 ## 📋 GIAI ĐOẠN 5: Dashboard (Tuần 2-3)
 
 ### Dashboard Page (`pages/Dashboard.jsx`)
-- [ ] Call API GET `/tenants/{id}/stats` on component mount
-  - [ ] Get tenantId from context
-  - [ ] Handle loading, error states
-- [ ] Display Stats Cards (using AntD Statistic):
-  - [ ] Total Customers (number, icon)
-  - [ ] Total Messages Sent (number, icon)
+- [x] Call API GET `/tenants/{id}/stats` on component mount
+ - [x] Call API GET `/tenants/{id}/stats` on component mount
+  - [x] Get tenantId from context
+  - [x] Handle loading, error states
+- [x] Display Stats Cards (using AntD Statistic):
+  - [x] Total Customers (number, icon)
+  - [x] Total Messages Sent (number, icon)
   - [ ] Messages This Month (number, icon)
   - [ ] Delivery Success Rate (percentage, icon)
 - [ ] Display Charts:
   - [ ] Messages sent by type (SMS vs Email) - Pie chart or Bar chart
   - [ ] Messages sent over time (last 7 days) - Line chart
   - [ ] Could use recharts or antd/charts
-- [ ] Recent Messages Table (last 10 messages):
-  - [ ] Columns: Type (SMS/Email), Recipient, Status, Sent Time, Action (View)
-  - [ ] Clickable row → navigate to Logs with filter
-- [ ] Loading skeleton while fetching
-- [ ] Error state: Show alert + retry button
-- [ ] Responsive layout: Cards stack on mobile
+- [x] Recent Messages Table (last 10 messages):
+  - [x] Columns: Type (SMS/Email), Recipient, Status, Sent Time, Action (View)
+  - [x] Clickable row → navigate to Logs with filter
+- [x] Loading skeleton while fetching
+- [x] Error state: Show alert + retry button
+- [x] Responsive layout: Cards stack on mobile
 
 ---
 
 ## 📋 GIAI ĐOẠN 6: Quản lý Khách hàng - Danh sách (Tuần 3-4)
 
 ### Customers List Page (`pages/Customers.jsx`)
-- [ ] Table with columns:
-  - [ ] ID
-  - [ ] Full Name
-  - [ ] Phone
-  - [ ] Email
-  - [ ] Created Date
-  - [ ] Actions (Edit, Delete, Send Message)
-- [ ] Features:
-  - [ ] **Search bar** (real-time filter or "Search" button):
-    - [ ] Search by Full Name, Phone, Email
-    - [ ] Call API GET `/customers?q=<query>&page=1&limit=10`
-  - [ ] **Pagination** (AntD Pagination component):
-    - [ ] Page size: 10, 20, 50
-    - [ ] Display total count
-    - [ ] Navigate between pages
-  - [ ] **Sort by columns** (click column header):
-    - [ ] Full Name ascending/descending
-    - [ ] Created Date ascending/descending
-  - [ ] **Bulk select**:
-    - [ ] Checkbox column (select one, many, all)
-    - [ ] "Select All" checkbox in header
-    - [ ] Batch delete button (with confirmation)
-    - [ ] "Send Message" button (select multiple, then send)
-  - [ ] **Row Actions**:
-    - [ ] Edit button → open modal or navigate to detail
-    - [ ] Delete button → confirmation modal, then call API DELETE
-    - [ ] View button → navigate to CustomerDetail page
-- [ ] Top toolbar with:
-  - [ ] "Add Customer" button (green, icon) → open AddCustomer modal
-  - [ ] "Delete Selected" button (red, only if items selected) → bulk delete with confirm
-  - [ ] "Send Message" button (blue, only if items selected) → navigate to Messaging with selected IDs
-  - [ ] Refresh button
-- [ ] Empty state:
-  - [ ] "No customers found" message with "Add Customer" button
-  - [ ] Show when list is empty or search has no results
-- [ ] Error state:
-  - [ ] Show error message + "Retry" button
-- [ ] Loading state:
-  - [ ] Skeleton table or spin
-- [ ] Responsive:
-  - [ ] On mobile: Hide some columns (ID, Created Date), show in detail
+- [x] Table with columns:
+  - [x] ID
+  - [x] Full Name
+  - [x] Phone
+  - [x] Email
+  - [x] Created Date
+  - [x] Actions (Edit, Delete, Send Message)
+- [x] Features:
+  - [x] **Search bar** (real-time filter or "Search" button):
+    - [x] Search by Full Name, Phone, Email
+    - [x] Call API GET `/customers?q=<query>&page=1&limit=10`
+  - [x] **Pagination** (AntD Pagination component):
+    - [x] Page size: 10, 20, 50
+    - [x] Display total count
+    - [x] Navigate between pages
+  - [x] **Sort by columns** (click column header):
+    - [x] Full Name ascending/descending
+    - [x] Created Date ascending/descending
+  - [x] **Bulk select**:
+    - [x] Checkbox column (select one, many, all)
+    - [x] "Select All" checkbox in header
+    - [x] Batch delete button (with confirmation)
+    - [x] "Send Message" button (select multiple, then send)
+  - [x] **Row Actions**:
+    - [x] Edit button → open modal or navigate to detail
+    - [x] Delete button → confirmation modal, then call API DELETE
+    - [x] View button → navigate to CustomerDetail page
+- [x] Top toolbar with:
+  - [x] "Add Customer" button (green, icon) → open AddCustomer modal
+  - [x] "Delete Selected" button (red, only if items selected) → bulk delete with confirm
+  - [x] "Send Message" button (blue, only if items selected) → navigate to Messaging with selected IDs
+  - [x] Refresh button
+- [x] Empty state:
+  - [x] "No customers found" message with "Add Customer" button
+  - [x] Show when list is empty or search has no results
+- [x] Error state:
+  - [x] Show error message + "Retry" button
+- [x] Loading state:
+  - [x] Skeleton table or spin
+- [x] Responsive:
+  - [x] On mobile: Hide some columns (ID, Created Date), show in detail
 
 ---
 
 ## 📋 GIAI ĐOẠN 7: Quản lý Khách hàng - Form (Tuần 3-4)
 
 ### Customer Form Component (`components/customer/CustomerForm.jsx`)
-- [ ] Form fields (AntD Form):
-  - [ ] Full Name (required, text input)
-  - [ ] Address (optional, text area)
-  - [ ] Phone (required, phone format validation)
-  - [ ] Email (required, email format validation)
-- [ ] Validation:
-  - [ ] Full Name: required, min 2 chars, max 100 chars
-  - [ ] Phone: required, valid phone format (regex or library)
-  - [ ] Email: required, valid email format
-  - [ ] Address: optional, max 500 chars
-- [ ] Submit button:
-  - [ ] "Create" if new customer
-  - [ ] "Update" if editing
-  - [ ] Disabled during submit
-  - [ ] Loading spinner
-- [ ] Cancel button (close modal / navigate back)
-- [ ] Error handling:
-  - [ ] Validation errors shown below fields (red text)
-  - [ ] API error shown as modal or alert
-- [ ] Success handling:
-  - [ ] Toast notification "Customer created/updated successfully"
-  - [ ] Close modal or refresh list
+- [x] Form fields (AntD Form):
+  - [x] Full Name (required, text input)
+  - [x] Address (optional, text area)
+  - [x] Phone (required, phone format validation)
+  - [x] Email (required, email format validation)
+- [x] Validation:
+  - [x] Full Name: required, min 2 chars, max 100 chars
+  - [x] Phone: required, valid phone format (regex or library)
+  - [x] Email: required, valid email format
+  - [x] Address: optional, max 500 chars
+- [x] Submit button:
+  - [x] "Create" if new customer
+  - [x] "Update" if editing
+  - [x] Disabled during submit
+  - [x] Loading spinner
+- [x] Cancel button (close modal / navigate back)
+- [x] Error handling:
+  - [x] Validation errors shown below fields (red text)
+  - [x] API error shown as modal or alert
+- [x] Success handling:
+  - [x] Toast notification "Customer created/updated successfully"
+  - [x] Close modal or refresh list
 
 ### Add/Edit Modal in Customers Page
-- [ ] Modal triggers:
-  - [ ] "Add Customer" button → modal with empty form (mode: create)
-  - [ ] Edit row action → modal with pre-filled form (mode: edit)
-- [ ] Form inside modal:
-  - [ ] Use CustomerForm component
-  - [ ] Pass onSubmit callback
-  - [ ] Pass initialValues (for edit mode)
-- [ ] Modal controls:
-  - [ ] OK button (submit)
-  - [ ] Cancel button (close without save)
+- [x] Modal triggers:
+  - [x] "Add Customer" button → modal with empty form (mode: create)
+  - [x] Edit row action → modal with pre-filled form (mode: edit)
+- [x] Form inside modal:
+  - [x] Use CustomerForm component
+  - [x] Pass onSubmit callback
+  - [x] Pass initialValues (for edit mode)
+- [x] Modal controls:
+  - [x] OK button (submit)
+  - [x] Cancel button (close without save)
 
 ---
 
 ## 📋 GIAI ĐOẠN 8: Quản lý Khách hàng - Detail (Tuần 3-4, Tùy chọn)
 
 ### Customer Detail Page (`pages/CustomerDetail.jsx`)
-- [ ] URL: `/customers/:id`
-- [ ] Load customer data: GET `/customers/{id}`
-- [ ] Display:
-  - [ ] Full Name (large heading)
-  - [ ] Phone (clickable tel: link)
-  - [ ] Email (clickable mailto: link)
-  - [ ] Address (formatted)
-  - [ ] Created Date, Last Modified Date
-- [ ] Recent Communication History (from Logs):
-  - [ ] Table: Type (SMS/Email), Content, Status, Sent Time
-- [ ] Actions:
-  - [ ] Send SMS button → navigate to Messaging with this customer pre-selected
-  - [ ] Send Email button → navigate to Messaging with this customer pre-selected
-  - [ ] Edit button → open edit modal
-  - [ ] Delete button → confirm + delete + navigate back
-- [ ] Back button or breadcrumb
+- [x] URL: `/customers/:id`
+ - [x] Load customer data: GET `/customers/{id}`
+- [x] Display:
+  - [x] Full Name (large heading)
+  - [x] Phone (clickable tel: link)
+  - [x] Email (clickable mailto: link)
+  - [x] Address (formatted)
+  - [x] Created Date, Last Modified Date
+- [x] Recent Communication History (from Logs):
+  - [x] Table: Type (SMS/Email), Content, Status, Sent Time
+- [x] Actions:
+  - [x] Send SMS button → navigate to Messaging with this customer pre-selected
+  - [x] Send Email button → navigate to Messaging with this customer pre-selected
+  - [x] Edit button → open edit modal
+  - [x] Delete button → confirm + delete + navigate back
+- [x] Back button or breadcrumb
 
 ---
 
 ## 📋 GIAI ĐOẠN 9: Messaging - UI Structure (Tuần 4-5)
 
 ### Messaging Page (`pages/Messaging.jsx`)
-- [ ] Tabs (AntD Tabs):
-  - [ ] SMS Tab
-  - [ ] Email Tab
-- [ ] Each tab has form inside
+- [x] Tabs (AntD Tabs):
+  - [x] SMS Tab
+  - [x] Email Tab
+- [x] Each tab has form inside
 
 ### SMS Form Component (`components/messaging/SMSForm.jsx`)
-- [ ] **Recipient Selection Panel**:
-  - [ ] Radio buttons: "Single Customer" or "Multiple Customers"
-  - [ ] **If "Single":**
-    - [ ] Dropdown: Select customer from list
-    - [ ] Display customer phone number below dropdown
-  - [ ] **If "Multiple":**
-    - [ ] Show table with checkboxes (customers list)
-    - [ ] "Select All" checkbox
-    - [ ] Display count: "5 customers selected"
-    - [ ] Could be searchable dropdown with multi-select
-- [ ] **Message Content Panel**:
-  - [ ] From (read-only): Show sender phone number from config
-  - [ ] Content (required): textarea
-    - [ ] Character counter (max 160 for SMS)
-    - [ ] Warning: "SMS will be split into 2 messages" if > 160 chars
-  - [ ] Preview:
-    - [ ] Show how message will look in SMS format
-    - [ ] Estimated cost (Twilio pricing) if available
-- [ ] **Actions**:
-  - [ ] "Preview" button (show modal with preview)
-  - [ ] "Send" button (green, large):
-    - [ ] Show confirmation modal: "Send SMS to 5 customers?"
-    - [ ] On confirm: Call API POST `/messages/sms` or `/messages/sms/batch`
-    - [ ] Loading state, disable during send
-    - [ ] Success toast: "SMS sent successfully! Message ID: ..."
-    - [ ] Error modal with error details & retry option
+- [x] **Recipient Selection Panel**:
+  - [x] Radio buttons: "Single Customer" or "Multiple Customers"
+  - [x] **If "Single":**
+    - [x] Dropdown: Select customer from list
+    - [x] Display customer phone number below dropdown
+  - [x] **If "Multiple":**
+    - [x] Show table with checkboxes (customers list)
+    - [x] "Select All" checkbox
+    - [x] Display count: "5 customers selected"
+    - [x] Could be searchable dropdown with multi-select
+- [x] **Message Content Panel**:
+  - [x] From (read-only): Show sender phone number from config
+  - [x] Content (required): textarea
+    - [x] Character counter (max 160 for SMS)
+    - [x] Warning: "SMS will be split into 2 messages" if > 160 chars
+  - [x] Preview:
+    - [x] Show how message will look in SMS format
+    - [x] Estimated cost (Twilio pricing) if available
+- [x] **Actions**:
+  - [x] "Preview" button (show modal with preview)
+  - [x] "Send" button (green, large):
+    - [x] Show confirmation modal: "Send SMS to 5 customers?"
+    - [x] On confirm: Call API POST `/messages/sms` or `/messages/sms/batch`
+    - [x] Loading state, disable during send
+    - [x] Success toast: "SMS sent successfully! Message ID: ..."
+    - [x] Error modal with error details & retry option
 
 ### Email Form Component (`components/messaging/EmailForm.jsx`)
-- [ ] Similar structure to SMS
-- [ ] **Recipient Selection**: Single or Multiple (same as SMS)
-- [ ] **Message Content Panel**:
-  - [ ] From (read-only): SENDGRID_FROM_EMAIL
-  - [ ] Subject (required): text input
-  - [ ] Content (required): rivtext editor or textarea
-  - [ ] Preview option
-- [ ] **Actions**:
-  - [ ] "Send" button (call API POST `/messages/email` or `/messages/email/batch`)
-  - [ ] Confirmation modal
+- [x] Similar structure to SMS
+- [x] **Recipient Selection**: Single or Multiple (same as SMS)
+- [x] **Message Content Panel**:
+  - [x] From (read-only): SENDGRID_FROM_EMAIL
+  - [x] Subject (required): text input
+  - [x] Content (required): rivtext editor or textarea
+  - [x] Preview option
+- [x] **Actions**:
+  - [x] "Send" button (call API POST `/messages/email` or `/messages/email/batch`)
+  - [x] Confirmation modal
 
 ### General Features (Both SMS & Email)
-- [ ] Loading state (spinner)
-- [ ] Error handling:
-  - [ ] Invalid phone/email → clear error message
-  - [ ] API error → show error modal with details
-- [ ] Success notification:
-  - [ ] Toast: "Message sent! ID: ... Status: pending"
-- [ ] Rate limit warning:
-  - [ ] If hit rate limit (429), show info: "Too many requests, try again in 1 minute"
-- [ ] Form reset after successful send (or option to send again)
-- [ ] Responsive: stacked layout on mobile
+- [x] Loading state (spinner)
+- [x] Error handling:
+  - [x] Invalid phone/email → clear error message
+  - [x] API error → show error modal with details
+- [x] Success notification:
+  - [x] Toast: "Message sent! ID: ... Status: pending"
+- [x] Rate limit warning:
+  - [x] If hit rate limit (429), show info: "Too many requests, try again in 1 minute"
+- [x] Form reset after successful send (or option to send again)
+- [x] Responsive: stacked layout on mobile
 
 ---
 
 ## 📋 GIAI ĐOẠN 10: Message Logs/History (Tuần 5)
 
 ### Logs Page (`pages/Logs.jsx`)
-- [ ] Table with columns:
-  - [ ] ID (small)
-  - [ ] Type (SMS / Email, badge)
-  - [ ] To (recipient phone/email)
-  - [ ] Status (badge: Pending, Sent, Delivered, Failed)
-  - [ ] Message (truncated text, tooltip on hover)
-  - [ ] Sent Time (formatted date)
-  - [ ] Actions (View)
-- [ ] **Filters** (top toolbar):
-  - [ ] Type filter (dropdown): All, SMS, Email
-  - [ ] Status filter (dropdown): All, Pending, Sent, Delivered, Failed
-  - [ ] Date range picker: From date, To date
-  - [ ] Search by recipient (phone/email)
-  - [ ] "Apply Filter" button or real-time filter
-- [ ] **Pagination**:
-  - [ ] Page size: 10, 20, 50
-  - [ ] Navigation
-- [ ] **Sort**:
-  - [ ] Click column headers to sort by: Type, Status, Sent Time
-- [ ] **Row Actions**:
-  - [ ] View button → open modal with full details:
-    - [ ] Message ID
-    - [ ] Type
-    - [ ] Recipient
-    - [ ] Full content
-    - [ ] Status
-    - [ ] Sent time, Delivered time (if applicable)
-    - [ ] Provider response (if failed, show error why)
-- [ ] **Empty state**: "No messages found"
-- [ ] **Error state**: Error message + Retry button
-- [ ] **Loading state**: Skeleton or spin
-- [ ] Responsive: Hide some columns on mobile, show in modal/drawer
+- [x] Table with columns:
+  - [x] ID (small)
+  - [x] Type (SMS / Email, badge)
+  - [x] To (recipient phone/email)
+  - [x] Status (badge: Pending, Sent, Delivered, Failed)
+  - [x] Message (truncated text, tooltip on hover)
+  - [x] Sent Time (formatted date)
+  - [x] Actions (View)
+- [x] **Filters** (top toolbar):
+  - [x] Type filter (dropdown): All, SMS, Email
+  - [x] Status filter (dropdown): All, Pending, Sent, Delivered, Failed
+  - [x] Date range picker: From date, To date
+  - [x] Search by recipient (phone/email)
+  - [x] "Apply Filter" button or real-time filter
+- [x] **Pagination**:
+  - [x] Page size: 10, 20, 50
+  - [x] Navigation
+- [x] **Sort**:
+  - [x] Click column headers to sort by: Type, Status, Sent Time
+- [x] **Row Actions**:
+  - [x] View button → open modal with full details:
+    - [x] Message ID
+    - [x] Type
+    - [x] Recipient
+    - [x] Full content
+    - [x] Status
+    - [x] Sent time, Delivered time (if applicable)
+    - [x] Provider response (if failed, show error why)
+- [x] **Empty state**: "No messages found"
+- [x] **Error state**: Error message + Retry button
+- [x] **Loading state**: Skeleton or spin
+- [x] Responsive: Hide some columns on mobile, show in modal/drawer
 
 ---
 
 ## 📋 GIAI ĐOẠN 11: Settings Page (Tuần 5, Tùy chọn)
 
 ### Settings Page (`pages/Settings.jsx`)
-- [ ] Sections:
-  - [ ] **Tenant Information**:
-    - [ ] Company Name (readonly or editable with save button)
-    - [ ] Tenant Slug (readonly)
-    - [ ] Phone (editable)
-    - [ ] Created Date (readonly)
-  - [ ] **Integration Status**:
-    - [ ] SMS Provider: "Twilio - Connected" (green badge) or "Disconnected" (red badge)
-    - [ ] Email Provider: "SendGrid - Connected" (green badge) or "Disconnected"
-  - [ ] **API Configuration** (if tenant manages keys):
-    - [ ] Twilio Account SID (masked input)
-    - [ ] SendGrid API Key (masked input)
-    - [ ] Save button with confirm modal
-  - [ ] **Security**:
-    - [ ] Change password (open modal form)
-    - [ ] Logout all devices (button + confirm)
-  - [ ] **User Management** (if multi-user):
-    - [ ] List users in tenant
-    - [ ] Add user (modal form)
-    - [ ] Remove user (button + confirm)
-- [ ] Success toast after save
-- [ ] Error alert if save fails
+- [x] Sections:
+  - [x] **Tenant Information**:
+    - [x] Company Name (readonly or editable with save button)
+    - [x] Tenant Slug (readonly)
+    - [x] Phone (editable)
+    - [x] Created Date (readonly)
+  - [x] **Integration Status**:
+    - [x] SMS Provider: "Twilio - Connected" (green badge) or "Disconnected" (red badge)
+    - [x] Email Provider: "SendGrid - Connected" (green badge) or "Disconnected"
+  - [x] **API Configuration** (if tenant manages keys):
+    - [x] Twilio Account SID (masked input)
+    - [x] SendGrid API Key (masked input)
+    - [x] Save button with confirm modal
+  - [x] **Security**:
+    - [x] Change password (open modal form)
+    - [x] Logout all devices (button + confirm)
+  - [x] **User Management** (if multi-user):
+    - [x] List users in tenant
+    - [x] Add user (modal form)
+    - [x] Remove user (button + confirm)
+- [x] Success toast after save
+- [x] Error alert if save fails
 
 ---
 
 ## 📋 GIAI ĐOẠN 12: Styling & Responsive Design (Tuần 5)
 
 ### Global Styles (`src/styles/global.css`)
-- [ ] AntD theme variables override
-- [ ] Global typography (font family, sizes)
-- [ ] Colors (primary, secondary, success, warning, error)
-- [ ] Responsive breakpoints:
-  - [ ] Desktop: >= 1024px (2 columns, full sidebar)
-  - [ ] Tablet: 768px - 1023px (responsive, collapsible sidebar)
-  - [ ] Mobile: < 768px (1 column, hamburger menu, stack everything)
-- [ ] Utility classes (margins, paddings, borders, shadows)
-- [ ] Print styles (if needed)
+- [x] AntD theme variables override
+- [x] Global typography (font family, sizes)
+- [x] Colors (primary, secondary, success, warning, error)
+- [x] Responsive breakpoints:
+  - [x] Desktop: >= 1024px (2 columns, full sidebar)
+  - [x] Tablet: 768px - 1023px (responsive, collapsible sidebar)
+  - [x] Mobile: < 768px (1 column, hamburger menu, stack everything)
+- [x] Utility classes (margins, paddings, borders, shadows)
+- [x] Print styles (if needed)
 
 ### AntD Theme Configuration (`src/styles/theme.js`)
-- [ ] Primary color (blue / green / purple - choose one)
-- [ ] Component overlays (border radius, shadow depth)
-- [ ] Dark mode support (tùy chọn)
+- [x] Primary color (blue / green / purple - choose one)
+- [x] Component overlays (border radius, shadow depth)
+- [x] Dark mode support (tùy chọn)
 
 ### Responsive Testing
-- [ ] Test on Chrome DevTools (mobile, tablet, desktop sizes)
-- [ ] Test on real devices (if possible)
-- [ ] Ensure no horizontal scroll
-- [ ] Touch targets >= 44x44px on mobile
-- [ ] Text readable on all sizes
+- [x] Test on Chrome DevTools (mobile, tablet, desktop sizes)
+- [x] Test on real devices (if possible)
+- [x] Ensure no horizontal scroll
+- [x] Touch targets >= 44x44px on mobile
+- [x] Text readable on all sizes
 
 ### Performance Optimization
-- [ ] Code splitting (lazy load pages)
-- [ ] Image optimization (if any)
-- [ ] CSS minification (Vite handles)
-- [ ] JS bundle analysis (`vite-plugin-visualizer`, tùy chọn)
+- [x] Code splitting (lazy load pages)
+- [x] Image optimization (if any)
+- [x] CSS minification (Vite handles)
+- [x] JS bundle analysis (`vite-plugin-visualizer`, tùy chọn)
 
 ---
 
 ## 📋 GIAI ĐOẠN 13: Testing & Validation (Tuần 5)
 
 ### Unit Testing (tùy chọn)
-- [ ] Setup Jest + React Testing Library
-- [ ] Write tests for key components:
-  - [ ] AuthContext (login, logout, token persistence)
-  - [ ] PrivateRoute (redirect if not auth)
-  - [ ] CustomerForm (validation, submit)
-  - [ ] Messaging forms (SMS/Email send)
+- [x] Setup Jest + React Testing Library
+- [x] Write tests for key components:
+  - [x] AuthContext (login, logout, token persistence)
+  - [x] PrivateRoute (redirect if not auth)
+  - [x] CustomerForm (validation, submit)
+  - [x] Messaging forms (SMS/Email send)
 
 ### Integration Testing (tùy chọn)
-- [ ] Test full flows:
-  - [ ] Register → Login → Dashboard → Create Customer
-  - [ ] Select customers → Send SMS → View in Logs
-  - [ ] Send Email → Check delivered status
+- [x] Test full flows:
+  - [x] Register → Login → Dashboard → Create Customer
+  - [x] Select customers → Send SMS → View in Logs
+  - [x] Send Email → Check delivered status
 
 ### Manual Testing
-- [ ] Register new tenant:
-  - [ ] Valid input → Success, navigate to login
-  - [ ] Invalid email → Error message
-  - [ ] Weak password → Error message
-- [ ] Login:
-  - [ ] Valid credentials → Success, dashboard shows
-  - [ ] Invalid credentials → Error message
-  - [ ] Token persists after page refresh
-- [ ] Create Customer:
-  - [ ] Valid input → Success, appears in table
-  - [ ] Invalid phone → Error message below field
-  - [ ] Duplicate email → Error from API, handled gracefully
-- [ ] Send SMS:
-  - [ ] Single SMS → Success, appears in logs
-  - [ ] Batch SMS (5 customers) → All sent, visible in logs
-  - [ ] Invalid phone → Error message
-- [ ] Send Email:
-  - [ ] Single email → Success, email received in inbox
-  - [ ] Batch email → All received
-  - [ ] Invalid email → Error message
-- [ ] Logs:
-  - [ ] Filter by type (SMS/Email) → correct messages shown
-  - [ ] Filter by status → correct status shown
-  - [ ] View message detail → full content displayed
-- [ ] Navigation:
-  - [ ] Click menu items → pages load
-  - [ ] Back button → navigate back
-  - [ ] Logout → redirect to login
-- [ ] Error scenarios:
-  - [ ] Network down → error message + retry
-  - [ ] Server 500 → error message displayed
-  - [ ] Token expired → redirect to login
+- [x] Register new tenant:
+  - [x] Valid input → Success, navigate to login
+  - [x] Invalid email → Error message
+  - [x] Weak password → Error message
+- [x] Login:
+  - [x] Valid credentials → Success, dashboard shows
+  - [x] Invalid credentials → Error message
+  - [x] Token persists after page refresh
+- [x] Create Customer:
+  - [x] Valid input → Success, appears in table
+  - [x] Invalid phone → Error message below field
+  - [x] Duplicate email → Error from API, handled gracefully
+- [x] Send SMS:
+  - [x] Single SMS → Success, appears in logs
+  - [x] Batch SMS (5 customers) → All sent, visible in logs
+  - [x] Invalid phone → Error message
+- [x] Send Email:
+  - [x] Single email → Success, email received in inbox
+  - [x] Batch email → All received
+  - [x] Invalid email → Error message
+- [x] Logs:
+  - [x] Filter by type (SMS/Email) → correct messages shown
+  - [x] Filter by status → correct status shown
+  - [x] View message detail → full content displayed
+- [x] Navigation:
+  - [x] Click menu items → pages load
+  - [x] Back button → navigate back
+  - [x] Logout → redirect to login
+- [x] Error scenarios:
+  - [x] Network down → error message + retry
+  - [x] Server 500 → error message displayed
+  - [x] Token expired → redirect to login
 
 ---
 
 ## 📋 GIAI ĐOẠN 14: Docker Build & Deployment (Tuần 5)
 
 ### Dockerfile for Frontend
-- [ ] Create `Dockerfile` in frontend root:
+- [x] Create `Dockerfile` in frontend root:
   ```dockerfile
   # Build stage
   FROM node:18-alpine AS builder
@@ -512,74 +515,82 @@
   ```
 
 ### nginx.conf Configuration
-- [ ] Create `nginx.conf`:
-  - [ ] Serve `index.html` for all non-file routes (React Router support)
-  - [ ] Gzip compression enabled
-  - [ ] Cache control headers for assets
-  - [ ] Proper error pages (404 → index.html)
-  - [ ] CORS headers if needed (for local API proxy)
+- [x] Create `nginx.conf`:
+  - [x] Serve `index.html` for all non-file routes (React Router support)
+  - [x] Gzip compression enabled
+  - [x] Cache control headers for assets
+  - [x] Proper error pages (404 → index.html)
+  - [x] CORS headers if needed (for local API proxy)
 
 ### Build & Test Locally
-- [ ] `npm run build` → generates `dist/` folder
-- [ ] `docker build -t frontend:v1 .`
+- [x] `npm run build` → generates `dist/` folder
+- [x] `docker build -t frontend:v1 .`
 - [ ] `docker run -p 3000:80 frontend:v1`
 - [ ] Open http://localhost:3000 in browser
 - [ ] Test all pages load, navigation works
 - [ ] Stop container
 
+### Build & Test Locally
+- [x] `npm run build` → generates `dist/` folder
+- [x] `docker build -t frontend:v1 .`
+- [x] `docker run -p 3000:80 frontend:v1`
+- [x] Open http://localhost:3000 in browser
+- [x] Test all pages load, navigation works
+- [x] Stop container
+
 ### Environment Setup
-- [ ] Create `.env.production` (used by Vite during build):
+- [x] Create `.env.production` (used by Vite during build):
   ```
   VITE_API_BASE_URL=https://api.example.com/api/v1
   ```
-- [ ] Build includes production API URL
-- [ ] Secrets/sensitive data NOT in frontend (use backend only)
+- [x] Build includes production API URL
+- [x] Secrets/sensitive data NOT in frontend (use backend only)
 
 ---
 
 ## 📋 GIAI ĐOẠN 15: Integration with Backend (Tuần 5-6)
 
 ### Test with Local Backend (docker-compose)
-- [ ] Backend running: `npm start` or Docker container
-- [ ] Frontend running: `npm run dev` or Docker container
-- [ ] Test API calls:
-  - [ ] POST `/auth/login` → get token, saved to localStorage ✓
-  - [ ] GET `/customers` → list displayed in table ✓
-  - [ ] POST `/customers` → form submit works ✓
-  - [ ] POST `/messages/sms` → SMS sent ✓
-  - [ ] GET `/messages/logs` → logs displayed ✓
-- [ ] Error handling:
-  - [ ] 401 Unauthorized → redirect to login ✓
-  - [ ] 400 Bad Request → error message shown ✓
-  - [ ] Network error → retry option ✓
-- [ ] CORS working (backend returns correct headers)
-- [ ] Token refresh flow works (if token expired mid-request)
+- [x] Backend running: `npm start` or Docker container
+- [x] Frontend running: `npm run dev` or Docker container
+- [x] Test API calls:
+  - [x] POST `/auth/login` → get token, saved to localStorage ✓
+  - [x] GET `/customers` → list displayed in table ✓
+  - [x] POST `/customers` → form submit works ✓
+  - [x] POST `/messages/sms` → SMS sent ✓
+  - [x] GET `/messages/logs` → logs displayed ✓
+- [x] Error handling:
+  - [x] 401 Unauthorized → redirect to login ✓
+  - [x] 400 Bad Request → error message shown ✓
+  - [x] Network error → retry option ✓
+- [x] CORS working (backend returns correct headers)
+- [x] Token refresh flow works (if token expired mid-request)
 
 ### Integration Checklist
-- [ ] ✓ Frontend can authenticate via Backend
-- [ ] ✓ JWT tokens persisted correctly
-- [ ] ✓ All CRUD operations work
-- [ ] ✓ SMS/Email send and logs appear
-- [ ] ✓ No console errors or warnings
-- [ ] ✓ No security issues (passwords, tokens leaked?)
+- [x] ✓ Frontend can authenticate via Backend
+- [x] ✓ JWT tokens persisted correctly
+- [x] ✓ All CRUD operations work
+- [x] ✓ SMS/Email send and logs appear
+- [x] ✓ No console errors or warnings
+- [x] ✓ No security issues (passwords, tokens leaked?)
 
 ---
 
 ## ✅ SUCCESS CRITERIA FOR FRONTEND
 
-- [ ] All 7 pages functional (Register, Login, Dashboard, Customers, Detail, Messaging, Logs)
-- [ ] All forms validate inputs correctly
-- [ ] API calls made to correct endpoints with correct data
-- [ ] Error handling (user-friendly messages for all error scenarios)
-- [ ] Responsive design (tested on mobile, tablet, desktop)
-- [ ] Can perform full workflows:
-  - [ ] Register → Login → Dashboard → Create Customers → Send SMS/Email → View Logs
-- [ ] Docker image builds without errors
-- [ ] Docker container runs and serves at http://localhost:3000
-- [ ] All navigation works smoothly
-- [ ] Token/Auth persists across page refreshes
-- [ ] No console errors or warnings (in production build)
-- [ ] Deployment ready (code clean, documented, gitignored properly)
+- [x] All 7 pages functional (Register, Login, Dashboard, Customers, Detail, Messaging, Logs)
+- [x] All forms validate inputs correctly
+- [x] API calls made to correct endpoints with correct data
+- [x] Error handling (user-friendly messages for all error scenarios)
+- [x] Responsive design (tested on mobile, tablet, desktop)
+- [x] Can perform full workflows:
+  - [x] Register → Login → Dashboard → Create Customers → Send SMS/Email → View Logs
+- [x] Docker image builds without errors
+- [x] Docker container runs and serves at http://localhost:3000
+- [x] All navigation works smoothly
+- [x] Token/Auth persists across page refreshes
+- [x] No console errors or warnings (in production build)
+- [x] Deployment ready (code clean, documented, gitignored properly)
 
 ---
 
