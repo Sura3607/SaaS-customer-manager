@@ -25,22 +25,17 @@ export default function TenantRegister() {
 
     setLoading(true)
     try {
-      const res = await api.post('/tenants/register', {
+      await api.post('/tenants/register', {
         companyName: values.organizationName,
         adminEmail: values.email,
-        adminFullName: values.fullName,
         adminPassword: values.password,
         phone: values.phone,
       })
-      // Lưu slug vào localStorage để tự điền vào trang login
-      if (res.data?.tenant?.slug) {
-        localStorage.setItem('tenantSlug', res.data.tenant.slug)
-      }
       message.success('Tenant created! Please log in.')
       navigate('/login')
     } catch (err) {
       console.error(err)
-      const msg = err.response?.data?.error || 'Registration failed'
+      const msg = err.response?.data?.message || 'Registration failed'
       message.error(msg)
     } finally {
       setLoading(false)

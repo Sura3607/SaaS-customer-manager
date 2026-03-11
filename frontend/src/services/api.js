@@ -33,7 +33,7 @@ api.interceptors.response.use(
         if (refreshToken) {
           // attempt refresh using plain axios to avoid interceptor loop
           const r = await axios.post(`${BASE}/auth/refresh`, { refreshToken })
-          const { accessToken, refreshToken: newRefresh } = r.data.data
+          const { accessToken, refreshToken: newRefresh } = r.data
           if (accessToken) {
             window.localStorage.setItem('accessToken', accessToken)
             if (newRefresh) window.localStorage.setItem('refreshToken', newRefresh)
@@ -46,18 +46,14 @@ api.interceptors.response.use(
       }
     }
 
-    // clear tokens and redirect to login only if not an auth request
-    const isAuthRequest = original.url?.includes('/auth')
-    
-    if (!isAuthRequest) {
-      try {
-        window.localStorage.removeItem('accessToken')
-        window.localStorage.removeItem('refreshToken')
-        window.localStorage.removeItem('auth')
-      } catch (e) {}
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login'
-      }
+    // clear tokens and redirect to login
+    try {
+      window.localStorage.removeItem('accessToken')
+      window.localStorage.removeItem('refreshToken')
+      window.localStorage.removeItem('auth')
+    } catch (e) {}
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login'
     }
     return Promise.reject(err)
   }

@@ -58,17 +58,7 @@ async function sendSMS(tenantId, customerId, content) {
     throw new ValidationError('Customer does not have a phone number');
   }
 
-  // 2. Fetch tenant config for Twilio
-  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
-  if (!tenant) {
-    throw new NotFoundError('Tenant');
-  }
-
-  if (!tenant.twilioAccountSid || !tenant.twilioAuthToken || !tenant.twilioPhoneNumber) {
-    throw new ValidationError('Tenant chưa cấu hình dịch vụ SMS');
-  }
-
-  // 3. Create Message record (PENDING)
+  // 2. Create Message record (PENDING)
   const message = await prisma.message.create({
     data: {
       tenantId,
@@ -80,28 +70,20 @@ async function sendSMS(tenantId, customerId, content) {
     },
   });
 
-  // 4. Call Twilio with tenant config
+  // 3. Call Twilio
   let providerResult;
   let finalStatus = 'FAILED';
   let errorReason = null;
 
   try {
-    providerResult = await twilioService.sendSMS(
-      customer.phone,
-      content,
-      {
-        accountSid: tenant.twilioAccountSid,
-        authToken: tenant.twilioAuthToken,
-        phoneNumber: tenant.twilioPhoneNumber,
-      }
-    );
+    providerResult = await twilioService.sendSMS(customer.phone, content);
     finalStatus = providerResult.status || 'SENT';
   } catch (err) {
     errorReason = err.message;
     logger.error('SMS send failed', { messageId: message.id, error: err.message });
   }
 
-  // 5. Update Message status
+  // 4. Update Message status
   await prisma.message.update({
     where: { id: message.id },
     data: {
@@ -110,7 +92,7 @@ async function sendSMS(tenantId, customerId, content) {
     },
   });
 
-  // 6. Create MessageLog
+  // 5. Create MessageLog
   await prisma.messageLog.create({
     data: {
       messageId: message.id,
@@ -163,16 +145,6 @@ async function sendEmail(tenantId, customerId, subject, content) {
     throw new ValidationError('Customer does not have an email address');
   }
 
-  // Fetch tenant config for SendGrid
-  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
-  if (!tenant) {
-    throw new NotFoundError('Tenant');
-  }
-
-  if (!tenant.sendgridApiKey || !tenant.sendgridFromEmail) {
-    throw new ValidationError('Tenant chưa cấu hình dịch vụ Email');
-  }
-
   // Create Message record
   const message = await prisma.message.create({
     data: {
@@ -191,15 +163,7 @@ async function sendEmail(tenantId, customerId, subject, content) {
   let errorReason = null;
 
   try {
-    providerResult = await sendgridService.sendEmail(
-      customer.email,
-      subject,
-      content,
-      {
-        apiKey: tenant.sendgridApiKey,
-        fromEmail: tenant.sendgridFromEmail,
-      }
-    );
+    providerResult = await sendgridService.sendEmail(customer.email, subject, content);
     finalStatus = providerResult.status || 'SENT';
   } catch (err) {
     errorReason = err.message;

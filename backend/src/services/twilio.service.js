@@ -22,14 +22,12 @@ const TWILIO_STATUS_MAP = {
  * Send a single SMS via Twilio.
  * @param {string} toNumber - Recipient phone number
  * @param {string} content  - SMS body (max ~1600 chars, 160 per segment)
- * @param {object} config   - Twilio config { accountSid, authToken, phoneNumber }
  * @returns {Promise<{messageId: string, status: string}>}
  */
-async function sendSMS(toNumber, content, config = {}) {
-  const { accountSid, authToken, phoneNumber } = config;
-
-  if (!accountSid || !authToken || !phoneNumber) {
-    throw new AppError('Twilio configuration is incomplete. Provide accountSid, authToken, and phoneNumber.', 503, 'PROVIDER_NOT_CONFIGURED');
+async function sendSMS(toNumber, content) {
+  const client = getTwilioClient();
+  if (!client) {
+    throw new AppError('Twilio is not configured. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_PHONE_NUMBER.', 503, 'PROVIDER_NOT_CONFIGURED');
   }
 
   if (!toNumber) throw new ValidationError('Phone number is required');
@@ -38,12 +36,9 @@ async function sendSMS(toNumber, content, config = {}) {
   const to = formatPhoneE164(toNumber);
 
   try {
-    const twilio = require('twilio');
-    const client = twilio(accountSid, authToken);
-    
     const message = await client.messages.create({
       body: content,
-      from: phoneNumber,
+      from: TWILIO_PHONE_NUMBER,
       to,
     });
 

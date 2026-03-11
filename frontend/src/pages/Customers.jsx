@@ -34,7 +34,6 @@ import {
   RightOutlined,
 } from '@ant-design/icons'
 import CustomerForm from '../components/customer/CustomerForm'
-import { parseApiError } from '../utils/parseApiError'
 
 export default function Customers() {
   const navigate = useNavigate()
@@ -64,8 +63,7 @@ export default function Customers() {
       setPagination({ current: page, pageSize, total })
     } catch (err) {
       console.error('Failed to fetch customers', err)
-      const errorMsg = parseApiError(err)
-      setError(errorMsg)
+      setError(err.response?.data?.message || 'Failed to load customers')
     } finally {
       setLoading(false)
     }
@@ -95,9 +93,7 @@ export default function Customers() {
       loadCustomers(pagination.current, pagination.pageSize, searchText)
       setSelectedRowKeys(selectedRowKeys.filter((k) => k !== id))
     } catch (err) {
-      console.error(err)
-      const errorMsg = parseApiError(err)
-      message.error(errorMsg)
+      message.error(err.response?.data?.message || 'Failed to delete customer')
     }
   }
 
@@ -108,9 +104,7 @@ export default function Customers() {
       setSelectedRowKeys([])
       loadCustomers(pagination.current, pagination.pageSize, searchText)
     } catch (err) {
-      console.error('Failed to bulk delete customers:', err)
-      const errorMsg = parseApiError(err)
-      message.error(errorMsg)
+      message.error('Failed to delete some customers')
     }
   }
 

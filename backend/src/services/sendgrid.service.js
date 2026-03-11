@@ -27,15 +27,13 @@ const SENDGRID_EVENT_MAP = {
  * @param {string} toEmail  - Recipient email address
  * @param {string} subject  - Email subject
  * @param {string} content  - HTML email body
- * @param {object} config   - SendGrid config { apiKey, fromEmail }
  * @returns {Promise<{messageId: string, status: string}>}
  */
-async function sendEmail(toEmail, subject, content, config = {}) {
-  const { apiKey, fromEmail } = config;
-
-  if (!apiKey || !fromEmail) {
+async function sendEmail(toEmail, subject, content) {
+  const sgMail = getSendGridClient();
+  if (!sgMail) {
     throw new AppError(
-      'SendGrid configuration is incomplete. Provide apiKey and fromEmail.',
+      'SendGrid is not configured. Set SENDGRID_API_KEY.',
       503,
       'PROVIDER_NOT_CONFIGURED'
     );
@@ -49,14 +47,12 @@ async function sendEmail(toEmail, subject, content, config = {}) {
 
   const msg = {
     to,
-    from: fromEmail,
+    from: SENDGRID_FROM_EMAIL,
     subject: subject.trim(),
     html: content,
   };
 
   try {
-    const sgMail = require('@sendgrid/mail');
-    sgMail.setApiKey(apiKey);
     const [response] = await sgMail.send(msg);
 
     // SendGrid returns x-message-id in headers

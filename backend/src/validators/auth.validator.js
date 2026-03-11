@@ -49,11 +49,6 @@ const registerTenantSchema = Joi.object({
 const updateTenantSchema = Joi.object({
   companyName: Joi.string().min(2).max(255).optional(),
   phone: Joi.string().max(20).optional().allow('', null),
-  twilioAccountSid: Joi.string().optional().allow('', null),
-  twilioAuthToken: Joi.string().optional().allow('', null),
-  twilioPhoneNumber: Joi.string().optional().allow('', null),
-  sendgridApiKey: Joi.string().optional().allow('', null),
-  sendgridFromEmail: Joi.string().email().optional().allow('', null),
 }).min(1).messages({
   'object.min': 'At least one field must be provided to update',
 });

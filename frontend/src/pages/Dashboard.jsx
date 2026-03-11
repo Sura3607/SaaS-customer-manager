@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import api from '../services/api'
 import useAuth from '../hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
-import { message } from 'antd'
 import {
   Spin,
   Alert,
@@ -56,16 +55,7 @@ export default function Dashboard() {
       setStats(res.data.data || res.data)
     } catch (err) {
       console.error('Failed to fetch stats', err)
-      const status = err.response?.status
-      
-      // Handle authentication errors
-      if (status === 401 || status === 403) {
-        const authError = 'Your session has expired. Please log in to continue.'
-        setError(authError)
-        setTimeout(() => navigate('/login'), 2000)
-      } else {
-        setError(err.response?.data?.message || err.message || 'Failed to load stats')
-      }
+      setError(err.response?.data?.message || err.message || 'Failed to load stats')
     } finally {
       setLoading(false)
     }
@@ -79,23 +69,9 @@ export default function Dashboard() {
       setRecent(res.data.data || res.data || [])
     } catch (err) {
       console.error('Failed to fetch recent messages', err)
-      // Handle authentication errors
-      const status = err.response?.status
-      if (status === 401 || status === 403) {
-        message.error('Session expired. Please log in again.')
-        setTimeout(() => navigate('/login'), 1500)
-      }
     } finally {
       setLoadingRecent(false)
     }
-  }
-
-  // Calculate delivery rate from recent messages
-  const calculateDeliveryRate = () => {
-    if (!recent || recent.length === 0) return null
-    const delivered = recent.filter((msg) => msg.status === 'DELIVERED').length
-    const rate = Math.round((delivered / recent.length) * 100)
-    return rate
   }
 
   useEffect(() => {
@@ -183,7 +159,7 @@ export default function Dashboard() {
             color: '#fff',
           }}
         >
-          <Text style={{ color: '#fff' }}>{tenant?.companyName || 'Acme Corp'}</Text>
+          <Text style={{ color: '#fff' }}>{tenant?.name || 'Acme Corp'}</Text>
           <DownOutlined />
         </Button>
 
@@ -247,10 +223,33 @@ export default function Dashboard() {
                     type="secondary"
                     style={{ fontSize: '12px', marginTop: '16px', display: 'block', color: '#8a92a6' }}
                   >
-                    TOTAL MESSAGES SENT
+                    TOTAL SMS SENT
                   </Text>
                   <Title level={2} style={{ margin: '8px 0 0', color: '#fff' }}>
-                    {stats?.messages ? stats.messages.toLocaleString() : '0'}
+                    128,402
+                  </Title>
+                </Card>
+              </Col>
+
+              <Col span={6}>
+                <Card
+                  style={{
+                    background: '#1a1f2e',
+                    border: `1px solid #2a3142`,
+                  }}
+                >
+                  <Flex justify="space-between" align="flex-start">
+                    <Avatar icon={<MailOutlined />} size={40} style={{ backgroundColor: '#fa6238' }} />
+                    <Badge count="+8.1%" style={{ backgroundColor: '#0bda5e1a', color: '#0bda5e' }} />
+                  </Flex>
+                  <Text
+                    type="secondary"
+                    style={{ fontSize: '12px', marginTop: '16px', display: 'block', color: '#8a92a6' }}
+                  >
+                    TOTAL EMAILS SENT
+                  </Text>
+                  <Title level={2} style={{ margin: '8px 0 0', color: '#fff' }}>
+                    85,219
                   </Title>
                 </Card>
               </Col>
@@ -273,30 +272,7 @@ export default function Dashboard() {
                     ACTIVE CUSTOMERS
                   </Text>
                   <Title level={2} style={{ margin: '8px 0 0', color: '#fff' }}>
-                    {stats?.customers ? stats.customers.toLocaleString() : '0'}
-                  </Title>
-                </Card>
-              </Col>
-
-              <Col span={6}>
-                <Card
-                  style={{
-                    background: '#1a1f2e',
-                    border: `1px solid #2a3142`,
-                  }}
-                >
-                  <Flex justify="space-between" align="flex-start">
-                    <Avatar icon={<MailOutlined />} size={40} style={{ backgroundColor: '#fa6238' }} />
-                    <Badge count="+0%" style={{ backgroundColor: '#0bda5e1a', color: '#0bda5e' }} />
-                  </Flex>
-                  <Text
-                    type="secondary"
-                    style={{ fontSize: '12px', marginTop: '16px', display: 'block', color: '#8a92a6' }}
-                  >
-                    TOTAL USERS
-                  </Text>
-                  <Title level={2} style={{ margin: '8px 0 0', color: '#fff' }}>
-                    {stats?.users ? stats.users.toLocaleString() : '0'}
+                    12,403
                   </Title>
                 </Card>
               </Col>
@@ -310,12 +286,7 @@ export default function Dashboard() {
                 >
                   <Flex justify="space-between" align="flex-start">
                     <Avatar icon={<CheckCircleOutlined />} size={40} style={{ backgroundColor: '#0bda5e' }} />
-                    {calculateDeliveryRate() !== null && (
-                      <Badge
-                        count={`${calculateDeliveryRate()}%`}
-                        style={{ backgroundColor: '#0bda5e1a', color: '#0bda5e' }}
-                      />
-                    )}
+                    <Badge count="-0.1%" style={{ backgroundColor: '#fa62381a', color: '#fa6238' }} />
                   </Flex>
                   <Text
                     type="secondary"
@@ -324,7 +295,7 @@ export default function Dashboard() {
                     DELIVERY RATE
                   </Text>
                   <Title level={2} style={{ margin: '8px 0 0', color: '#fff' }}>
-                    {calculateDeliveryRate() !== null ? `${calculateDeliveryRate()}%` : 'N/A'}
+                    98.2%
                   </Title>
                 </Card>
               </Col>
@@ -365,11 +336,7 @@ export default function Dashboard() {
                       justifyContent: 'center',
                     }}
                   >
-                    {stats?.messages && stats.messages > 0 ? (
-                      <Text type="secondary">Charts will render here (data available: {stats.messages} messages)</Text>
-                    ) : (
-                      <Text type="secondary">No message data available for the selected period</Text>
-                    )}
+                    <Text type="secondary">charts placeholder</Text>
                   </div>
                 </Card>
               </Col>
@@ -390,32 +357,21 @@ export default function Dashboard() {
                       marginBottom: '24px',
                     }}
                   >
-                    {stats?.messages && stats.messages > 0 ? (
-                      <Progress
-                        type="circle"
-                        percent={92}
-                        size={180}
-                        format={(percent) => (
-                          <div>
-                            <Title level={1} style={{ margin: 0, color: '#fff' }}>
-                              {percent}%
-                            </Title>
-                            <Text type="secondary" style={{ fontSize: '10px', color: '#8a92a6' }}>
-                              GLOBAL RATE
-                            </Text>
-                          </div>
-                        )}
-                      />
-                    ) : (
-                      <div style={{ textAlign: 'center' }}>
-                        <Title level={2} style={{ margin: 0, color: '#8a92a6' }}>
-                          No Data
-                        </Title>
-                        <Text type="secondary" style={{ fontSize: '12px', color: '#8a92a6' }}>
-                          Send messages to see delivery rates
-                        </Text>
-                      </div>
-                    )}
+                    <Progress
+                      type="circle"
+                      percent={92}
+                      size={180}
+                      format={(percent) => (
+                        <div>
+                          <Title level={1} style={{ margin: 0, color: '#fff' }}>
+                            {percent}%
+                          </Title>
+                          <Text type="secondary" style={{ fontSize: '10px', color: '#8a92a6' }}>
+                            GLOBAL RATE
+                          </Text>
+                        </div>
+                      )}
+                    />
                   </div>
                   <div style={{ marginTop: '32px' }}>
                     <div

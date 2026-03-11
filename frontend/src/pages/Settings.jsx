@@ -29,7 +29,6 @@ import {
   PlusOutlined,
 } from '@ant-design/icons'
 import api from '../services/api'
-import { parseApiError } from '../utils/parseApiError'
 import useAuth from '../hooks/useAuth'
 import dayjs from 'dayjs'
 import TenantInformationCard from '../components/TenantInformationCard'
@@ -190,7 +189,7 @@ const Settings = () => {
       const res = await api.get(`/tenants/${tenant?.id}`)
       const data = res.data.data || res.data
       setTenantData(data)
-      setCompanyName(data.companyName || '')
+      setCompanyName(data.name || '')
       setTwilioAccountSid(data.twilioAccountSid || '')
       setTwilioAuthToken(data.twilioAuthToken || '')
       setSendgridApiKey(data.sendgridApiKey || '')
@@ -210,9 +209,7 @@ const Settings = () => {
         }))
       }
     } catch (err) {
-      console.error('Failed to fetch tenant data:', err)
-      const errorMsg = parseApiError(err)
-      message.error(errorMsg)
+      message.error('Failed to load settings')
     } finally {
       setLoading(false)
     }
@@ -225,9 +222,7 @@ const Settings = () => {
       const data = res.data.data || res.data || []
       setUsers(Array.isArray(data) ? data : [])
     } catch (err) {
-      console.error('Failed to fetch users:', err)
-      const errorMsg = parseApiError(err)
-      message.error(errorMsg)
+      message.error('Failed to load users')
     } finally {
       setUsersLoading(false)
     }
@@ -244,7 +239,7 @@ const Settings = () => {
     setSavingTenant(true)
     try {
       const updateData = {
-        companyName: companyName,
+        name: companyName,
         twilioAccountSid: twilioAccountSid || undefined,
         twilioAuthToken: twilioAuthToken || undefined,
         sendgridApiKey: sendgridApiKey || undefined,
@@ -272,9 +267,7 @@ const Settings = () => {
 
       fetchTenantData()
     } catch (err) {
-      console.error('Failed to save tenant info:', err)
-      const errorMsg = parseApiError(err)
-      message.error(errorMsg)
+      message.error(err.response?.data?.message || 'Failed to update settings')
     } finally {
       setSavingTenant(false)
     }
@@ -295,9 +288,7 @@ const Settings = () => {
       setChangePasswordVisible(false)
       passwordForm.resetFields()
     } catch (err) {
-      console.error('Failed to change password:', err)
-      const errorMsg = parseApiError(err)
-      message.error(errorMsg)
+      message.error(err.response?.data?.message || 'Failed to change password')
     }
   }
 
@@ -316,9 +307,7 @@ const Settings = () => {
             window.location.href = '/login'
           }, 1000)
         } catch (err) {
-          console.error('Failed to logout from all devices:', err)
-          const errorMsg = parseApiError(err)
-          message.error(errorMsg)
+          message.error(err.response?.data?.message || 'Failed to logout')
         }
       },
     })
@@ -340,9 +329,7 @@ const Settings = () => {
       addUserForm.resetFields()
       fetchUsers()
     } catch (err) {
-      console.error('Failed to add user:', err)
-      const errorMsg = parseApiError(err)
-      message.error(errorMsg)
+      message.error(err.response?.data?.message || 'Failed to add user')
     }
   }
 
@@ -359,9 +346,7 @@ const Settings = () => {
           message.success('User removed successfully')
           fetchUsers()
         } catch (err) {
-          console.error('Failed to remove user:', err)
-          const errorMsg = parseApiError(err)
-          message.error(errorMsg)
+          message.error(err.response?.data?.message || 'Failed to remove user')
         }
       },
     })

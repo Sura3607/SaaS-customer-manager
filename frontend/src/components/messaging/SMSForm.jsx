@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import api from '../../services/api'
-import { parseApiError } from '../../utils/parseApiError'
 import { Form, Input, Button, Radio, Select, Table, InputNumber, Modal, message, Tag, Alert } from 'antd'
 import { SendOutlined, EyeOutlined } from '@ant-design/icons'
 
@@ -21,9 +20,7 @@ const SMSForm = ({ selectedCustomerIds = [] }) => {
       const res = await api.get('/customers', { params: { limit: 100 } })
       setCustomers(res.data.data || res.data || [])
     } catch (err) {
-      console.error('Failed to load customers:', err)
-      const errorMsg = parseApiError(err)
-      message.error(errorMsg)
+      message.error('Failed to load customers')
     } finally {
       setCustomersLoading(false)
     }
@@ -72,11 +69,9 @@ const SMSForm = ({ selectedCustomerIds = [] }) => {
       setSelectedRecipients([])
       setRecipientType('single')
     } catch (err) {
-      console.error('Failed to send SMS:', err)
-      const errorMsg = parseApiError(err)
       Modal.error({
         title: 'Failed to send SMS',
-        content: errorMsg,
+        content: err.response?.data?.message || err.message,
         okText: 'OK',
       })
     } finally {

@@ -23,8 +23,7 @@ export default function CustomerDetail() {
       setCustomer(res.data.data || res.data)
     } catch (err) {
       console.error('Failed to fetch customer', err)
-      const backendError = err.response?.data?.error || 'Failed to load customer'
-      setError(backendError)
+      setError(err.response?.data?.message || 'Failed to load customer')
     } finally {
       setLoading(false)
     }
@@ -35,13 +34,14 @@ export default function CustomerDetail() {
     try {
       const res = await api.get('/messages/logs', {
         params: {
-          customerId: id,
           page: 1,
           limit: 10,
         },
       })
       const data = res.data.data || res.data || []
-      setLogs(Array.isArray(data) ? data : data.logs || [])
+      // Filter logs for this customer only
+      const filtered = data.filter((log) => log.customerId === id)
+      setLogs(filtered)
     } catch (err) {
       console.error('Failed to fetch logs', err)
     } finally {
@@ -62,9 +62,7 @@ export default function CustomerDetail() {
       message.success('Customer deleted successfully')
       navigate('/customers')
     } catch (err) {
-      console.error(err)
-      const backendError = err.response?.data?.error || 'Failed to delete customer'
-      message.error(backendError)
+      message.error(err.response?.data?.message || 'Failed to delete customer')
     }
   }
 

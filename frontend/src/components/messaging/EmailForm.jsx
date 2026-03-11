@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import api from '../../services/api'
-import { parseApiError } from '../../utils/parseApiError'
 import { Form, Input, Button, Radio, Select, Modal, message, Tag, Alert } from 'antd'
 import { SendOutlined, EyeOutlined } from '@ant-design/icons'
 
@@ -22,9 +21,7 @@ const EmailForm = ({ selectedCustomerIds = [] }) => {
       const res = await api.get('/customers', { params: { limit: 100 } })
       setCustomers(res.data.data || res.data || [])
     } catch (err) {
-      console.error('Failed to load customers:', err)
-      const errorMsg = parseApiError(err)
-      message.error(errorMsg)
+      message.error('Failed to load customers')
     } finally {
       setCustomersLoading(false)
     }
@@ -78,11 +75,9 @@ const EmailForm = ({ selectedCustomerIds = [] }) => {
       setSelectedRecipients([])
       setRecipientType('single')
     } catch (err) {
-      console.error('Failed to send email:', err)
-      const errorMsg = parseApiError(err)
       Modal.error({
         title: 'Failed to send email',
-        content: errorMsg,
+        content: err.response?.data?.message || err.message,
         okText: 'OK',
       })
     } finally {

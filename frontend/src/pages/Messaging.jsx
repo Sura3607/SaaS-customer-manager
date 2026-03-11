@@ -58,7 +58,7 @@ const Messaging = () => {
             color: '#fff',
           }}
         >
-          <Text style={{ color: '#fff' }}>{tenant?.companyName || 'Acme Corp'}</Text>
+          <Text style={{ color: '#fff' }}>{tenant?.name || 'Acme Corp'}</Text>
           <DownOutlined />
         </Button>
 

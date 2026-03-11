@@ -36,14 +36,7 @@ export default function Login() {
       navigate('/dashboard')
     } catch (err) {
       console.error(err)
-      // Parse lỗi từ backend: { error, code, details }
-      const backendError = err.response?.data?.error || 'Login failed'
-      const details = err.response?.data?.details
-      let msg = backendError
-      if (details && Array.isArray(details) && details.length > 0) {
-        const fieldErrors = details.map(d => `${d.field}: ${d.message}`).join(', ')
-        msg = `${backendError} (${fieldErrors})`
-      }
+      const msg = err.response?.data?.message || 'Login failed'
       message.error(msg)
     } finally {
       setLoading(false)
@@ -89,7 +82,7 @@ export default function Login() {
             <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ tenantSlug }}>
               <Flex vertical gap={8}>
                 <Text style={{ color: '#fff' }}>Organization</Text>
-                <Form.Item name="tenantSlug" noStyle rules={[{ required: true, message: 'Please select an organization' }]}>
+                <Form.Item name="tenantSlug" noStyle rules={[{ required: false }]}>
                   <Input
                     prefix={<BankOutlined />}
                     suffix={<DownOutlined />}

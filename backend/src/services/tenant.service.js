@@ -104,7 +104,7 @@ async function getTenant(tenantId) {
 }
 
 /**
- * Update tenant info (companyName, phone, API keys).
+ * Update tenant info (companyName, phone).
  */
 async function updateTenant(tenantId, data) {
   // Verify tenant exists
@@ -116,11 +116,6 @@ async function updateTenant(tenantId, data) {
   const updateData = {};
   if (data.companyName !== undefined) updateData.companyName = data.companyName;
   if (data.phone !== undefined) updateData.phone = data.phone;
-  if (data.twilioAccountSid !== undefined) updateData.twilioAccountSid = data.twilioAccountSid;
-  if (data.twilioAuthToken !== undefined) updateData.twilioAuthToken = data.twilioAuthToken;
-  if (data.twilioPhoneNumber !== undefined) updateData.twilioPhoneNumber = data.twilioPhoneNumber;
-  if (data.sendgridApiKey !== undefined) updateData.sendgridApiKey = data.sendgridApiKey;
-  if (data.sendgridFromEmail !== undefined) updateData.sendgridFromEmail = data.sendgridFromEmail;
 
   if (Object.keys(updateData).length === 0) {
     throw new ValidationError('No fields to update');
@@ -138,11 +133,6 @@ async function updateTenant(tenantId, data) {
     companyName: updated.companyName,
     slug: updated.slug,
     phone: updated.phone,
-    twilioAccountSid: updated.twilioAccountSid,
-    twilioAuthToken: updated.twilioAuthToken,
-    twilioPhoneNumber: updated.twilioPhoneNumber,
-    sendgridApiKey: updated.sendgridApiKey,
-    sendgridFromEmail: updated.sendgridFromEmail,
     updatedAt: updated.updatedAt,
   };
 }

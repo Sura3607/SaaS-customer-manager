@@ -1,7 +1,6 @@
 import React from 'react'
 import { Form, Input, Modal, message } from 'antd'
 import api from '../../services/api'
-import { parseApiError } from '../../utils/parseApiError'
 
 const CustomerForm = ({ visible, onCancel, onSuccess, initialValues, mode = 'create' }) => {
   const [form] = Form.useForm()
@@ -30,26 +29,9 @@ const CustomerForm = ({ visible, onCancel, onSuccess, initialValues, mode = 'cre
       form.resetFields()
       onSuccess()
     } catch (err) {
-      console.error(err)
-      
-      // Handle validation errors with field-specific messages
-      const backendDetails = err.response?.data?.details
-      if (backendDetails && Array.isArray(backendDetails) && backendDetails.length > 0) {
-        // Set form field errors for each validation error
-        const fieldErrors = backendDetails.map((detail) => ({
-          name: detail.field,
-          errors: [detail.message],
-        }))
-        form.setFields(fieldErrors)
-        
-        // Show summary error message
-        const errorSummary = backendDetails.map((d) => `${d.field}: ${d.message}`).join('; ')
-        message.error(errorSummary)
-      } else {
-        // Fall back to general error message
-        const errorMsg = parseApiError(err)
-        message.error(errorMsg)
-      }
+      message.error(
+        err.response?.data?.message || (mode === 'create' ? 'Failed to create customer' : 'Failed to update customer')
+      )
     } finally {
       setLoading(false)
     }
@@ -102,7 +84,7 @@ const CustomerForm = ({ visible, onCancel, onSuccess, initialValues, mode = 'cre
           name="phone"
           rules={[
             { required: true, message: 'Please enter phone number' },
-            { pattern: /^[+]?[\d\s()-]{7,20}$/, message: 'Phone must be 7-20 characters (digits, +, -, (), spaces)' },
+            { pattern: /^[+]?[\d\s()-]+$/, message: 'Please enter a valid phone number' },
           ]}
           labelCol={{ style: { color: '#0d101b' } }}
         >

@@ -22,9 +22,7 @@ import {
   Typography,
   Pagination,
   Badge,
-  message,
 } from 'antd'
-import { useNavigate } from 'react-router-dom'
 import {
   SearchOutlined,
   EyeOutlined,
@@ -49,7 +47,6 @@ const { Title, Text } = Typography
 
 const Logs = () => {
   const screens = useBreakpoint()
-  const navigate = useNavigate()
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -73,56 +70,28 @@ const Logs = () => {
         limit: pageSize,
       }
 
-      // Type: convert to uppercase for backend
-      if (filters.type !== 'all') {
-        params.type = filters.type.toUpperCase()
-      }
-      
-      // Status: send as-is (already lowercase)
-      if (filters.status !== 'all') {
-        params.status = filters.status.toLowerCase()
-      }
-      
-      // Date range
+      if (filters.type !== 'all') params.type = filters.type
+      if (filters.status !== 'all') params.status = filters.status
+      if (filters.search) params.q = filters.search
       if (filters.dateRange && filters.dateRange.length === 2) {
-        params.startDate = filters.dateRange[0].toISOString()
-        params.endDate = filters.dateRange[1].toISOString()
+        params.fromDate = filters.dateRange[0].toISOString()
+        params.toDate = filters.dateRange[1].toISOString()
       }
-      
-      // Sorting
       if (sorting.field) {
         params.sortBy = sorting.field
         params.sortOrder = sorting.order === 'ascend' ? 'asc' : 'desc'
       }
 
       const res = await api.get('/messages/logs', { params })
-      
-      // Handle response: Backend returns { data: { logs: [...], total: ... } }
-      const responseData = res.data.data || res.data
-      const logsList = Array.isArray(responseData) 
-        ? responseData 
-        : (responseData?.logs || [])
-      
-      setLogs(logsList)
+      const data = res.data.data || res.data
+      setLogs(Array.isArray(data) ? data : data.logs || [])
       setPagination({
         current: page,
         pageSize,
-        total: responseData?.total || logsList.length,
+        total: res.data.total || (Array.isArray(data) ? data.length : 0),
       })
     } catch (err) {
-      console.error(err)
-      const status = err.response?.status
-      
-      // Handle authentication errors
-      if (status === 401 || status === 403) {
-        const authError = 'Your session has expired. Please log in to continue.'
-        setError(authError)
-        message.error(authError)
-        setTimeout(() => navigate('/login'), 1500)
-      } else {
-        const backendError = err.response?.data?.error || err.message || 'Failed to load logs'
-        setError(backendError)
-      }
+      setError(err.response?.data?.message || err.message || 'Failed to load logs')
     } finally {
       setLoading(false)
     }
@@ -192,12 +161,7 @@ const Logs = () => {
       key: 'type',
       width: 100,
       sorter: true,
-      render: (type) => (
-        <Flex align="center" gap={8}>
-          {type?.toUpperCase() === 'SMS' ? <MessageOutlined /> : <MailOutlined />}
-          <Tag color={getTypeColor(type)}>{type?.toUpperCase()}</Tag>
-        </Flex>
-      ),
+      render: (type) => <Tag color={getTypeColor(type)}>{type?.toUpperCase()}</Tag>,
     },
     {
       title: 'To',
@@ -413,8 +377,6 @@ const Logs = () => {
                   prefix={<SearchOutlined />}
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  disabled
-                  title="Backend does not support search feature yet"
                 />
               </div>
             </Col>
@@ -434,7 +396,7 @@ const Logs = () => {
             loading={loading}
             pagination={false}
             rowKey={(record) => record.id}
-            locale={{ emptyText: 'No logs found' }}
+            locale={{ emptyText: 'No messages found' }}
             scroll={{ x: 800 }}
             size="middle"
           />
