@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -87,7 +87,7 @@ model User {
 /// RefreshToken — persisted refresh tokens for secure session management
 model RefreshToken {
   id        String   @id @default(cuid())
-  token     String   @unique
+  token     String   @unique @db.VarChar(500)
   userId    String
   expiresAt DateTime
   createdAt DateTime @default(now())
