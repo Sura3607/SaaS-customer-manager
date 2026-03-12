@@ -24,7 +24,7 @@ const TEST_TENANT = {
 
 /**
  * Register a new tenant and login as admin.
- * Returns { tenant, user, accessToken, refreshToken }.
+ * Returns { tenantId, tenantSlug, user, accessToken, refreshToken }.
  */
 async function registerAndLogin() {
   // Register
@@ -36,21 +36,29 @@ async function registerAndLogin() {
   const tenantId = regRes.body.data.tenant.id;
   const tenantSlug = regRes.body.data.tenant.slug;
 
-  // Login
+  // Login (no tenantSlug needed)
   const loginRes = await request(app)
     .post('/api/v1/auth/login')
     .send({
       email: TEST_TENANT.adminEmail,
       password: TEST_TENANT.adminPassword,
-      tenantSlug,
     })
+    .expect(200);
+
+  const loginToken = loginRes.body.data.accessToken;
+
+  // Select tenant to get a tenant-scoped token
+  const selectRes = await request(app)
+    .post('/api/v1/auth/select-tenant')
+    .set('Authorization', `Bearer ${loginToken}`)
+    .send({ tenantId })
     .expect(200);
 
   return {
     tenantId,
     tenantSlug,
     user: loginRes.body.data.user,
-    accessToken: loginRes.body.data.accessToken,
+    accessToken: selectRes.body.data.accessToken,
     refreshToken: loginRes.body.data.refreshToken,
   };
 }
@@ -67,8 +75,21 @@ async function cleanupTenant(tenantId) {
     await prisma.message.deleteMany({ where: { tenantId } });
     await prisma.customer.deleteMany({ where: { tenantId } });
     await prisma.auditLog.deleteMany({ where: { tenantId } });
-    await prisma.refreshToken.deleteMany({ where: { user: { tenantId } } });
-    await prisma.user.deleteMany({ where: { tenantId } });
+    // Get user IDs via memberships, then delete their refresh tokens
+    const memberships = await prisma.tenantMembership.findMany({
+      where: { tenantId },
+      select: { userId: true },
+    });
+    const userIds = memberships.map((m) => m.userId);
+    await prisma.refreshToken.deleteMany({ where: { userId: { in: userIds } } });
+    await prisma.tenantMembership.deleteMany({ where: { tenantId } });
+    // Only delete users that have no other memberships
+    for (const uid of userIds) {
+      const remaining = await prisma.tenantMembership.count({ where: { userId: uid } });
+      if (remaining === 0) {
+        await prisma.user.delete({ where: { id: uid } }).catch(() => {});
+      }
+    }
     await prisma.tenant.delete({ where: { id: tenantId } });
   } catch (_) {
     // Ignore — tenant may have already been cleaned up

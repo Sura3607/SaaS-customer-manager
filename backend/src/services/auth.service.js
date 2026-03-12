@@ -5,6 +5,7 @@
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const prisma = require('../config/db');
 const { env } = require('../config/env');
 const { UnauthorizedError, ValidationError, NotFoundError } = require('../utils/errors');
@@ -17,69 +18,66 @@ function generateAccessToken(payload) {
 }
 
 function generateRefreshToken(payload) {
-  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRE });
+  return jwt.sign({ ...payload, jti: crypto.randomUUID() }, env.JWT_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRE });
 }
 
 /* ───── Service methods ───── */
 
 /**
- * Login user by email + password + tenantSlug.
+ * Login user by email + password (no tenantSlug required).
+ * Returns user info + list of tenants + tokens.
  */
-async function login(email, password, tenantSlug) {
-  if (!email || !password || !tenantSlug) {
-    throw new ValidationError('Email, password and tenantSlug are required');
+async function login(email, password) {
+  if (!email || !password) {
+    throw new ValidationError('Email and password are required');
   }
 
-  // 1. Find tenant by slug
-  const tenant = await prisma.tenant.findUnique({
-    where: { slug: tenantSlug },
-  });
-  if (!tenant) {
-    throw new NotFoundError('Tenant');
-  }
-
-  // 2. Find user by composite unique (tenantId + email)
+  // 1. Find user by globally unique email
   const user = await prisma.user.findUnique({
-    where: {
-      tenantId_email: {
-        tenantId: tenant.id,
-        email: email.toLowerCase().trim(),
-      },
-    },
+    where: { email: email.toLowerCase().trim() },
   });
   if (!user) {
     throw new UnauthorizedError('Invalid email or password');
   }
 
-  // 3. Verify password
+  // 2. Verify password
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
     throw new UnauthorizedError('Invalid email or password');
   }
 
-  // 4. Generate tokens
-  const tokenPayload = {
-    userId: user.id,
-    tenantId: tenant.id,
-    email: user.email,
-    role: user.role,
-  };
-  const accessToken = generateAccessToken(tokenPayload);
-  const refreshToken = generateRefreshToken({ userId: user.id, tenantId: tenant.id });
+  // 3. Get all tenants this user belongs to
+  const memberships = await prisma.tenantMembership.findMany({
+    where: { userId: user.id },
+    include: {
+      tenant: { select: { id: true, slug: true, companyName: true } },
+    },
+    orderBy: { createdAt: 'asc' },
+  });
 
-  // 5. Persist refresh token in DB (upsert in case of duplicate token within same second)
+  const tenants = memberships.map((m) => ({
+    id: m.tenant.id,
+    slug: m.tenant.slug,
+    companyName: m.tenant.companyName,
+    role: m.role,
+  }));
+
+  // 4. Generate tokens (NO tenantId/role in payload — user hasn't selected a tenant yet)
+  const tokenPayload = { userId: user.id, email: user.email };
+  const accessToken = generateAccessToken(tokenPayload);
+  const refreshToken = generateRefreshToken({ userId: user.id });
+
+  // 5. Persist refresh token in DB (create new — supports multi-device login)
   const decoded = jwt.decode(refreshToken);
-  await prisma.refreshToken.upsert({
-    where: { token: refreshToken },
-    update: { expiresAt: new Date(decoded.exp * 1000) },
-    create: {
+  await prisma.refreshToken.create({
+    data: {
       token: refreshToken,
       userId: user.id,
       expiresAt: new Date(decoded.exp * 1000),
     },
   });
 
-  logger.info('User logged in', { userId: user.id, tenantId: tenant.id });
+  logger.info('User logged in', { userId: user.id, tenantCount: tenants.length });
 
   return {
     accessToken,
@@ -88,14 +86,47 @@ async function login(email, password, tenantSlug) {
       id: user.id,
       email: user.email,
       fullName: user.fullName,
-      role: user.role,
-      tenantId: user.tenantId,
     },
+    tenants,
+  };
+}
+
+/**
+ * Select a tenant after login — returns a new "tenant-scoped" access token.
+ */
+async function selectTenant(userId, tenantId) {
+  if (!userId || !tenantId) {
+    throw new ValidationError('userId and tenantId are required');
+  }
+
+  // Verify user is a member of the requested tenant
+  const membership = await prisma.tenantMembership.findUnique({
+    where: { userId_tenantId: { userId, tenantId } },
+    include: {
+      tenant: { select: { id: true, slug: true, companyName: true } },
+    },
+  });
+  if (!membership) {
+    throw new UnauthorizedError('You are not a member of this tenant');
+  }
+
+  // Generate tenant-scoped access token (contains tenantId + role)
+  const tenantToken = generateAccessToken({
+    userId,
+    tenantId: membership.tenantId,
+    role: membership.role,
+  });
+
+  logger.info('Tenant selected', { userId, tenantId, role: membership.role });
+
+  return {
+    accessToken: tenantToken,
     tenant: {
-      id: tenant.id,
-      slug: tenant.slug,
-      companyName: tenant.companyName,
+      id: membership.tenant.id,
+      slug: membership.tenant.slug,
+      companyName: membership.tenant.companyName,
     },
+    role: membership.role,
   };
 }
 
@@ -132,12 +163,15 @@ async function refresh(token) {
       throw new UnauthorizedError('User not found');
     }
 
-    const accessToken = generateAccessToken({
-      userId: user.id,
-      tenantId: user.tenantId,
-      email: user.email,
-      role: user.role,
-    });
+    // Recreate similar access token (preserve tenantId/role if present)
+    const payload = { userId: user.id, email: user.email };
+    if (decoded.tenantId) {
+      payload.tenantId = decoded.tenantId;
+    }
+    if (decoded.role) {
+      payload.role = decoded.role;
+    }
+    const accessToken = generateAccessToken(payload);
 
     return { accessToken };
   } catch (err) {
@@ -173,36 +207,52 @@ async function getMe(userId) {
       id: true,
       email: true,
       fullName: true,
-      role: true,
-      tenantId: true,
       createdAt: true,
-      tenant: {
-        select: { id: true, companyName: true, slug: true },
+      memberships: {
+        include: {
+          tenant: { select: { id: true, companyName: true, slug: true } },
+        },
+        orderBy: { createdAt: 'asc' },
       },
     },
   });
   if (!user) {
     throw new NotFoundError('User');
   }
-  return user;
+  return {
+    id: user.id,
+    email: user.email,
+    fullName: user.fullName,
+    createdAt: user.createdAt,
+    tenants: user.memberships.map((m) => ({
+      id: m.tenant.id,
+      companyName: m.tenant.companyName,
+      slug: m.tenant.slug,
+      role: m.role,
+    })),
+  };
 }
 
 /**
- * Get all users for a tenant.
+ * Get all users (members) for a tenant.
  */
 async function getUsersByTenant(tenantId) {
-  const users = await prisma.user.findMany({
+  const memberships = await prisma.tenantMembership.findMany({
     where: { tenantId },
-    select: {
-      id: true,
-      email: true,
-      fullName: true,
-      role: true,
-      createdAt: true,
+    include: {
+      user: {
+        select: { id: true, email: true, fullName: true, createdAt: true },
+      },
     },
     orderBy: { createdAt: 'desc' },
   });
-  return users;
+  return memberships.map((m) => ({
+    id: m.user.id,
+    email: m.user.email,
+    fullName: m.user.fullName,
+    role: m.role,
+    createdAt: m.user.createdAt,
+  }));
 }
 
-module.exports = { login, refresh, logout, getMe, getUsersByTenant };
+module.exports = { login, selectTenant, refresh, logout, getMe, getUsersByTenant };

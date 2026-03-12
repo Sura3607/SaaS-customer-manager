@@ -11,11 +11,28 @@ const logger = require('../utils/logger');
  */
 async function login(req, res, next) {
   try {
-    const { email, password, tenantSlug } = req.body;
-    const result = await authService.login(email, password, tenantSlug);
+    const { email, password } = req.body;
+    const result = await authService.login(email, password);
     res.status(200).json({
       success: true,
       message: 'Login successful',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * POST /api/v1/auth/select-tenant
+ */
+async function selectTenant(req, res, next) {
+  try {
+    const { tenantId } = req.body;
+    const result = await authService.selectTenant(req.user.userId, tenantId);
+    res.status(200).json({
+      success: true,
+      message: 'Tenant selected',
       data: result,
     });
   } catch (error) {
@@ -71,4 +88,4 @@ async function me(req, res, next) {
   }
 }
 
-module.exports = { login, refresh, logout, me };
+module.exports = { login, selectTenant, refresh, logout, me };

@@ -11,6 +11,8 @@ const { UnauthorizedError } = require('../utils/errors');
 
 /**
  * Authenticate request via JWT Bearer token.
+ * Sets req.user = { userId, tenantId?, role? }.
+ * tenantId and role are only present after select-tenant.
  */
 function authenticate(req, res, next) {
   try {
@@ -27,9 +29,13 @@ function authenticate(req, res, next) {
     const decoded = jwt.verify(token, env.JWT_SECRET);
     req.user = {
       userId: decoded.userId,
-      tenantId: decoded.tenantId,
-      role: decoded.role,
+      tenantId: decoded.tenantId || null,
+      role: decoded.role || null,
     };
+    // Convenience: set req.tenantId for tenant-scoped routes
+    if (decoded.tenantId) {
+      req.tenantId = decoded.tenantId;
+    }
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {

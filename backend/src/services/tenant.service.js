@@ -14,7 +14,8 @@ const SALT_ROUNDS = 10;
 
 /**
  * Register a new tenant with an admin user (public endpoint).
- * Creates Tenant + first User (role ADMIN) in a single transaction.
+ * If the email already exists, reuse the existing User.
+ * Creates Tenant + TenantMembership (ADMIN) in a single transaction.
  */
 async function register({ companyName, adminEmail, adminPassword, adminFullName, phone }) {
   if (!companyName || !adminEmail || !adminPassword) {
@@ -27,14 +28,18 @@ async function register({ companyName, adminEmail, adminPassword, adminFullName,
   let slug = generateSlug(companyName);
   const existingSlug = await prisma.tenant.findUnique({ where: { slug } });
   if (existingSlug) {
-    // Append short random suffix to avoid collision
     slug = `${slug}-${crypto.randomUUID().slice(0, 6)}`;
   }
 
-  // Hash password
-  const hashedPassword = await bcrypt.hash(adminPassword, SALT_ROUNDS);
+  // Check if user already exists (globally unique email)
+  const existingUser = await prisma.user.findUnique({ where: { email } });
 
-  // Create tenant + admin user in transaction
+  // Hash password (only needed for new users)
+  const hashedPassword = existingUser
+    ? null
+    : await bcrypt.hash(adminPassword, SALT_ROUNDS);
+
+  // Create tenant + user (if new) + membership in transaction
   const result = await prisma.$transaction(async (tx) => {
     const tenant = await tx.tenant.create({
       data: {
@@ -44,17 +49,28 @@ async function register({ companyName, adminEmail, adminPassword, adminFullName,
       },
     });
 
-    const user = await tx.user.create({
+    let user;
+    if (existingUser) {
+      user = existingUser;
+    } else {
+      user = await tx.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          fullName: adminFullName || 'Admin',
+        },
+      });
+    }
+
+    const membership = await tx.tenantMembership.create({
       data: {
-        email,
-        password: hashedPassword,
-        fullName: adminFullName || 'Admin',
-        role: 'ADMIN',
+        userId: user.id,
         tenantId: tenant.id,
+        role: 'ADMIN',
       },
     });
 
-    return { tenant, user };
+    return { tenant, user, membership };
   });
 
   logger.info('Tenant registered', { tenantId: result.tenant.id, slug });
@@ -71,7 +87,7 @@ async function register({ companyName, adminEmail, adminPassword, adminFullName,
       id: result.user.id,
       email: result.user.email,
       fullName: result.user.fullName,
-      role: result.user.role,
+      role: result.membership.role,
     },
   };
 }
@@ -84,7 +100,7 @@ async function getTenant(tenantId) {
     where: { id: tenantId },
     include: {
       _count: {
-        select: { users: true, customers: true },
+        select: { memberships: true, customers: true },
       },
     },
   });
@@ -98,7 +114,7 @@ async function getTenant(tenantId) {
     phone: tenant.phone,
     createdAt: tenant.createdAt,
     updatedAt: tenant.updatedAt,
-    userCount: tenant._count.users,
+    userCount: tenant._count.memberships,
     customerCount: tenant._count.customers,
   };
 }
@@ -144,7 +160,7 @@ async function getTenantStats(tenantId) {
   const [customerCount, messageCount, userCount] = await Promise.all([
     prisma.customer.count({ where: { tenantId } }),
     prisma.message.count({ where: { tenantId } }),
-    prisma.user.count({ where: { tenantId } }),
+    prisma.tenantMembership.count({ where: { tenantId } }),
   ]);
 
   return {
