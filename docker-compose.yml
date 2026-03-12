@@ -14,19 +14,43 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - saas-network
+    # Thêm dòng này để kiểm tra xem MySQL đã sống thực sự chưa
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   backend:
     build: ./backend
+    user: "root"
     ports:
       - "5000:5000"
     env_file:
       - ./backend/.env
+    environment:
+      - DATABASE_URL=mysql://saas_user:saas_password123@mysql:3306/saas_db
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy 
     networks:
       - saas-network
     volumes:
       - ./backend/src:/app/src
+    
+    command: sh -c "npx prisma db push && node src/server.js"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    env_file:
+      - ./frontend/.env
+    environment:
+      - VITE_API_BASE_URL=http://localhost:5000/api/v1
+    depends_on:
+      - backend
+    networks:
+      - saas-network
 
 volumes:
   mysql_data:
