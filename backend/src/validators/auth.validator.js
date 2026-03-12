@@ -16,8 +16,11 @@ const loginSchema = Joi.object({
     'string.min': 'Password must be at least 6 characters',
     'any.required': 'Password is required',
   }),
-  tenantSlug: Joi.string().required().messages({
-    'any.required': 'Tenant slug is required',
+});
+
+const selectTenantSchema = Joi.object({
+  tenantId: Joi.string().required().messages({
+    'any.required': 'Tenant ID is required',
   }),
 });
 
@@ -74,6 +77,7 @@ function validate(schema) {
 
 module.exports = {
   loginSchema,
+  selectTenantSchema,
   refreshSchema,
   registerTenantSchema,
   updateTenantSchema,

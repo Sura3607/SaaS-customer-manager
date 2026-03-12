@@ -26,7 +26,6 @@ describe('Auth Endpoints', () => {
         .send({
           email: ctx.user.email,
           password: 'Test@12345',
-          tenantSlug: ctx.tenantSlug,
         })
         .expect(200);
 
@@ -34,6 +33,8 @@ describe('Auth Endpoints', () => {
       expect(res.body.data.accessToken).toBeDefined();
       expect(res.body.data.refreshToken).toBeDefined();
       expect(res.body.data.user.email).toBe(ctx.user.email);
+      expect(res.body.data.tenants).toBeDefined();
+      expect(res.body.data.tenants.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should reject wrong password', async () => {
@@ -42,7 +43,6 @@ describe('Auth Endpoints', () => {
         .send({
           email: ctx.user.email,
           password: 'WrongPassword',
-          tenantSlug: ctx.tenantSlug,
         })
         .expect(401);
 
@@ -55,7 +55,6 @@ describe('Auth Endpoints', () => {
         .send({
           email: 'nobody@nowhere.com',
           password: 'Test@12345',
-          tenantSlug: ctx.tenantSlug,
         })
         .expect(401);
 
@@ -106,7 +105,8 @@ describe('Auth Endpoints', () => {
 
       expect(res.body.success).toBe(true);
       expect(res.body.data.email).toBe(ctx.user.email);
-      expect(res.body.data.role).toBe('ADMIN');
+      expect(res.body.data.tenants).toBeDefined();
+      expect(res.body.data.tenants.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should return 401 without token', async () => {

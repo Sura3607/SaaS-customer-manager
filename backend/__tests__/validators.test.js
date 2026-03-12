@@ -30,7 +30,7 @@ describe('Input Validation', () => {
     it('should reject login with invalid email', async () => {
       const res = await request(app)
         .post('/api/v1/auth/login')
-        .send({ email: 'notanemail', password: '123', tenantSlug: 'x' })
+        .send({ email: 'notanemail', password: '123456' })
         .expect(400);
       expect(res.body.error).toBeDefined();
     });

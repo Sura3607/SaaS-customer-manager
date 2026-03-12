@@ -39,12 +39,20 @@ describe('Integration Workflow', () => {
         .send({
           email: tenantA.email,
           password: 'Integ@12345',
-          tenantSlug: tenantA.slug,
         })
         .expect(200);
 
-      tenantA.token = res.body.data.accessToken;
+      tenantA.loginToken = res.body.data.accessToken;
       tenantA.refreshToken = res.body.data.refreshToken;
+
+      // Select tenant to get tenant-scoped token
+      const selectRes = await request(app)
+        .post('/api/v1/auth/select-tenant')
+        .set('Authorization', `Bearer ${tenantA.loginToken}`)
+        .send({ tenantId: tenantA.id })
+        .expect(200);
+
+      tenantA.token = selectRes.body.data.accessToken;
     });
 
     it('Step 3: Get tenant stats (initially zero customers)', async () => {
@@ -151,9 +159,15 @@ describe('Integration Workflow', () => {
         .send({
           email: `iso_${ts2}@test.com`,
           password: 'Iso@12345',
-          tenantSlug: tenantB.slug,
         });
-      tenantB.token = loginRes.body.data.accessToken;
+      const loginToken = loginRes.body.data.accessToken;
+
+      // Select tenant B
+      const selectRes = await request(app)
+        .post('/api/v1/auth/select-tenant')
+        .set('Authorization', `Bearer ${loginToken}`)
+        .send({ tenantId: tenantB.id });
+      tenantB.token = selectRes.body.data.accessToken;
 
       // Create a customer in Tenant B
       const custRes = await request(app)
@@ -174,9 +188,14 @@ describe('Integration Workflow', () => {
         .send({
           email: tenantA.email,
           password: 'Integ@12345',
-          tenantSlug: tenantA.slug,
         });
-      tenantA.token = loginRes.body.data.accessToken;
+      const loginToken = loginRes.body.data.accessToken;
+
+      const selectRes = await request(app)
+        .post('/api/v1/auth/select-tenant')
+        .set('Authorization', `Bearer ${loginToken}`)
+        .send({ tenantId: tenantA.id });
+      tenantA.token = selectRes.body.data.accessToken;
 
       const res = await request(app)
         .get('/api/v1/customers')
