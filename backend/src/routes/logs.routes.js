@@ -16,3 +16,6 @@ router.get('/logs', authenticate, tenantIsolation, validate(logQuerySchema, 'que
 router.get('/logs/:id', authenticate, tenantIsolation, messagesController.getLogById);
 
 module.exports = router;
+
+// Delete a message log + its parent Message permanently
+router.delete('/logs/:id', authenticate, tenantIsolation, messagesController.deleteMessage);

@@ -98,6 +98,16 @@ async function sendgridWebhook(req, res, next) {
   }
 }
 
+
+async function deleteMessage(req, res, next) {
+  try {
+    await messageService.deleteMessage(req.tenantId, req.params.id);
+    res.status(200).json({ success: true, message: 'Message deleted' });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   sendSMS,
   sendBatchSMS,
@@ -107,4 +117,5 @@ module.exports = {
   getLogById,
   twilioWebhook,
   sendgridWebhook,
+  deleteMessage,
 };

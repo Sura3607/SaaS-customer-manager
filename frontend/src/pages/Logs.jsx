@@ -24,16 +24,16 @@ import {
   Badge,
 } from 'antd'
 import {
-  SearchOutlined,
+  DownOutlined,
+  DownloadOutlined,
   EyeOutlined,
   FilterOutlined,
-  ReloadOutlined,
-  DownloadOutlined,
-  PlusOutlined,
-  RightOutlined,
-  DownOutlined,
   MailOutlined,
   MessageOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  RightOutlined,
+  SearchOutlined,
 } from '@ant-design/icons'
 import api from '../services/api'
 import dayjs from 'dayjs'

@@ -1,253 +1,279 @@
 import React, { useEffect, useState } from 'react'
 import api from '../../services/api'
-import { Form, Input, Button, Radio, Select, Modal, message, Tag, Alert } from 'antd'
-import { SendOutlined, EyeOutlined } from '@ant-design/icons'
+import { Form, Input, Button, Select, Modal, message, Tag, Typography, Flex, Divider } from 'antd'
+import { SendOutlined, EyeOutlined, MailOutlined, UserOutlined, CheckCircleFilled } from '@ant-design/icons'
+
+const { Text } = Typography
+
+const inputStyle = { background: '#232b3d', borderColor: '#2a3142', color: '#fff', borderRadius: 8 }
+const labelStyle = { color: '#8a92a6', fontSize: 13 }
 
 const EmailForm = ({ selectedCustomerIds = [] }) => {
-  const [form] = Form.useForm()
-  const [customers, setCustomers] = useState([])
+  const [customers, setCustomers]           = useState([])
   const [customersLoading, setCustomersLoading] = useState(false)
-  const [recipientType, setRecipientType] = useState('single')
   const [selectedRecipients, setSelectedRecipients] = useState(selectedCustomerIds)
-  const [subject, setSubject] = useState('')
+  const [subject, setSubject]               = useState('')
   const [messageContent, setMessageContent] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading]               = useState(false)
   const [previewVisible, setPreviewVisible] = useState(false)
   const [confirmVisible, setConfirmVisible] = useState(false)
 
-  const loadCustomers = async () => {
-    setCustomersLoading(true)
-    try {
-      const res = await api.get('/customers', { params: { limit: 100 } })
-      setCustomers(res.data.data || res.data || [])
-    } catch (err) {
-      message.error('Failed to load customers')
-    } finally {
-      setCustomersLoading(false)
-    }
-  }
-
   useEffect(() => {
-    loadCustomers()
-    if (selectedCustomerIds.length > 0) {
-      setSelectedRecipients(selectedCustomerIds)
-      setRecipientType('multiple')
-    }
+    ;(async () => {
+      setCustomersLoading(true)
+      try {
+        const res = await api.get('/customers', { params: { limit: 100 } })
+        setCustomers(res.data.data || res.data || [])
+      } catch { message.error('Failed to load customers') }
+      finally { setCustomersLoading(false) }
+    })()
   }, [])
 
-  const recipientCount =
-    recipientType === 'single' && selectedRecipients.length > 0
-      ? 1
-      : recipientType === 'multiple'
-        ? selectedRecipients.length
-        : 0
+  const recipientCount = selectedRecipients.length
+  const canPreview = subject.trim() && messageContent.trim() && recipientCount > 0
 
   const handleSend = async () => {
-    if (recipientCount === 0) {
-      message.warning('Please select at least one customer')
-      return
-    }
-    if (!subject.trim()) {
-      message.warning('Please enter subject')
-      return
-    }
-    if (!messageContent.trim()) {
-      message.warning('Please enter message content')
-      return
-    }
-
+    if (!recipientCount)        { message.warning('Select at least one customer'); return }
+    if (!subject.trim())        { message.warning('Enter subject'); return }
+    if (!messageContent.trim()) { message.warning('Enter message content'); return }
     setLoading(true)
     try {
-      const payload =
-        recipientType === 'single'
-          ? { customerId: selectedRecipients[0], subject, content: messageContent }
-          : { customerIds: selectedRecipients, subject, content: messageContent }
-
-      const endpoint = recipientType === 'single' ? '/messages/email' : '/messages/email/batch'
-      const res = await api.post(endpoint, payload)
-
-      message.success(
-        res.data.data?.messageId ? `Email sent! ID: ${res.data.data.messageId}` : 'Email sent successfully'
-      )
-      form.resetFields()
+      await api.post('/messages/email/batch', {
+        customerIds: selectedRecipients,
+        subject,
+        content: messageContent,
+      })
+      message.success(`Email sent to ${recipientCount} customer${recipientCount > 1 ? 's' : ''}`)
       setSubject('')
       setMessageContent('')
       setSelectedRecipients([])
-      setRecipientType('single')
     } catch (err) {
-      Modal.error({
-        title: 'Failed to send email',
-        content: err.response?.data?.message || err.message,
-        okText: 'OK',
-      })
-    } finally {
-      setLoading(false)
-      setConfirmVisible(false)
-    }
+      Modal.error({ title: 'Failed to send email', content: err.response?.data?.message || err.message })
+    } finally { setLoading(false); setConfirmVisible(false) }
   }
 
-  const selectedCustomer =
-    recipientType === 'single' && selectedRecipients.length > 0
-      ? customers.find((c) => c.id === selectedRecipients[0])
-      : null
+  const selectedCustomerData = customers.filter((c) => selectedRecipients.includes(c.id))
 
   return (
     <div style={{ width: '100%' }}>
       <Form layout="vertical">
-        {/* Recipient Selection */}
-        <Form.Item label="Send to">
-          <Radio.Group
-            value={recipientType}
-            onChange={(e) => {
-              setRecipientType(e.target.value)
-              setSelectedRecipients([])
-            }}
-          >
-            <Radio value="single">Single Customer</Radio>
-            <Radio value="multiple">Multiple Customers</Radio>
-          </Radio.Group>
+
+        {/* Recipients */}
+        <Form.Item label={<Text style={labelStyle}>Select Customers</Text>} required>
+          <Select
+            mode="multiple"
+            placeholder="Choose one or more customers..."
+            loading={customersLoading}
+            maxTagCount="responsive"
+            style={{ width: '100%' }}
+            dropdownStyle={{ background: '#1a1f2e', border: '1px solid #2a3142' }}
+            options={customers.map((c) => ({
+              label: `${c.fullName} — ${c.email}`,
+              value: c.id,
+            }))}
+            value={selectedRecipients}
+            onChange={setSelectedRecipients}
+            className="msg-select"
+            popupClassName="msg-select-dropdown"
+          />
+          {recipientCount > 0 && (
+            <Flex gap={6} style={{ marginTop: 8 }} align="center">
+              <CheckCircleFilled style={{ color: '#0bda5e', fontSize: 13 }} />
+              <Text style={{ color: '#0bda5e', fontSize: 12 }}>{recipientCount} customer{recipientCount > 1 ? 's' : ''} selected</Text>
+            </Flex>
+          )}
         </Form.Item>
 
-        {recipientType === 'single' && (
-          <Form.Item label="Select Customer" rules={[{ required: true, message: 'Please select a customer' }]}>
-            <Select
-              placeholder="Choose a customer..."
-              loading={customersLoading}
-              options={customers.map((c) => ({
-                label: `${c.fullName} (${c.email})`,
-                value: c.id,
-              }))}
-              value={selectedRecipients[0] || undefined}
-              onChange={(val) => setSelectedRecipients(val ? [val] : [])}
-            />
-          </Form.Item>
-        )}
-
-        {selectedCustomer && (
-          <Form.Item>
-            <div style={{ padding: '8px 12px', background: '#f0f2f5', borderRadius: '4px' }}>
-              <strong>{selectedCustomer.email}</strong>
-            </div>
-          </Form.Item>
-        )}
-
-        {recipientType === 'multiple' && (
-          <Form.Item label="Select Customers">
-            <Select
-              mode="multiple"
-              placeholder="Choose customers..."
-              loading={customersLoading}
-              maxTagCount="responsive"
-              options={customers.map((c) => ({
-                label: `${c.fullName} (${c.email})`,
-                value: c.id,
-              }))}
-              value={selectedRecipients}
-              onChange={setSelectedRecipients}
-            />
-            {selectedRecipients.length > 0 && (
-              <div style={{ marginTop: '8px' }}>
-                <Tag color="blue">{selectedRecipients.length} customers selected</Tag>
-              </div>
-            )}
-          </Form.Item>
-        )}
-
-        {/* Email Content */}
-        <Form.Item label="From">
-          <Input value="noreply@sendgrid.example.com" disabled />
+        {/* From */}
+        <Form.Item label={<Text style={labelStyle}>From</Text>}>
+          <Input value="noreply@sendgrid.example.com" disabled style={inputStyle} />
         </Form.Item>
 
-        <Form.Item label="Subject" rules={[{ required: true, message: 'Please enter subject' }]}>
-          <Input placeholder="Email subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
+        {/* Subject */}
+        <Form.Item label={<Text style={labelStyle}>Subject</Text>} required>
+          <Input
+            placeholder="Email subject"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            style={inputStyle}
+          />
         </Form.Item>
 
-        <Form.Item label="Message Content" rules={[{ required: true, message: 'Please enter message content' }]}>
+        {/* Body */}
+        <Form.Item
+          label={<Text style={labelStyle}>Message Content</Text>}
+          required
+          extra={<Text style={{ color: '#8a92a6', fontSize: 12 }}>Max 320 characters per message</Text>}
+        >
           <Input.TextArea
-            rows={6}
+            rows={7}
             value={messageContent}
             onChange={(e) => setMessageContent(e.target.value)}
-            placeholder="Type your email message (HTML supported)"
+            placeholder="Type your email message..."
+            style={{ ...inputStyle, resize: 'vertical' }}
           />
         </Form.Item>
 
         {/* Actions */}
         <Form.Item>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <Flex gap={12}>
             <Button
               icon={<EyeOutlined />}
               onClick={() => setPreviewVisible(true)}
-              disabled={!subject.trim() || !messageContent.trim() || recipientCount === 0}
-            >
-              Preview
-            </Button>
+              disabled={!canPreview}
+              style={{ background: '#232b3d', borderColor: '#2a3142', color: '#fff' }}
+            >Preview</Button>
             <Button
-              type="primary"
-              icon={<SendOutlined />}
-              size="large"
-              loading={loading}
+              type="primary" icon={<SendOutlined />} size="large" loading={loading}
               onClick={() => setConfirmVisible(true)}
-              disabled={!subject.trim() || !messageContent.trim() || recipientCount === 0}
-            >
-              Send
-            </Button>
-          </div>
+              disabled={!canPreview}
+            >Send</Button>
+          </Flex>
         </Form.Item>
       </Form>
 
-      {/* Preview Modal */}
+      {/* ── Preview Modal ── */}
       <Modal
-        title="Email Preview"
         open={previewVisible}
         onCancel={() => setPreviewVisible(false)}
         footer={null}
-        width={700}
-        wrapClassName="dark-modal"
-        bodyStyle={{ background: '#0d101b' }}
-        headerStyle={{ background: '#1a1f2e', borderColor: '#2a3142' }}
-        titleProps={{ style: { color: '#fff' } }}
+        width={600}
+        centered
+        title={null}
+        styles={{
+          content: { background: '#1a1f2e', border: '1px solid #2a3142', borderRadius: 16, padding: 0, overflow: 'hidden' },
+          body: { padding: 0 },
+        }}
       >
-        <div style={{ marginBottom: '16px' }}>
-          <strong>To {recipientCount} customer(s):</strong>
-          {recipientType === 'single' && selectedCustomer && (
-            <div>
-              {selectedCustomer.fullName} ({selectedCustomer.email})
-            </div>
-          )}
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <strong>Subject:</strong> {subject}
-        </div>
-        <div style={{ background: '#232b3d', padding: '12px', borderRadius: '4px', color: '#fff' }}>
-          <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{messageContent}</pre>
+        {/* Header bar */}
+        <Flex align="center" gap={10} style={{ padding: '18px 24px', borderBottom: '1px solid #2a3142' }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#fa6238', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <MailOutlined style={{ color: '#fff', fontSize: 16 }} />
+          </div>
+          <Flex vertical gap={0}>
+            <Text style={{ color: '#fff', fontWeight: 600, fontSize: 15 }}>Email Preview</Text>
+            <Text style={{ color: '#8a92a6', fontSize: 12 }}>via SendGrid</Text>
+          </Flex>
+        </Flex>
+
+        <div style={{ padding: '20px 24px' }}>
+          {/* Meta fields */}
+          <div style={{ background: '#0d101b', borderRadius: 10, padding: '12px 16px', marginBottom: 16 }}>
+            {[
+              { label: 'FROM', value: 'noreply@sendgrid.example.com' },
+              {
+                label: 'TO',
+                value: (
+                  <Flex wrap gap={4}>
+                    {selectedCustomerData.slice(0, 4).map((c) => (
+                      <Tag key={c.id} style={{ background: '#232b3d', border: '1px solid #2a3142', color: '#fff', borderRadius: 5, margin: 0 }}>
+                        {c.fullName}
+                      </Tag>
+                    ))}
+                    {selectedCustomerData.length > 4 && (
+                      <Tag style={{ background: '#232b3d', border: '1px solid #2a3142', color: '#8a92a6', borderRadius: 5, margin: 0 }}>
+                        +{selectedCustomerData.length - 4} more
+                      </Tag>
+                    )}
+                  </Flex>
+                ),
+              },
+              { label: 'SUBJECT', value: subject },
+            ].map(({ label, value }) => (
+              <Flex key={label} align="flex-start" gap={12} style={{ marginBottom: 8 }}>
+                <Text style={{ color: '#8a92a6', fontSize: 11, letterSpacing: '0.07em', minWidth: 60, paddingTop: 2 }}>{label}</Text>
+                <div style={{ flex: 1 }}>
+                  {typeof value === 'string'
+                    ? <Text style={{ color: '#fff', fontSize: 13 }}>{value}</Text>
+                    : value}
+                </div>
+              </Flex>
+            ))}
+          </div>
+
+          {/* Email body */}
+          <div style={{
+            background: '#0d101b', borderRadius: 10, padding: '20px',
+            border: '1px solid #2a3142', maxHeight: 300, overflowY: 'auto',
+          }}>
+            {messageContent.includes('<') ? (
+              <div
+                style={{ color: '#e0e6f0', fontSize: 14, lineHeight: 1.7 }}
+                dangerouslySetInnerHTML={{ __html: messageContent }}
+              />
+            ) : (
+              <Text style={{ color: '#e0e6f0', fontSize: 14, lineHeight: '1.7', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                {messageContent}
+              </Text>
+            )}
+          </div>
+
+          <Divider style={{ borderColor: '#2a3142', margin: '16px 0' }} />
+          <Flex justify="space-between" align="center">
+            <Text style={{ color: '#8a92a6', fontSize: 12 }}>{recipientCount} recipient{recipientCount !== 1 ? 's' : ''}</Text>
+            <Button type="primary" icon={<SendOutlined />}
+              onClick={() => { setPreviewVisible(false); setConfirmVisible(true) }}>
+              Send Now
+            </Button>
+          </Flex>
         </div>
       </Modal>
 
-      {/* Confirmation Modal */}
+      {/* ── Confirm Modal ── */}
       <Modal
-        title="Send Email"
+        title={<Text style={{ color: '#fff' }}>Confirm Send</Text>}
         open={confirmVisible}
         onOk={handleSend}
         onCancel={() => setConfirmVisible(false)}
         confirmLoading={loading}
-        wrapClassName="dark-modal"
-        bodyStyle={{ background: '#0d101b' }}
-        headerStyle={{ background: '#1a1f2e', borderColor: '#2a3142' }}
-        titleProps={{ style: { color: '#fff' } }}
+        okText="Send"
+        centered
+        styles={{
+          content: { background: '#1a1f2e', border: '1px solid #2a3142' },
+          header: { background: '#1a1f2e', borderBottom: '1px solid #2a3142' },
+        }}
       >
-        <p>
-          Send email to <strong>{recipientCount}</strong> customer{recipientCount !== 1 ? 's' : ''}?
-        </p>
-        <div style={{ background: '#232b3d', padding: '12px', borderRadius: '4px', color: '#fff' }}>
-          <div>
-            <strong>Subject:</strong> {subject}
-          </div>
-          <div style={{ marginTop: '8px', maxHeight: '200px', overflow: 'auto' }}>
-            {messageContent.substring(0, 150)}
-            {messageContent.length > 150 ? '...' : ''}
-          </div>
+        <Text style={{ color: '#8a92a6' }}>
+          Send email to{' '}
+          <Text style={{ color: '#fff', fontWeight: 600 }}>{recipientCount} customer{recipientCount !== 1 ? 's' : ''}</Text>?
+        </Text>
+        <div style={{ background: '#0d101b', padding: '12px 16px', borderRadius: 8, marginTop: 12, borderLeft: '3px solid #fa6238' }}>
+          <Text style={{ color: '#8a92a6', fontSize: 12 }}>Subject</Text>
+          <div style={{ color: '#fff', fontWeight: 500, marginBottom: 6 }}>{subject}</div>
+          <Text style={{ color: '#8a92a6', fontSize: 13 }}>
+            {messageContent.replace(/<[^>]*>/g, '').slice(0, 120)}{messageContent.length > 120 ? '…' : ''}
+          </Text>
         </div>
       </Modal>
+
+      {/* Dark theme fix for AntD Select */}
+      <style>{`
+        .msg-select .ant-select-selector {
+          background: #232b3d !important;
+          border-color: #2a3142 !important;
+        }
+        .msg-select .ant-select-selection-placeholder,
+        .msg-select .ant-select-selection-item,
+        .msg-select .ant-select-selection-search-input {
+          color: #fff !important;
+        }
+        .msg-select .ant-select-selection-item {
+          background: #1a1f2e !important;
+          border-color: #2a3142 !important;
+          color: #fff !important;
+        }
+        .msg-select .ant-select-selection-item-remove {
+          color: #8a92a6 !important;
+        }
+        .msg-select-dropdown .ant-select-item {
+          color: #fff !important;
+          background: transparent !important;
+        }
+        .msg-select-dropdown .ant-select-item-option-active,
+        .msg-select-dropdown .ant-select-item-option-selected {
+          background: #232b3d !important;
+        }
+      `}</style>
     </div>
   )
 }

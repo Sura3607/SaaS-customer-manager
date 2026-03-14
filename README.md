@@ -67,6 +67,7 @@ npm run dev
 ```bash
 cd frontend
 npm install
+npm install recharts
 npm run dev
 ```
 

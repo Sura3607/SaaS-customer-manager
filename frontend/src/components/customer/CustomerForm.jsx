@@ -1,18 +1,20 @@
-import React from 'react'
-import { Form, Input, Modal, message } from 'antd'
+import React, { useEffect } from 'react'
+import { Form, Input, Modal, message, Typography } from 'antd'
 import api from '../../services/api'
+
+const { Text } = Typography
+
+const inputStyle = {
+  background: '#232b3d', borderColor: '#2a3142', color: '#fff', borderRadius: 8, height: 40,
+}
 
 const CustomerForm = ({ visible, onCancel, onSuccess, initialValues, mode = 'create' }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = React.useState(false)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (visible) {
-      if (initialValues) {
-        form.setFieldsValue(initialValues)
-      } else {
-        form.resetFields()
-      }
+      initialValues ? form.setFieldsValue(initialValues) : form.resetFields()
     }
   }, [visible, initialValues, form])
 
@@ -29,9 +31,14 @@ const CustomerForm = ({ visible, onCancel, onSuccess, initialValues, mode = 'cre
       form.resetFields()
       onSuccess()
     } catch (err) {
-      message.error(
-        err.response?.data?.message || (mode === 'create' ? 'Failed to create customer' : 'Failed to update customer')
-      )
+      const status = err.response?.status
+      const serverMsg = err.response?.data?.message || ''
+      // 409 Conflict = trùng email hoặc số điện thoại
+      if (status === 409 || serverMsg.toLowerCase().includes('already') || serverMsg.toLowerCase().includes('unique')) {
+        message.warning('This customer has already been added. Please check and try again.')
+      } else {
+        message.error(serverMsg || (mode === 'create' ? 'Failed to create customer' : 'Failed to update customer'))
+      }
     } finally {
       setLoading(false)
     }
@@ -39,65 +46,64 @@ const CustomerForm = ({ visible, onCancel, onSuccess, initialValues, mode = 'cre
 
   return (
     <Modal
-      title={mode === 'create' ? 'Add Customer' : 'Edit Customer'}
+      title={<Text style={{ color: '#fff', fontSize: 16 }}>{mode === 'create' ? 'Add Customer' : 'Edit Customer'}</Text>}
       open={visible}
       onCancel={onCancel}
       onOk={() => form.submit()}
       confirmLoading={loading}
-      wrapClassName="dark-modal"
-      bodyStyle={{ background: '#0d101b' }}
-      headerStyle={{ background: '#1a1f2e', borderColor: '#2a3142' }}
-      titleProps={{ style: { color: '#fff' } }}
-      okText="OK"
+      okText={mode === 'create' ? 'Add' : 'Save'}
       cancelText="Cancel"
-      okButtonProps={{ style: { color: '#fff' } }}
-      modalRenderToBody={true}
+      centered
+      styles={{
+        content: { background: '#1a1f2e', border: '1px solid #2a3142' },
+        header: { background: '#1a1f2e', borderBottom: '1px solid #2a3142' },
+        body: { paddingTop: 16 },
+      }}
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
-          label="Full Name"
+          label={<Text style={{ color: '#8a92a6' }}>Full Name</Text>}
           name="fullName"
           rules={[
-            { required: true, message: 'Please enter full name' },
-            { min: 2, message: 'Full name must be at least 2 characters' },
-            { max: 100, message: 'Full name must not exceed 100 characters' },
+            { required: true, message: 'Full name is required' },
+            { min: 2, message: 'At least 2 characters' },
           ]}
-          labelCol={{ style: { color: '#0d101b' } }}
         >
-          <Input placeholder="John Doe" />
+          <Input placeholder="Nguyen Van A" style={inputStyle} />
         </Form.Item>
 
         <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, message: 'Please enter email' },
-            { type: 'email', message: 'Please enter a valid email' },
-          ]}
-          labelCol={{ style: { color: '#0d101b' } }}
-        >
-          <Input placeholder="john@example.com" />
-        </Form.Item>
-
-        <Form.Item
-          label="Phone"
+          label={<Text style={{ color: '#8a92a6' }}>Phone Number</Text>}
           name="phone"
           rules={[
-            { required: true, message: 'Please enter phone number' },
-            { pattern: /^[+]?[\d\s()-]+$/, message: 'Please enter a valid phone number' },
+            { required: true, message: 'Phone number is required' },
+            { pattern: /^[+]?[\d\s()\-]{6,20}$/, message: 'Invalid phone number' },
           ]}
-          labelCol={{ style: { color: '#0d101b' } }}
         >
-          <Input placeholder="+1 (555) 123-4567" />
+          <Input placeholder="+84 123 456 789" style={inputStyle} />
         </Form.Item>
 
         <Form.Item
-          label="Address"
-          name="address"
-          rules={[{ max: 500, message: 'Address must not exceed 500 characters' }]}
-          labelCol={{ style: { color: '#0d101b' } }}
+          label={<Text style={{ color: '#8a92a6' }}>Email</Text>}
+          name="email"
+          rules={[
+            { required: true, message: 'Email is required' },
+            { type: 'email', message: 'Invalid email address' },
+          ]}
         >
-          <Input.TextArea placeholder="123 Main St, City, State" rows={3} />
+          <Input placeholder="customer@example.com" style={inputStyle} />
+        </Form.Item>
+
+        <Form.Item
+          label={<Text style={{ color: '#8a92a6' }}>Address</Text>}
+          name="address"
+          rules={[{ max: 500, message: 'Max 500 characters' }]}
+        >
+          <Input.TextArea
+            placeholder="123 Street, City"
+            rows={3}
+            style={{ ...inputStyle, height: 'auto', resize: 'none' }}
+          />
         </Form.Item>
       </Form>
     </Modal>
