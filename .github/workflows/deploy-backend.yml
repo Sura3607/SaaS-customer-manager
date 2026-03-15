@@ -37,4 +37,4 @@ jobs:
 
       - name: Force ECS to Deploy New Version
         run: |
-          aws ecs update-service --cluster saas-cluster --service saas-backend-service --force-new-deployment
+          aws ecs update-service --cluster saas-cluster --service saas-backend-task-service --force-new-deployment
