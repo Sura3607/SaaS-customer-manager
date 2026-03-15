@@ -56,6 +56,14 @@ const updateTenantSchema = Joi.object({
   'object.min': 'At least one field must be provided to update',
 });
 
+const createTenantForUserSchema = Joi.object({
+  companyName: Joi.string().min(2).max(255).required().messages({
+    'string.min': 'Company name must be at least 2 characters',
+    'any.required': 'Company name is required',
+  }),
+  phone: Joi.string().max(20).optional().allow('', null),
+});
+
 /* ───── Middleware factory ───── */
 
 /**
@@ -81,5 +89,6 @@ module.exports = {
   refreshSchema,
   registerTenantSchema,
   updateTenantSchema,
+  createTenantForUserSchema,
   validate,
 };

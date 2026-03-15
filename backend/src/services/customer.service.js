@@ -17,6 +17,15 @@ async function checkUniqueEmail(tenantId, email, excludeId = null) {
   if (existing) {
     throw new ConflictError('A customer with this email already exists in your tenant');
   }
+
+  // Also check against the tenant admin's email
+  const adminMembership = await prisma.tenantMembership.findFirst({
+    where: { tenantId, role: 'ADMIN' },
+    select: { user: { select: { email: true } } },
+  });
+  if (adminMembership?.user?.email && adminMembership.user.email === email) {
+    throw new ConflictError('This email is already in use by the organization owner');
+  }
 }
 
 async function checkUniquePhone(tenantId, phone, excludeId = null) {
@@ -25,6 +34,12 @@ async function checkUniquePhone(tenantId, phone, excludeId = null) {
   const existing = await prisma.customer.findFirst({ where });
   if (existing) {
     throw new ConflictError('A customer with this phone already exists in your tenant');
+  }
+
+  // Also check against the tenant's own phone number
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { phone: true } });
+  if (tenant?.phone && formatPhoneE164(tenant.phone) === phone) {
+    throw new ConflictError('This phone number is already in use by the organization');
   }
 }
 
@@ -157,15 +172,31 @@ async function bulkCreateCustomers(tenantId, dataArray) {
   const emails = new Set();
   const phones = new Set();
 
+  // Pre-load existing customer phones + emails, tenant phone, and admin emails
+  const [existingCustomers, tenant, adminMemberships] = await Promise.all([
+    prisma.customer.findMany({ where: { tenantId }, select: { phone: true, email: true } }),
+    prisma.tenant.findUnique({ where: { id: tenantId }, select: { phone: true } }),
+    prisma.tenantMembership.findMany({
+      where: { tenantId, role: 'ADMIN' },
+      select: { user: { select: { email: true } } },
+    }),
+  ]);
+  const existingPhones = new Set(existingCustomers.map((c) => c.phone));
+  const existingEmails = new Set(existingCustomers.map((c) => c.email));
+  if (tenant?.phone) existingPhones.add(formatPhoneE164(tenant.phone));
+  for (const m of adminMemberships) {
+    if (m.user?.email) existingEmails.add(m.user.email);
+  }
+
   const prepared = dataArray.map((item, idx) => {
     const email = sanitizeEmail(item.email);
     const phone = formatPhoneE164(item.phone);
 
-    if (emails.has(email)) {
-      throw new ConflictError(`Duplicate email "${email}" at index ${idx}`);
+    if (emails.has(email) || existingEmails.has(email)) {
+      throw new ConflictError(`Email "${email}" at index ${idx} is already in use`);
     }
-    if (phones.has(phone)) {
-      throw new ConflictError(`Duplicate phone "${phone}" at index ${idx}`);
+    if (phones.has(phone) || existingPhones.has(phone)) {
+      throw new ConflictError(`Phone "${phone}" at index ${idx} is already in use`);
     }
     emails.add(email);
     phones.add(phone);

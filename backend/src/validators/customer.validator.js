@@ -11,10 +11,10 @@ const createCustomerSchema = Joi.object({
     'any.required': 'Full name is required',
   }),
   phone: Joi.string()
-    .pattern(/^\+?[\d\s()-]{7,20}$/)
+    .pattern(/^(\+[1-9]\d{6,14}|0[1-9]\d{8,9})$/)
     .required()
     .messages({
-      'string.pattern.base': 'Phone must be a valid phone number',
+      'string.pattern.base': 'Phone must be in international format (+...) or Vietnamese local format (0...)',
       'any.required': 'Phone is required',
     }),
   email: Joi.string().email().required().messages({
@@ -27,9 +27,9 @@ const createCustomerSchema = Joi.object({
 const updateCustomerSchema = Joi.object({
   fullName: Joi.string().min(2).max(100).optional(),
   phone: Joi.string()
-    .pattern(/^\+?[\d\s()-]{7,20}$/)
+    .pattern(/^(\+[1-9]\d{6,14}|0[1-9]\d{8,9})$/)
     .optional()
-    .messages({ 'string.pattern.base': 'Phone must be a valid phone number' }),
+    .messages({ 'string.pattern.base': 'Phone must be in international format (+...) or Vietnamese local format (0...)' }),
   email: Joi.string().email().optional(),
   address: Joi.string().max(500).optional().allow('', null),
 }).min(1).messages({

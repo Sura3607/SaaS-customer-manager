@@ -31,6 +31,24 @@ async function register(req, res, next) {
 }
 
 /**
+ * POST /api/v1/tenants/create  (authenticated — add org to current user)
+ */
+async function createForUser(req, res, next) {
+  try {
+    const { companyName, phone } = req.body;
+    const userId = req.user.userId;
+    const result = await tenantService.createTenantForUser(userId, { companyName, phone });
+    res.status(201).json({
+      success: true,
+      message: 'Organization created successfully',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
  * Ensure the requested tenant ID matches the authenticated user's tenant.
  */
 function ensureTenantAccess(req) {
@@ -104,4 +122,4 @@ async function getCharts(req, res, next) {
   }
 }
 
-module.exports = { register, getById, update, getStats, getCharts };
+module.exports = { register, createForUser, getById, update, getStats, getCharts };

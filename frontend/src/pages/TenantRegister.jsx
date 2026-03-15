@@ -35,10 +35,15 @@ export default function TenantRegister() {
       message.success('Tenant created! Please log in.')
       navigate('/login')
         } catch (err) {
-      const status = err.response?.status
-      const code   = err.response?.data?.code
-      if (status === 409 || code === 'CONFLICT' || code === 'DUPLICATE_ENTRY') {
-        message.error('An account with this email and company name already exists. Please log in instead.')
+      const code = err.response?.data?.code
+      if (code === 'EMAIL_ALREADY_REGISTERED') {
+        form.setFields([{ name: 'email', errors: ['This email is already registered.'] }])
+        message.error('This email address is already registered. Please log in instead.')
+      } else if (code === 'PHONE_ALREADY_REGISTERED') {
+        form.setFields([{ name: 'phone', errors: ['This phone number is already registered.'] }])
+        message.error('This phone number is already registered. Please use a different one.')
+      } else if (err.response?.status === 409) {
+        message.error('An account with this information already exists. Please log in instead.')
       } else {
         message.error(parseApiError(err, 'Registration failed. Please try again.'))
       }
@@ -104,15 +109,14 @@ export default function TenantRegister() {
                   </Col>
                 </Row>
 
-                <Flex vertical gap={8}>
-                  <Text style={{ color: '#fff' }}>Email Address</Text>
-                  <Form.Item
+                <Form.Item
                     name="email"
-                    noStyle
+                    label={<Text style={{ color: '#fff' }}>Email Address</Text>}
                     rules={[
                       { required: true, message: 'Please input email' },
                       { type: 'email', message: 'Please enter a valid email' },
                     ]}
+                    style={{ marginBottom: 0 }}
                   >
                     <Input
                       placeholder="john@company.com"
@@ -120,7 +124,6 @@ export default function TenantRegister() {
                       style={{ background: '#1a1f2e', borderColor: '#2a3142', color: '#fff' }}
                     />
                   </Form.Item>
-                </Flex>
 
                 <Flex vertical gap={8}>
                   <Flex justify="space-between" align="center">
@@ -158,15 +161,17 @@ export default function TenantRegister() {
                   </Form.Item>
                 </Flex>
 
-                <Flex vertical gap={8}>
-                  <Text style={{ color: '#fff' }}>Phone Number</Text>
-                  <Form.Item name="phone" noStyle rules={[{ required: false }]}>
+                <Form.Item
+                    name="phone"
+                    label={<Text style={{ color: '#fff' }}>Phone Number</Text>}
+                    rules={[{ required: false }]}
+                    style={{ marginBottom: 0 }}
+                  >
                     <Input
                       placeholder="123-456-7890"
                       style={{ background: '#1a1f2e', borderColor: '#2a3142', color: '#fff' }}
                     />
                   </Form.Item>
-                </Flex>
 
                 <Button
                   type="primary"

@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const prisma = require('../config/db');
 const { generateSlug, sanitizeEmail } = require('../utils/formatters');
-const { ConflictError, NotFoundError, ValidationError } = require('../utils/errors');
+const { AppError, ConflictError, NotFoundError, ValidationError } = require('../utils/errors');
 const logger = require('../utils/logger');
 
 const SALT_ROUNDS = 10;
@@ -31,32 +31,30 @@ async function register({ companyName, adminEmail, adminPassword, adminFullName,
     slug = `${slug}-${crypto.randomUUID().slice(0, 6)}`;
   }
 
-  // Check if user already exists (globally unique email)
+  // Check if email is already registered
   const existingUser = await prisma.user.findUnique({ where: { email } });
-
-  // If email already exists, check if they also have a tenant with the same company name.
-  // That means both email AND company name match → reject as duplicate registration.
   if (existingUser) {
-    // Prisma does not support mode:'insensitive' on nested relation filters.
-    // Fetch all memberships for this user, then compare companyName in JS.
-    const userMemberships = await prisma.tenantMembership.findMany({
-      where: { userId: existingUser.id },
-      include: { tenant: { select: { companyName: true } } },
-    });
-    const existingMembership = userMemberships.find(
-      (m) => m.tenant.companyName.toLowerCase() === companyName.toLowerCase()
+    throw new AppError(
+      'This email address is already registered. Please log in instead.',
+      409,
+      'EMAIL_ALREADY_REGISTERED'
     );
-    if (existingMembership) {
-      throw new ConflictError(
-        'An account with this email and company name already exists. Please log in instead.'
+  }
+
+  // Check if phone is already registered by another account
+  if (phone) {
+    const existingPhone = await prisma.tenant.findFirst({ where: { phone } });
+    if (existingPhone) {
+      throw new AppError(
+        'This phone number is already registered. Please use a different phone number.',
+        409,
+        'PHONE_ALREADY_REGISTERED'
       );
     }
   }
 
-  // Hash password (only needed for new users)
-  const hashedPassword = existingUser
-    ? null
-    : await bcrypt.hash(adminPassword, SALT_ROUNDS);
+  // Hash password
+  const hashedPassword = await bcrypt.hash(adminPassword, SALT_ROUNDS);
 
   // Create tenant + user (if new) + membership in transaction
   const result = await prisma.$transaction(async (tx) => {
@@ -68,18 +66,13 @@ async function register({ companyName, adminEmail, adminPassword, adminFullName,
       },
     });
 
-    let user;
-    if (existingUser) {
-      user = existingUser;
-    } else {
-      user = await tx.user.create({
-        data: {
-          email,
-          password: hashedPassword,
-          fullName: adminFullName || 'Admin',
-        },
-      });
-    }
+    const user = await tx.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        fullName: adminFullName || 'Admin',
+      },
+    });
 
     const membership = await tx.tenantMembership.create({
       data: {
@@ -108,6 +101,63 @@ async function register({ companyName, adminEmail, adminPassword, adminFullName,
       fullName: result.user.fullName,
       role: result.membership.role,
     },
+  };
+}
+
+/**
+ * Create a new tenant for an already-authenticated user.
+ * No email/password required — the user account already exists.
+ */
+async function createTenantForUser(userId, { companyName, phone }) {
+  if (!companyName) {
+    throw new ValidationError('companyName is required');
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    throw new NotFoundError('User');
+  }
+
+  // Generate unique slug
+  let slug = generateSlug(companyName);
+  const existingSlug = await prisma.tenant.findUnique({ where: { slug } });
+  if (existingSlug) {
+    slug = `${slug}-${crypto.randomUUID().slice(0, 6)}`;
+  }
+
+  // Check if phone is already registered (if provided)
+  if (phone) {
+    const existingPhone = await prisma.tenant.findFirst({ where: { phone } });
+    if (existingPhone) {
+      throw new AppError(
+        'This phone number is already registered. Please use a different phone number.',
+        409,
+        'PHONE_ALREADY_REGISTERED'
+      );
+    }
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    const tenant = await tx.tenant.create({
+      data: { companyName, slug, phone: phone || null },
+    });
+
+    const membership = await tx.tenantMembership.create({
+      data: { userId: user.id, tenantId: tenant.id, role: 'ADMIN' },
+    });
+
+    return { tenant, membership };
+  });
+
+  logger.info('Tenant created for existing user', { tenantId: result.tenant.id, userId });
+
+  return {
+    id: result.tenant.id,
+    companyName: result.tenant.companyName,
+    slug: result.tenant.slug,
+    phone: result.tenant.phone,
+    role: result.membership.role,
+    createdAt: result.tenant.createdAt,
   };
 }
 
@@ -275,4 +325,4 @@ async function getChartData(tenantId) {
   return { monthly, weekly, currentMonth: now.toLocaleString('en-US', { month: 'long', year: 'numeric' }) };
 }
 
-module.exports = { register, getTenant, updateTenant, getTenantStats, getChartData };
+module.exports = { register, createTenantForUser, getTenant, updateTenant, getTenantStats, getChartData };

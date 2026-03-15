@@ -75,6 +75,22 @@ export function AuthProvider({ children }) {
     return res.data
   }
 
+  async function addTenant({ companyName, phone }) {
+    const res = await api.post('/tenants/create', { companyName, phone })
+    const newTenant = res.data.data
+    const updated = [...availableTenants, { ...newTenant, role: newTenant.role || 'ADMIN' }]
+    setAvailableTenants(updated)
+    try {
+      const raw = window.localStorage.getItem('auth')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        parsed.availableTenants = updated
+        window.localStorage.setItem('auth', JSON.stringify(parsed))
+      }
+    } catch (_) {}
+    return newTenant
+  }
+
   function logout() {
     api.post('/auth/logout').catch(() => {})
     setUser(null)
@@ -88,7 +104,7 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{
       user, tenant, availableTenants, loading,
-      login, selectTenant, logout, registerTenant, updateUser,
+      login, selectTenant, logout, registerTenant, addTenant, updateUser,
     }}>
       {children}
     </AuthContext.Provider>

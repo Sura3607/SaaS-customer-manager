@@ -8,12 +8,15 @@ const { Router } = require('express');
 const tenantsController = require('../controllers/tenants.controller');
 const { authenticate } = require('../middlewares/auth.middleware');
 const { tenantIsolation } = require('../middlewares/tenant.middleware');
-const { validate, registerTenantSchema, updateTenantSchema } = require('../validators/auth.validator');
+const { validate, registerTenantSchema, updateTenantSchema, createTenantForUserSchema } = require('../validators/auth.validator');
 
 const router = Router();
 
 // Public
 router.post('/register', validate(registerTenantSchema), tenantsController.register);
+
+// Authenticated — create a new org for the currently logged-in user
+router.post('/create', authenticate, validate(createTenantForUserSchema), tenantsController.createForUser);
 
 // Protected + tenant isolation
 router.get('/:id', authenticate, tenantIsolation, tenantsController.getById);

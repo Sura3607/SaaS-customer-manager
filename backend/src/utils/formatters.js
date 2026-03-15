@@ -10,11 +10,10 @@
  */
 function formatPhoneE164(phone) {
   if (!phone) return '';
-  // Remove all non-numeric characters except leading +
   const cleaned = phone.replace(/[^\d+]/g, '');
-  // If it already starts with +, return as-is
   if (cleaned.startsWith('+')) return cleaned;
-  // Default: assume it needs a + prefix
+  // VN local format: 0xxxxxxxxx -> +84xxxxxxxxx
+  if (cleaned.startsWith('0')) return `+84${cleaned.slice(1)}`;
   return `+${cleaned}`;
 }
 
