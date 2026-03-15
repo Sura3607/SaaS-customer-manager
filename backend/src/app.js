@@ -30,7 +30,8 @@ const app = express();
 
 // CORS — restrict to known origins
 const allowedOrigins = [
-  'http://localhost:5173',   // Vite dev server
+  'http://localhost:5173',
+  'http://localhost:4173',   // Vite dev server
   'http://localhost:3000',   // Alt dev port
   env.FRONTEND_URL,          // Production (CloudFront, etc.)
 ].filter(Boolean);
