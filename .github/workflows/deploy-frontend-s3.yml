@@ -1,0 +1,43 @@
+name: Deploy Frontend to S3 (No CloudFront)
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'frontend/**' ]
+  workflow_dispatch: # Cho phép tự bấm nút chạy tay
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Lấy code từ GitHub
+        uses: actions/checkout@v4
+
+      - name: Cài đặt Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Vite chạy ổn định nhất trên Node 20
+
+      - name: Cài đặt thư viện (npm install)
+        run: npm install
+
+      - name: Build ứng dụng
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_APP_NAME: "Customer Manager SaaS"
+        run: npm run build
+
+      - name: Đăng nhập AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Đồng bộ file lên S3 Bucket
+        # Lệnh này sẽ copy thư mục dist lên S3 và xóa các file cũ không còn dùng
+        run: aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
