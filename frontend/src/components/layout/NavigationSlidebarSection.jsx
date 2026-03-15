@@ -1,9 +1,6 @@
 import React from 'react'
+import { DashboardOutlined, ContactsOutlined, InboxOutlined, RocketOutlined, SettingOutlined, AppstoreOutlined } from '@ant-design/icons'
 import { Menu, Flex, Avatar, Typography } from 'antd'
-import {
-  DashboardOutlined, ContactsOutlined, InboxOutlined,
-  RocketOutlined, SettingOutlined,
-} from '@ant-design/icons'
 import { Link, useLocation } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 
@@ -30,11 +27,22 @@ export default function NavigationSlidebarSection({ collapsed, selectKey }) {
       {/* Logo */}
       <Flex align="center" justify="center" style={{ padding: '26px 16px', flexShrink: 0 }}>
         {!collapsed && (
-          <Text strong style={{ fontSize: 20, color: '#fff' }}>SaaS Manager</Text>
+          <Flex align="center" gap={10}>
+            <Flex
+              align="center" justify="center"
+              style={{ width: 32, height: 32, borderRadius: 8, background: '#1a1f2e', flexShrink: 0 }}
+            >
+              <AppstoreOutlined style={{ fontSize: 18, color: '#1f73f9' }} />
+            </Flex>
+            <Text strong style={{ fontSize: 20, color: '#fff' }}>SaaS Manager</Text>
+          </Flex>
         )}
         {collapsed && (
-          <Avatar size={32} style={{ backgroundColor: '#1f73f9' }}>{initials}</Avatar>
-        )}
+          <Flex align="center" justify="center"
+            style={{ width: 36, height: 36, borderRadius: 8, background: '#1a1f2e' }}>
+            <AppstoreOutlined style={{ fontSize: 20, color: '#1f73f9' }} />
+          </Flex>
+        )}                                                      
       </Flex>
 
       {/* Nav menu */}
