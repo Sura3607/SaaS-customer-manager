@@ -28,6 +28,8 @@ enum MessageStatus {
   PENDING
   SENT
   DELIVERED
+  OPENED
+  CLICKED
   FAILED
 }
 
@@ -35,8 +37,12 @@ enum LogStatus {
   PENDING
   SENT
   DELIVERED
+  OPENED
+  CLICKED
   FAILED
   BOUNCED
+  SPAM
+  UNSUBSCRIBED
 }
 
 // ============================================

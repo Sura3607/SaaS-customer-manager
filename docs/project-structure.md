@@ -1,6 +1,6 @@
 # Cấu trúc dự án đề xuất
 
-```
+```plaintext
 SaaS-customer-manager/
 ├─ backend/
 │  ├─ src/
@@ -113,8 +113,10 @@ SaaS-customer-manager/
 ```
 
 ## Ghi chú kỹ thuật
+
 - **Backend:** Node.js (Express)
 - **ORM:** Prisma với **Singleton pattern** (tránh tràn RAM khi khởi tạo nhiều PrismaClient):
+
   ```js
   // config/db.js
   const { PrismaClient } = require('@prisma/client');
@@ -132,6 +134,7 @@ SaaS-customer-manager/
   
   module.exports = prisma;
   ```
+
 - **DB:** MySQL trên AWS RDS (multi-tenant: mỗi row có `tenantId`)
 - **Frontend:** React + Vite + React Router + **Ant Design (AntD)**
 - **Messaging:**
@@ -139,7 +142,7 @@ SaaS-customer-manager/
   - **Email:** SendGrid SDK (`@sendgrid/mail` npm package)
 - **Deploy:**
   - **Backend:** Docker image → AWS ECS Fargate (hoặc EC2 + Docker Compose)
-  - **Frontend:** 
+  - **Frontend:**
     - **Cách 1 (đơn giản nhất):** Build static → S3 + CloudFront
     - **Cách 2:** Docker image (nginx serve) → ECS Fargate (nếu muốn đồng nhất deployment)
   - **Database:** AWS RDS MySQL
@@ -148,7 +151,9 @@ SaaS-customer-manager/
   - **SSL/TLS:** AWS Certificate Manager (ACM)
 
 ## Đề xuất deployment frontend (đơn giản)
+
 **Khuyến nghị:** S3 + CloudFront
+
 - Build React app thành static files (`npm run build`)
 - Upload lên S3 bucket (enable static website hosting)
 - CloudFront distribution trỏ tới S3 (cache, HTTPS)

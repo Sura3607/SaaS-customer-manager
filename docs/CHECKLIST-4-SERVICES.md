@@ -10,13 +10,15 @@
 ## 📋 GIAI ĐOẠN 1: Twilio Account Setup (Tuần 1)
 
 ### Create Twilio Account
-- [ ] Go to https://www.twilio.com/console
+
+- [ ] Go to <https://www.twilio.com/console>
 - [ ] Sign up with email address
 - [ ] Email verification required
 - [ ] Setup phone number (can use for testing)
 - [ ] Accept Twilio terms & conditions
 
 ### Twilio Project & Credentials
+
 - [ ] Go to Console Home
 - [ ] Create new Project (or use default):
   - [ ] Project name: `SaaS-Customer-Manager`
@@ -30,6 +32,7 @@
   - [ ] Setup complete
 
 ### Purchase Twilio Phone Number
+
 - [ ] Go to Phone Numbers > Manage > Buy a Number
   - [ ] Country: US (or your region)
   - [ ] Capabilities: SMS
@@ -40,6 +43,7 @@
 - [ ] Verify: Go back to Phone Numbers > Active Numbers, see your new number
 
 ### Setup Twilio Webhook for Status Callbacks
+
 - [ ] Go to Messaging > Settings > Webhook URLs
 - [ ] Add Status Callback URL:
   - [ ] URL: `https://api.example.com/api/v1/messages/twilio/webhook`
@@ -49,12 +53,14 @@
 - [ ] Note: Can't test locally until deployed, or use ngrok (see Giai đoạn 6)
 
 ### Test Twilio Setup
+
 - [ ] Go to Messaging > Try it out > Send an SMS
 - [ ] Send message to your phone number
 - [ ] Verify SMS received on phone
 - [ ] Check message logs in Twilio console
 
 ### Create Twilio API Key (Alternative to Auth Token)
+
 - [ ] Go to Account > API Keys > Create authentication token
 - [ ] Or generate new API Key (symmetric key)
 - [ ] Store securely (use this instead of Auth Token if preferred)
@@ -64,13 +70,15 @@
 ## 📋 GIAI ĐOẠN 2: SendGrid Account Setup (Tuần 1)
 
 ### Create SendGrid Account
-- [ ] Go to https://sendgrid.com/
+
+- [ ] Go to <https://sendgrid.com/>
 - [ ] Click "Sign up" (or login if existing account)
 - [ ] Email, password, company info
 - [ ] Verify email address (link in email)
 - [ ] Complete welcome wizard
 
 ### SendGrid Project & Credentials
+
 - [ ] Go to Settings > API Keys
 - [ ] Create new API Key:
   - [ ] Name: `SaaS-Customer-Manager-Backend`
@@ -82,6 +90,7 @@
 - [ ] Verify in SendGrid Subuser portal if using subusers
 
 ### Verify Sender Email Address (Sender Identity)
+
 - [ ] Go to Settings > Sender Authentication
 - [ ] Option 1: **Single Sender Verification** (for testing):
   - [ ] Click "Verify a Single Sender"
@@ -97,6 +106,7 @@
 - [ ] Confirmed sender: `noreply@saas.example.com`
 
 ### Setup SendGrid Webhook for Event Tracking
+
 - [ ] Go to Settings > Event Webhooks
 - [ ] URL: `https://api.example.com/api/v1/messages/sendgrid/webhook`
 - [ ] Method: HTTP POST
@@ -112,6 +122,7 @@
 - [ ] Note: Test locally with ngrok (see Giai đoạn 6)
 
 ### Test SendGrid Setup
+
 - [ ] Go to Mail Send > Send a Test Email
 - [ ] From: `noreply@saas.example.com`
 - [ ] To: Your real email (Gmail, Outlook, etc.)
@@ -120,6 +131,7 @@
 - [ ] Verify email received in inbox (check spam folder)
 
 ### SendGrid Email Templates (Optional)
+
 - [ ] Go to Dynamic Templates
 - [ ] Create template for customer notification emails
 - [ ] Use variables: {{customerName}}, {{messageContent}}
@@ -131,8 +143,10 @@
 ## 📋 GIAI ĐOẠN 3: Environment Variables & Configuration (Tuần 1)
 
 ### Document Required Environment Variables
+
 - [ ] Create `.env.example` in backend (shared with Backend dev):
-  ```
+
+  ```env
   # Twilio SMS
   TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxx
   TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -144,6 +158,7 @@
   ```
 
 ### Store in AWS Secrets Manager (for Production)
+
 - [ ] Create secret: `saas/twilio-account-sid` = `ACxxxxxxxxxxxxxxxxxxxxx`
 - [ ] Create secret: `saas/twilio-auth-token` = `xxxxxxxxxxxxxxxxxxxxxxxxxxxx`
 - [ ] Create secret: `saas/twilio-phone-number` = `+1 (555) 123-4567`
@@ -152,6 +167,7 @@
 - [ ] Reference in ECS Task Definition environment variables
 
 ### Local Development
+
 - [ ] Create `.env` in backend (from `.env.example`)
 - [ ] Fill with actual Twilio & SendGrid credentials
 - [ ] DON'T commit to Git (add to `.gitignore`)
@@ -161,6 +177,7 @@
 ## 📋 GIAI ĐOẠN 4: Twilio SDK Integration Testing (Tuần 2-3)
 
 ### Review Backend Twilio Service Code
+
 - [ ] Work with Backend dev to review `src/services/twilio.service.js`
 - [ ] Verify:
   - [ ] Twilio client initialized correctly
@@ -170,15 +187,18 @@
   - [ ] Error handling for invalid numbers, low credits
 
 ### Test Single SMS Send
+
 - [ ] Create test endpoint (temporary):
   - [ ] POST `/test/send-sms`
   - [ ] Body: `{ "phoneNumber": "+1...", "message": "Test SMS" }`
 - [ ] Call from Postman or cURL:
+
   ```bash
   curl -X POST http://localhost:5000/test/send-sms \
     -H "Content-Type: application/json" \
     -d '{"phoneNumber":"+1555123456","message":"Test from Twilio integration"}'
   ```
+
 - [ ] Expected response: `{ "messageId": "SMxxxxx", "status": "queued" }`
 - [ ] Check your phone for SMS received
 - [ ] Verify message time, content correct
@@ -189,36 +209,45 @@
   - [ ] Recipient: show your number
 
 ### Test Batch SMS Send
+
 - [ ] Create test endpoint:
   - [ ] POST `/test/send-sms-batch`
   - [ ] Body: `{ "phoneNumbers": [...], "message": "..." }`
 - [ ] Send to 3-5 phone numbers:
+
   ```bash
   curl -X POST http://localhost:5000/test/send-sms-batch \
     -H "Content-Type: application/json" \
     -d '{"phoneNumbers":["+1555111111","+1555222222","+1555333333"],"message":"Batch test"}'
   ```
+
 - [ ] Verify all SMS received
 - [ ] Check Twilio console > Messages:
   - [ ] All 3 messages listed
   - [ ] All "Delivered"
 
 ### Test Error Handling
+
 - [ ] Send SMS to invalid number:
+
   ```bash
   curl -X POST http://localhost:5000/test/send-sms \
     -H "Content-Type: application/json" \
     -d '{"phoneNumber":"invalid","message":"test"}'
   ```
+
 - [ ] Expected: `{ "error": "Invalid phone number", "statusCode": 400 }`
 - [ ] Backend logs should show error
 - [ ] Twilio console shouldn't show message attempt
 
 ### Test Webhook (Local with ngrok)
+
 - [ ] Setup ngrok (expose local server to internet):
+
   ```bash
   ngrok http 5000
   ```
+
 - [ ] Get ngrok URL: `https://abc1234.ngrok.io`
 - [ ] Update Twilio webhook setting:
   - [ ] Go to Messaging > Settings > Webhook URLs
@@ -232,7 +261,8 @@
   - [ ] `To`, `From` (recipients and sender)
 - [ ] Backend should update MessageLog in database
 - [ ] Check logs in backend console:
-  ```
+
+  ```plaintext
   📝 Webhook received from Twilio
   MessageSid: SMxxxxx
   Status: delivered
@@ -240,7 +270,9 @@
   ```
 
 ### Test Rate Limiting
+
 - [ ] Send 20 SMS in rapid succession:
+
   ```bash
   for i in {1..20}; do
     curl -X POST http://localhost:5000/api/v1/messages/sms \
@@ -249,6 +281,7 @@
       -d '{"customerId":"...", "content":"Message '$i'"}'
   done
   ```
+
 - [ ] Should hit rate limit (429 Too Many Requests) after ~10 requests
 - [ ] Response: `{ "error": "Too many requests, try again later" }`
 - [ ] Backend should log rate limit hit
@@ -258,6 +291,7 @@
 ## 📋 GIAI ĐOẠN 5: SendGrid SDK Integration Testing (Tuần 2-3)
 
 ### Review Backend SendGrid Service Code
+
 - [ ] Work with Backend dev to review `src/services/sendgrid.service.js`
 - [ ] Verify:
   - [ ] SendGrid client initialized correctly
@@ -267,10 +301,12 @@
   - [ ] Error handling for invalid emails, API errors
 
 ### Test Single Email Send
+
 - [ ] Create test endpoint:
   - [ ] POST `/test/send-email`
   - [ ] Body: `{ "toEmail": "...", "subject": "...", "content": "..." }`
 - [ ] Call from Postman:
+
   ```json
   POST http://localhost:5000/test/send-email
   {
@@ -279,6 +315,7 @@
     "content": "<h1>Hello</h1><p>This is a test email</p>"
   }
   ```
+
 - [ ] Expected response: `{ "messageId": "SGxxxxx", "status": "queued" }`
 - [ ] Check email inbox:
   - [ ] Email received
@@ -292,10 +329,12 @@
   - [ ] Subject shown
 
 ### Test Batch Email Send
+
 - [ ] Create test endpoint:
   - [ ] POST `/test/send-email-batch`
   - [ ] Body: `{ "emails": [...], "subject": "...", "content": "..." }`
 - [ ] Send to 3-5 different emails:
+
   ```json
   POST http://localhost:5000/test/send-email-batch
   {
@@ -304,13 +343,16 @@
     "content": "<p>This is a batch test</p>"
   }
   ```
+
 - [ ] Verify all 3 emails received in their respective inboxes
 - [ ] Check SendGrid console > Mail Activity:
   - [ ] All 3 emails listed
   - [ ] All "Delivered"
 
 ### Test Email with HTML Content
+
 - [ ] Send email with rich HTML:
+
   ```json
   {
     "toEmail": "yourname@gmail.com",
@@ -318,20 +360,25 @@
     "content": "<h2>Order Confirmation</h2><p>Your order #123 has been confirmed...</p><a href='https://example.com'>View Order</a>"
   }
   ```
+
 - [ ] Verify HTML renders properly in email client
 - [ ] Links are clickable
 
-### Test Error Handling
+### Test Email Error Handling
+
 - [ ] Send email to invalid email format:
+
   ```bash
   curl -X POST http://localhost:5000/test/send-email \
     -H "Content-Type: application/json" \
     -d '{"toEmail":"invalid-email","subject":"test","content":"test"}'
   ```
+
 - [ ] Expected: `{ "error": "Invalid email address", "statusCode": 400 }`
 - [ ] Backend logs should show validation error
 
 ### Test Webhook for Delivery Events
+
 - [ ] Setup ngrok for SendGrid webhook:
   - [ ] ngrok URL: `https://abc1234.ngrok.io`
   - [ ] Update SendGrid webhook (Settings > Event Webhooks):
@@ -347,7 +394,8 @@
   - [ ] Find corresponding MessageLog
   - [ ] Update status (Delivered, Opened, etc.)
 - [ ] Verify in backend logs:
-  ```
+
+  ```plaintext
   📝 SendGrid webhook received
   Event: delivered
   MessageId: SGxxxxx
@@ -356,6 +404,7 @@
   ```
 
 ### Test Event Tracking
+
 - [ ] Send email to yourself
 - [ ] Open email in client → webhook should fire "open" event
 - [ ] Backend logs: Status updated to "Opened"
@@ -366,6 +415,7 @@
 ## 📋 GIAI ĐOẠN 6: Integration Testing - Full Workflows (Tuần 3-4)
 
 ### Workflow 1: Create Customer → Send SMS → View Status
+
 - [ ] **Step 1: Register Tenant** (Frontend):
   - [ ] Frontend: Register new tenant
   - [ ] Backend: Create tenant in DB
@@ -399,6 +449,7 @@
   - [ ] Status now shows "Delivered" ✓
 
 ### Workflow 2: Batch Email to Multiple Customers
+
 - [ ] Create 3 customers with different emails
 - [ ] Frontend: Select all 3 in table
 - [ ] Frontend: Open Messaging > Email tab
@@ -410,6 +461,7 @@
 - [ ] Open one email: Webhook fires, status updates to "Delivered" ✓
 
 ### Workflow 3: Error Handling - Invalid Phone
+
 - [ ] Frontend: Create customer with invalid phone (e.g., "abc123")
 - [ ] Frontend: Try to send SMS
 - [ ] Backend: Validate phone format
@@ -419,6 +471,7 @@
 - [ ] Message NOT attempted on Twilio
 
 ### Workflow 4: Error Handling - Rate Limit
+
 - [ ] Frontend: Send 15 SMS in quick succession
 - [ ] 1-10: Success ✓
 - [ ] 11-15: Rate limit hit → 429 error ✓
@@ -430,12 +483,15 @@
 ## 📋 GIAI ĐOẠN 7: Load Testing (Tuần 4)
 
 ### Prepare Test Data
+
 - [ ] Create 100 test customers in database (bulk insert)
 - [ ] Generate 100 phone numbers (use Twilio trial numbers or similar)
 - [ ] Generate 50 test email addresses
 
 ### Load Test SMS Sending
+
 - [ ] Create test script:
+
   ```bash
   #!/bin/bash
   TOKEN=<jwt_token>
@@ -448,6 +504,7 @@
   done
   wait
   ```
+
 - [ ] Run test
 - [ ] Monitor backend:
   - [ ] Response time: < 500ms per request
@@ -460,6 +517,7 @@
   - [ ] Status updates received in CloudWatch logs
 
 ### Load Test Email Sending
+
 - [ ] Similar test for batch email
 - [ ] 50 concurrent email sends
 - [ ] Verify all received in respective inboxes
@@ -468,6 +526,7 @@
   - [ ] No bounce/reject
 
 ### Load Test Webhook Processing
+
 - [ ] Send 100 SMS
 - [ ] Simulate 100 webhook callbacks arriving in rapid succession
 - [ ] Backend should:
@@ -481,6 +540,7 @@
 ## 📋 GIAI ĐOẠN 8: Webhook Security & Verification (Tuần 4)
 
 ### Twilio Webhook Security
+
 - [ ] Backend should verify Twilio signature:
   - [ ] Use `twilio.validateRequest()` SDK method
   - [ ] Or manually HMAC-SHA1 verification
@@ -489,12 +549,14 @@
   - [ ] Should get 403 Forbidden
   - [ ] Not processed in database
 - [ ] Backend logs should show:
-  ```
+
+  ```plaintext
   🔒 Webhook signature verification failed
   Blocked webhook from invalid source
   ```
 
 ### SendGrid Webhook Security
+
 - [ ] Backend should verify SendGrid signature:
   - [ ] Extract timestamp from header
   - [ ] Extract signature from header
@@ -506,6 +568,7 @@
   - [ ] Logs show verification failed
 
 ### Webhook Timeout & Retry Logic
+
 - [ ] Simulate slow webhook processing:
   - [ ] Backend takes 30+ seconds to respond
   - [ ] Twilio/SendGrid should timeout & retry
@@ -520,6 +583,7 @@
 ## 📋 GIAI ĐOẠN 9: Monitoring & Alerting (Tuần 5)
 
 ### Create Twilio Monitoring Dashboard
+
 - [ ] Twilio console > Monitoring > Insights:
   - [ ] SMS volume: Daily/weekly/monthly
   - [ ] Success rate: % of messages delivered
@@ -530,6 +594,7 @@
   - [ ] Alert if cost > $50/month (or your threshold)
 
 ### Create SendGrid Monitoring Dashboard
+
 - [ ] SendGrid > Stats:
   - [ ] Email volume: Daily/weekly/monthly
   - [ ] Delivery rate: % delivered
@@ -540,6 +605,7 @@
   - [ ] Alert if delivery rate < 95%
 
 ### Application-Level Monitoring (CloudWatch)
+
 - [ ] Create CloudWatch dashboard:
   - [ ] Total SMS sent (counter)
   - [ ] Total emails sent (counter)
@@ -553,12 +619,15 @@
   - [ ] Webhook processing latency > 5 seconds → alert
 
 ### Log Analysis
+
 - [ ] Setup CloudWatch Insights query:
-  ```
+
+  ```plaintext
   fields @timestamp, providerId, messageId, status
   | filter provider = "twilio"
   | stats count() by status
   ```
+
 - [ ] Run weekly to check:
   - [ ] Distribution of message statuses
   - [ ] Any stuck messages (still pending)
@@ -569,6 +638,7 @@
 ## 📋 GIAI ĐOẠN 10: Documentation & Support (Tuần 5)
 
 ### Admin Setup Guide
+
 - [ ] How to create Twilio account:
   1. Go to twilio.com
   2. Sign up
@@ -585,20 +655,25 @@
 - [ ] Include troubleshooting: "If SMS not received, check..."
 
 ### API Integration Guide
+
 - [ ] How to send SMS via API:
+
   ```bash
   curl -X POST https://api.example.com/api/v1/messages/sms \
     -H "Authorization: Bearer <JWT_TOKEN>" \
     -H "Content-Type: application/json" \
     -d '{"customerId":"cust_123","content":"Hello!"}'
   ```
+
 - [ ] How to send email via API:
+
   ```bash
   curl -X POST https://api.example.com/api/v1/messages/email \
     -H "Authorization: Bearer <JWT_TOKEN>" \
     -H "Content-Type: application/json" \
     -d '{"customerId":"cust_123","subject":"Hello","content":"<p>Hello!</p>"}'
   ```
+
 - [ ] Error codes & meanings:
   - [ ] 400: Invalid input (bad phone/email)
   - [ ] 401: Unauthorized (no token)
@@ -607,6 +682,7 @@
 - [ ] Webhook payload examples
 
 ### Troubleshooting Guide
+
 - [ ] **SMS not received:**
   - [ ] Check phone number format (include country code)
   - [ ] Check Twilio phone number active
@@ -636,6 +712,7 @@
   - [ ] Consider upgrading Twilio/SendGrid plan
 
 ### Operational Runbook
+
 - [ ] How to respond to SMS/Email failures:
   1. Check CloudWatch alerts
   2. Check provider dashboards (Twilio/SendGrid)
@@ -654,6 +731,7 @@
 ## 📋 GIAI ĐOẠN 11: Production Readiness Checklist (Tuần 5-6)
 
 ### Cost Analysis
+
 - [ ] Estimate monthly costs:
   - [ ] **Twilio SMS:** $0.0075 per SMS × target volume
     - [ ] Example: 1000 SMS/day × 30 days = 30,000 SMS/month = $225
@@ -675,6 +753,7 @@
   - [ ] Consider backup providers (Vonage, AWS SNS) for failover
 
 ### Failover & Backup Plan
+
 - [ ] **SMS Backup:**
   - [ ] Primary: Twilio
   - [ ] Backup: AWS SNS or Vonage
@@ -692,6 +771,7 @@
   - [ ] Testing failover quarterly
 
 ### Compliance & Legal
+
 - [ ] **GDPR:**
   - [ ] Right to be forgotten: Customer deleted → stop SMS/Email
   - [ ] Backend: Implement cascade delete (when customer deleted, delete all messages)
@@ -715,6 +795,7 @@
   - [ ] Third-party service usage (Twilio, SendGrid)
 
 ### Testing Checklist (Final)
+
 - [ ] ✓ SMS sent successfully, delivered
 - [ ] ✓ Email sent successfully, delivered
 - [ ] ✓ Batch SMS works (100+ messages)
@@ -795,7 +876,7 @@
 ## 📅 WEEK-BY-WEEK BREAKDOWN
 
 | Week | Focus | Output | Sync Point |
-|------|-------|--------|-----------|
+| ------ | ------- | -------- | ----------- |
 | W1 | Twilio & SendGrid setup, credentials | Accounts active, credentials saved | Got all credentials? |
 | W2 | SMS integration testing | SMS send/receive working, webhooks configured | Backend SMS service ready? |
 | W3 | Email integration testing | Email send/receive working, webhooks configured | Backend Email service ready? |
@@ -808,6 +889,7 @@
 ## 🔗 INTEGRATION WITH OTHER CHECKLISTS
 
 ### With Backend Developer
+
 - [ ] Backend implements Twilio & SendGrid services
 - [ ] Backend creates webhooks for status updates
 - [ ] Backend exposes `/messages/sms` and `/messages/email` endpoints
@@ -816,6 +898,7 @@
 - [ ] Sync: Weekly (W2-4) to verify integration points
 
 ### With Frontend Developer
+
 - [ ] Frontend displays message sending UI
 - [ ] Frontend shows error messages when SMS/Email fails
 - [ ] Frontend displays message logs with status
@@ -823,6 +906,7 @@
 - [ ] Sync: Monthly check that UI reflects API responses
 
 ### With DevOps Engineer
+
 - [ ] DevOps adds AWS Secrets Manager for API keys
 - [ ] DevOps configures ECS environment variables
 - [ ] DevOps sets up CloudWatch metrics for SMS/Email volume
@@ -833,9 +917,8 @@
 
 ## 📚 ADDITIONAL RESOURCES
 
-- **Twilio Documentation:** https://www.twilio.com/docs/sms
-- **SendGrid Documentation:** https://docs.sendgrid.com/
-- **Twilio Node.js SDK:** https://github.com/twilio/twilio-node
-- **SendGrid Node.js SDK:** https://github.com/sendgrid/sendgrid-nodejs
+- **Twilio Documentation:** <https://www.twilio.com/docs/sms>
+- **SendGrid Documentation:** <https://docs.sendgrid.com/>
+- **Twilio Node.js SDK:** <https://github.com/twilio/twilio-node>
+- **SendGrid Node.js SDK:** <https://github.com/sendgrid/sendgrid-nodejs>
 - **Webhook Security Best Practices:** OWASP Webhooks Security
-

@@ -22,6 +22,7 @@ Welcome to the SaaS Customer Manager platform! This guide will help you navigate
 ## Getting Started
 
 The SaaS Manager is a multi-tenant customer communication platform that lets you:
+
 - ✉️ Send SMS and Email campaigns to your customers
 - 📊 Track message delivery and engagement
 - 👥 Manage customer contacts and information
@@ -34,6 +35,7 @@ The SaaS Manager is a multi-tenant customer communication platform that lets you
 ## Landing Page
 
 ### 📍 Location
+
 **URL:** `/` (Home)
 
 ### 🎨 What You See
@@ -41,6 +43,7 @@ The SaaS Manager is a multi-tenant customer communication platform that lets you
 The landing page welcomes new visitors and introduces the platform's key features.
 
 #### **Navigation Section**
+
 - **Logo:** "SaaS Manager" in top-left corner
 - **Login Button:** (top-right) For existing users
   - *Click here* if you already have an account
@@ -48,6 +51,7 @@ The landing page welcomes new visitors and introduces the platform's key feature
   - *Click here* to create a new account
 
 #### **Hero Section**
+
 - **Headline:** "Build seamless communication experiences"
 - **Description:** Overview of the platform's multi-tenant CRM capabilities
 - **CTA Buttons:**
@@ -55,7 +59,9 @@ The landing page welcomes new visitors and introduces the platform's key feature
   - **View Documentation** (text link) → Opens documentation
 
 #### **Trusted Partners Section**
+
 Shows logos of companies using the platform:
+
 - ACME
 - BlastOff
 - DevCorp
@@ -63,6 +69,7 @@ Shows logos of companies using the platform:
 - Energy
 
 #### **Features Section**
+
 Three main features showcased:
 
 1. **Multi-tenant Isolation**
@@ -81,6 +88,7 @@ Three main features showcased:
    - CTA: "Start Sending"
 
 #### **Developer Signup Section**
+
 - **Headline:** "Ready to scale your communications?"
 - **Email Subscription Box:** Enter email and click "Subscribe"
 - **Info Cards:**
@@ -88,15 +96,18 @@ Three main features showcased:
   - Enterprise Security (shield icon)
 
 #### **Footer**
+
 - Links: Privacy Policy | Terms of Service | Cookie Policy
 - Copyright: © 2026 ConnectSaaS Inc. All rights reserved
 
 ### 🎬 Actions
+
 | Button/Link | Where It Goes | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | Get Started | Registration page | Create new account |
 | Already have an account? | Login page | Sign in with credentials |
-| Learn more | Documentation | Read about multi-tenant | | View API Docs | API documentation | SMS integration details |
+| Learn more | Documentation | Read about multi-tenant |
+| View API Docs | API documentation | SMS integration details |
 | Start Sending | Email setup | Email campaign setup |
 
 ---
@@ -107,7 +118,8 @@ Three main features showcased:
 
 **URL:** `/login`
 
-#### Form Fields
+#### Form Fields (Registration)
+
 1. **Organization** (Workspace dropdown)
    - Required: No (optional)
    - Purpose: Select which tenant environment to access
@@ -115,7 +127,7 @@ Three main features showcased:
 
 2. **Email Address**
    - Required: Yes ✓
-   - Format: Valid email (e.g., john@company.com)
+   - Format: Valid email (e.g., <john@company.com>)
    - Icon: Mail icon
 
 3. **Password**
@@ -125,14 +137,17 @@ Three main features showcased:
    - Note: Password is masked with dots
 
 #### Helpful Links
+
 - **Forgot password?** → Password reset flow (top-right of password field)
 - **Don't have an account?** → Registration page (bottom)
 
-#### Buttons
+#### Buttons (Registration)
+
 - **Sign In** (blue button) → Login to dashboard
 - **Security Badge:** Shows "Secure login with JWT" authentication
 
-#### Footer
+#### Footer (Registration)
+
 Links to: Terms | Privacy | Status | Help
 
 ### 📝 Registration Page (Tenant Registration)
@@ -140,8 +155,9 @@ Links to: Terms | Privacy | Status | Help
 **URL:** `/register`
 
 #### Header
+
 - **Organization Name:** "SaaS Manager"
-- **Links:** 
+- **Links:**
   - "Already have an account?" (gray text)
   - "Sign In" (blue button)
 
@@ -159,7 +175,7 @@ Links to: Terms | Privacy | Status | Help
 3. **Email Address**
    - Required: Yes ✓
    - Format: Valid email
-   - Example: "john@company.com"
+   - Example: "<john@company.com>"
 
 4. **Password**
    - Required: Yes ✓
@@ -176,19 +192,23 @@ Links to: Terms | Privacy | Status | Help
    - Example: "123-456-7890"
 
 #### Buttons
+
 - **Create Account** (blue button with arrow) → Creates tenant and redirects to login
 
 #### Agreement
+
 - Must agree to Terms of Service and Privacy Policy before registering
 - Links are clickable in blue
 
 #### Footer
+
 - Links to: Terms | Privacy | Status | Help
 - Copyright notice
 
 ### ✅ Registration Validation
 
 The system checks:
+
 - Email format is valid
 - Passwords are at least 8 characters
 - Passwords match
@@ -204,12 +224,14 @@ The system checks:
 ### 🎯 Main Features
 
 #### **Header**
+
 - **Tenant Selector:** Dropdown showing current organization
   - Change which organization you're viewing
 - **Search Bar:** Search across messages and data
 - **Bell Icon:** Notifications
 
 #### **Statistics Section (Top Cards)**
+
 Four metric cards showing:
 
 1. **SMS Sent**
@@ -229,6 +251,7 @@ Four metric cards showing:
    - Calculated as (successful / total) × 100
 
 #### **Messaging Volume Chart**
+
 - **Type:** Line chart
 - **X-axis:** Time periods (days/weeks)
 - **Y-axis:** Message count
@@ -236,16 +259,18 @@ Four metric cards showing:
 - **Interaction:** Hover to see exact values
 
 #### **Message Status Circle**
+
 - **Display:** Circular progress indicator (92%)
 - **Color:** Blue gradient
 - **Meaning:** 92% of messages delivered successfully
 - **Impact:** Shows platform reliability
 
 #### **Recent Activity Table**
+
 Shows latest messages sent:
 
 | Column | Details |
-|--------|---------|
+| -------- | ------ |
 | **RECIPIENT** | Customer name/number (shows avatar) |
 | **CHANNEL** | SMS or Email (icon shows type) |
 | **STATUS** | ✓ Delivered, ⏳ Pending, ✗ Failed |
@@ -253,11 +278,13 @@ Shows latest messages sent:
 | **ACTION** | View details or retry |
 
 **Dark Table Styling:**
+
 - Background: Dark gray (#1a1f2e)
 - Hover: Lighter shade (#232b3d)
 - Text: White for readability
 
 #### **Navigation from Dashboard**
+
 - **View All Messages** → Redirects to `/messaging-history`
 - Use sidebar to access other sections
 
@@ -270,11 +297,13 @@ Shows latest messages sent:
 **URL:** `/messaging`
 
 #### **Fixed Header** (stays visible when scrolling)
+
 - **Tenant Selector:** Change organization
 - **Search Bar:** Find specific messages
 - **Bell Icon:** Notifications
 
-#### **Fixed Toolbar** (below header)
+#### **Fixed Toolbar** (Logs Page, below header)
+
 Five action buttons:
 
 1. **+ New Campaign** (blue button)
@@ -298,6 +327,7 @@ Five action buttons:
 #### **Message Composition Area**
 
 **Tabs at top:**
+
 - **SMS Tab** (Twilio)
   - Send via SMS/text message
   - Uses Twilio integration
@@ -308,20 +338,21 @@ Five action buttons:
 ##### **SMS Compose Form**
 
 | Field | Type | Required | Notes |
-|-------|------|----------|-------|
+| -------- | ------ | -------- | ----------- |
 | **Recipient(s)** | Text/Phone | Yes | Phone number(s) with country code |
 | **Message** | Textarea | Yes | SMS text (160 char limit displayed) |
 | **Schedule** | DateTime | No | Send now or schedule for later |
 | **Template** | Dropdown | No | Select pre-built templates |
 
 **Buttons:**
+
 - **Send Now** (blue) → Send immediately
 - **Schedule** → Save for later delivery
 
 ##### **Email Compose Form**
 
 | Field | Type | Required | Notes |
-|-------|------|----------|-------|
+| -------- | ------ | -------- | ----------- |
 | **To** | Email | Yes | Recipient email address(es) |
 | **Subject** | Text | Yes | Email subject line |
 | **Body** | Textarea | Yes | Email content (supports HTML) |
@@ -332,6 +363,7 @@ Five action buttons:
 | **Attachments** | File upload | No | Attach files to email |
 
 **Buttons:**
+
 - **Send Now** (blue) → Send immediately
 - **Save Draft** → Save for later
 
@@ -340,6 +372,7 @@ Five action buttons:
 **Triggered by:** Clicking **+ New Campaign** button
 
 **Modal Contents:**
+
 - Title: "Create New Campaign"
 - Two tab options:
   - **SMS** - Full SMS form (see SMS section above)
@@ -354,9 +387,11 @@ Five action buttons:
 **URL:** `/messaging-history`
 
 #### **Purpose**
+
 View all messages sent through the system with full CRUD operations.
 
 #### **Fixed Header** (stays visible)
+
 - **Tenant Selector**
 - **Search Bar:** Quick search by recipient or content
 - **Bell Icon:** Notifications
@@ -390,7 +425,7 @@ Five CRUD buttons:
 Columns display in order:
 
 | Column | Shows | Example |
-|--------|-------|---------|
+| -------- | ------ | -------- |
 | **RECIPIENT** | Customer info + avatar | JD avatar + "John Doe" |
 | **CHANNEL** | Message type | SMS icon or Email icon |
 | **STATUS** | Delivery status | ✓ Delivered (green) |
@@ -398,6 +433,7 @@ Columns display in order:
 | **ACTION** | Quick buttons | View / Edit / Delete |
 
 #### **Status Values**
+
 - ✓ **Delivered** - Successfully sent and confirmed
 - ⏳ **Pending** - Waiting to send (scheduled)
 - ⚠️ **Failed** - Delivery failed, error details available
@@ -408,6 +444,7 @@ Columns display in order:
 **Opens when:** Click "View" or row to expand
 
 **Shows:**
+
 - Full message content
 - Recipient information
 - Delivery status with timestamp
@@ -420,12 +457,14 @@ Columns display in order:
 #### **Search & Filter**
 
 **Search Bar:**
+
 - Search by recipient name/number
 - Search by email subject
 - Search by message content
 - Real-time filter as you type
 
 **Optional Filters (if implemented):**
+
 - By Status (Delivered, Pending, Failed)
 - By Channel (SMS, Email)
 - By Date Range
@@ -449,7 +488,7 @@ Columns display in order:
 ### Table Layout
 
 | Column | Purpose |
-|--------|---------|
+| -------- | ------ |
 | **Name** | Customer full name |
 | **Email** | Contact email address |
 | **Phone** | Phone number for SMS |
@@ -502,6 +541,7 @@ Manage and monitor all marketing/communication campaigns.
 Typical settings include:
 
 #### **Account Settings**
+
 - Organization name
 - Organization logo
 - Contact information
@@ -509,23 +549,27 @@ Typical settings include:
 - Language preference
 
 #### **Communication Settings**
+
 - Default SMS sender (if using Twilio)
 - Email from address (SendGrid)
 - Reply-to address
 - Unsubscribe preferences
 
 #### **API Keys & Integration**
+
 - Twilio API credentials
 - SendGrid API token
 - Webhook endpoints
 - API documentation
 
 #### **User Management**
+
 - Team members
 - User roles and permissions
 - Invoice/billing (if applicable)
 
 #### **Security**
+
 - Password policy
 - Two-factor authentication
 - API key rotation
@@ -540,6 +584,7 @@ Typical settings include:
 Accessible on all protected pages (after login).
 
 #### **Logo Section** (Top)
+
 - **Icon + Text:** "SaaS Manager"
 - **Position:** Top-left corner
 - **Color:** White text on dark background
@@ -573,14 +618,16 @@ Accessible on all protected pages (after login).
    - Features: API keys, user management, security
 
 #### **User Profile Section** (Bottom)
+
 - **Avatar:** Colored circle with user initial
   - Example: "JD" for John Doe
 - **Username:** First part of email
-  - Example: "john" from john@company.com
+  - Example: "john" from <john@company.com>
 - **Plan Type:** Subscription level (e.g., "PREMIUM PLAN")
 - **Interaction:** Click to logout or access profile
 
 #### **Visual Indicators**
+
 - **Active Menu Item:** Highlighted in blue
   - Shows which page you're currently on
   - Left border accent on active item
@@ -588,6 +635,7 @@ Accessible on all protected pages (after login).
 - **Icons:** Visual indicators for each section
 
 #### **Sidebar Toggle**
+
 - **Collapse Button:** Double arrow (<<) to minimize
   - Shows only icons when collapsed
   - Tooltips appear on hover
@@ -602,7 +650,7 @@ Accessible on all protected pages (after login).
 The entire application uses a cohesive dark theme:
 
 | Element | Color | Usage |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | **Main Background** | #0d101b | Page backgrounds |
 | **Card Background** | #1a1f2e | Sidebar, cards, modals |
 | **Secondary Bg** | #232b3d | Hover states, nested elements |
@@ -622,6 +670,7 @@ The entire application uses a cohesive dark theme:
 ### 🎨 Interactive Elements
 
 #### **Forms & Inputs**
+
 - **Input Background:** Dark gray (#1a1f2e)
 - **Input Border:** Subtle (#2a3142)
 - **Input Text:** White
@@ -630,6 +679,7 @@ The entire application uses a cohesive dark theme:
 - **Filled:** Blue highlight to show completion
 
 #### **Tables**
+
 - **Header Row:** Dark background, white text, bold
 - **Data Rows:** Alternating dark shades for readability
 - **Hover:** Slightly lighter shade to show selection
@@ -637,6 +687,7 @@ The entire application uses a cohesive dark theme:
 - **Text:** White on dark for maximum contrast
 
 #### **Buttons**
+
 - **Primary (Blue):** #1f73f9, white text
   - Used for main actions (Send, Create, etc.)
 - **Secondary (Text):** Gray text, no background
@@ -645,12 +696,14 @@ The entire application uses a cohesive dark theme:
   - With confirmation dialog
 
 #### **Tooltips & Popovers**
+
 - **Background:** Dark gray with slight transparency
 - **Text:** White
 - **Border:** Subtle blue or gray
 - **Position:** Auto-positioned to avoid overflow
 
 #### **Modals & Dialogs**
+
 - **Background:** Dark background with overlay
 - **Content Area:** Card-style with dark background
 - **Header:** Bold white text, small cap labels
@@ -669,7 +722,7 @@ The entire application uses a cohesive dark theme:
 
 ## 🎓 Quick Navigation Map
 
-```
+```plaintext
 ┌─────────────────────────────────────────────────┐
 │  Landing Page (/) - Everyone can access        │
 │  ├─ Get Started → Register page                │
@@ -727,6 +780,7 @@ The entire application uses a cohesive dark theme:
 ## 💡 Tips & Best Practices
 
 ### ✅ Do's
+
 - ✓ Use descriptive campaign names for easy identification
 - ✓ Schedule messages during business hours for better engagement
 - ✓ Test SMS/Email on sample contacts before bulk send
@@ -736,6 +790,7 @@ The entire application uses a cohesive dark theme:
 - ✓ Use search functionality to find specific messages
 
 ### ❌ Don'ts
+
 - ✗ Don't send messages without proper recipient list
 - ✗ Don't exceed SMS character limit (160 chars) without awareness
 - ✗ Don't share API keys in public repositories
@@ -762,21 +817,24 @@ The entire application uses a cohesive dark theme:
 1. **In-App Help:** Look for "Help" links in footer
 2. **Documentation:** Click "View Documentation" on landing page
 3. **API Docs:** Available in Settings page
-4. **Email Support:** support@connectsaas.com (for Enterprise plan)
+4. **Email Support:** <support@connectsaas.com> (for Enterprise plan)
 
 ### Common Issues
 
 **Forgot Password?**
+
 - Click "Forgot password?" on login page
 - Receive reset link via email
 - Follow reset instructions
 
 **Can't Find Contact?**
+
 - Use search bar to find by name/email
 - Check if contact was imported correctly
 - Verify organization/tenant selection
 
 **Message Failed to Send?**
+
 - Check recipient format (valid number/email)
 - Verify API keys are configured
 - Check account balance/limits
@@ -787,17 +845,20 @@ The entire application uses a cohesive dark theme:
 ## 📊 Data Formats
 
 ### SMS/Phone Numbers
+
 - Format: International format recommended
 - Example: +1 (555) 123-4567
 - Twilio validates automatically
 
 ### Email Addresses
+
 - Format: Standard email format
-- Example: john.doe@company.com
+- Example: <john.doe@company.com>
 - Must be valid and accessible
 
 ### CSV Import (Contacts)
-```
+
+```csv
 Name, Email, Phone
 John Doe, john@company.com, +1-555-1234
 Jane Smith, jane@company.com, +1-555-5678
