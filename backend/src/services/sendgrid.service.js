@@ -11,15 +11,15 @@ const logger = require('../utils/logger');
 /* ───── Event mapping ───── */
 
 const SENDGRID_EVENT_MAP = {
-  processed: 'PENDING',
-  delivered: 'DELIVERED',
-  open: 'DELIVERED',
-  click: 'DELIVERED',
-  bounce: 'BOUNCED',
-  dropped: 'FAILED',
-  deferred: 'PENDING',
-  spamreport: 'FAILED',
-  unsubscribe: 'FAILED',
+  processed: 'SENT',          // SendGrid đã nhận, đang gửi
+  delivered: 'DELIVERED',     // Đã vào inbox
+  open: 'OPENED',             // Khách đã mở
+  click: 'CLICKED',           // Khách đã bấm link
+  bounce: 'BOUNCED',          // Sai email, hòm thư đầy...
+  dropped: 'FAILED',          // SendGrid từ chối gửi
+  deferred: 'PENDING',        // Tạm hoãn, sẽ thử gửi lại
+  spamreport: 'SPAM',         // Bị báo cáo spam
+  unsubscribe: 'UNSUBSCRIBED',// Hủy nhận thư
 };
 
 /**

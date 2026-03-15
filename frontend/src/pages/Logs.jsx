@@ -128,10 +128,15 @@ const Logs = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      pending: 'processing',
-      sent: 'default',
-      delivered: 'success',
-      failed: 'error',
+      pending: 'processing',   // Xanh dương nhạt (đang xử lý)
+      sent: 'default',         // Xám
+      delivered: 'success',    // Xanh lá
+      opened: 'cyan',          // Xanh lơ (mở thư)
+      clicked: 'geekblue',     // Xanh đậm (bấm link)
+      bounced: 'warning',      // Vàng cam (bị dội lại)
+      failed: 'error',         // Đỏ (lỗi hệ thống)
+      spam: 'volcano',         // Đỏ cam (bị báo cáo spam)
+      unsubscribed: 'magenta', // Tím hồng (hủy đăng ký)
     }
     return colors[status?.toLowerCase()] || 'default'
   }
@@ -363,7 +368,12 @@ const Logs = () => {
                     { label: 'Pending', value: 'pending' },
                     { label: 'Sent', value: 'sent' },
                     { label: 'Delivered', value: 'delivered' },
+                    { label: 'Opened', value: 'opened' },
+                    { label: 'Clicked', value: 'clicked' },
+                    { label: 'Bounced', value: 'bounced' },
                     { label: 'Failed', value: 'failed' },
+                    { label: 'Spam Reported', value: 'spam' },
+                    { label: 'Unsubscribed', value: 'unsubscribed' },
                   ]}
                   suffixIcon={<DownOutlined />}
                 />
