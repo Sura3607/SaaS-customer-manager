@@ -22,13 +22,13 @@ export default function Login() {
   const onFinish = async (values) => {
     setLoading(true)
     try {
-      const { tenants: list } = await login({ email: values.email, password: values.password })
+      const { user, tenants: list } = await login({ email: values.email, password: values.password })
       if (!list || list.length === 0) {
         message.error('Your account has no organization. Please register first.')
         return
       }
       if (list.length === 1) {
-        await handleSelectTenant(list[0].id)
+        await handleSelectTenant(list[0].id, user)
         return
       }
       setTenants(list)
@@ -48,10 +48,10 @@ export default function Login() {
     }
   }
 
-  const handleSelectTenant = async (tenantId) => {
+  const handleSelectTenant = async (tenantId, authUser = null) => {
     setSelectingTenantId(tenantId)
     try {
-      await selectTenant(tenantId)
+      await selectTenant(tenantId, { user: authUser })
       message.success('Logged in successfully')
       setTenantModalOpen(false)
       navigate('/dashboard')
