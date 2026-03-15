@@ -3,6 +3,7 @@
 Hệ thống SaaS quản lý liên hệ khách hàng và gửi SMS/Email qua Twilio & SendGrid, triển khai trên AWS.
 
 ## Tính năng chính
+
 - ✅ Multi-tenant (nhiều tổ chức độc lập)
 - ✅ CRUD khách hàng (Họ tên, Địa chỉ, SĐT, Email)
 - ✅ Gửi SMS qua Twilio
@@ -14,6 +15,7 @@ Hệ thống SaaS quản lý liên hệ khách hàng và gửi SMS/Email qua Twi
 ## Tech Stack
 
 ### Backend
+
 - **Runtime:** Node.js
 - **Framework:** Express
 - **ORM:** Prisma (Singleton pattern)
@@ -23,12 +25,14 @@ Hệ thống SaaS quản lý liên hệ khách hàng và gửi SMS/Email qua Twi
 - **Auth:** JWT
 
 ### Frontend
+
 - **Framework:** React + Vite
 - **Routing:** React Router
 - **UI Library:** Ant Design (AntD)
 - **HTTP Client:** Axios
 
 ### AWS Services
+
 - **Compute:** ECS Fargate (backend Docker)
 - **Storage:** S3 + CloudFront (frontend static)
 - **Database:** RDS MySQL
@@ -37,7 +41,8 @@ Hệ thống SaaS quản lý liên hệ khách hàng và gửi SMS/Email qua Twi
 - **SSL/TLS:** AWS Certificate Manager
 
 ## Cấu trúc dự án
-```
+
+```text
 SaaS-customer-manager/
 ├── backend/          # Node.js + Express + Prisma
 ├── frontend/         # React + Vite + AntD
@@ -47,13 +52,15 @@ SaaS-customer-manager/
 ```
 
 ## Tài liệu chi tiết
+
 - [Kế hoạch dự án (plan.md)](plan.md) - Phân tích yêu cầu, các giai đoạn, checklist
 - [API Endpoints (endpoints.md)](endpoints.md) - Danh sách đầy đủ các endpoint
 - [Cấu trúc dự án (project-structure.md)](project-structure.md) - Folder structure, tech notes
 
 ## Quick Start (Development)
 
-### Backend
+### Backend Setup
+
 ```bash
 cd backend
 npm install
@@ -63,7 +70,8 @@ npx prisma migrate dev
 npm run dev
 ```
 
-### Frontend
+### Frontend Setup
+
 ```bash
 cd frontend
 npm install
@@ -72,12 +80,15 @@ npm run dev
 ```
 
 ### Docker (Local)
+
 ```bash
 docker-compose up
 ```
 
 ## Deployment
+
 Xem chi tiết trong [docs/deployment.md](docs/deployment.md)
 
 ## License
+
 MIT License
