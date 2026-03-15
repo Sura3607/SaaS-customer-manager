@@ -11,7 +11,7 @@
 ### 4 Vai Trò Độc Lập
 
 | # | Vai Trò | File | Công Nghệ | Đầu Ra |
-|---|---------|------|-----------|---------|
+| --- | --------- | ------ | ----------- | --------- |
 | **1** | Frontend Developer | [CHECKLIST-1-FRONTEND.md](CHECKLIST-1-FRONTEND.md) | React, Vite, AntD | Web UI hoàn chỉnh |
 | **2** | Backend Developer | [CHECKLIST-2-BACKEND.md](CHECKLIST-2-BACKEND.md) | Node.js, Express, Prisma | RESTful API |
 | **3** | DevOps Engineer | [CHECKLIST-3-DEVOPS.md](CHECKLIST-3-DEVOPS.md) | Docker, AWS (ECS, RDS, S3) | Cloud Infrastructure |
@@ -26,6 +26,7 @@
 **🎨 Tập Trung Vào:** User Interface & Experience
 
 #### Giai Đoạn Chính (15 giai đoạn)
+
 1. **Chuẩn bị & Thiết lập** - Setup Vite, AntD, thư mục cấu trúc
 2. **Authentication & Context** - AuthContext, JWT persistence
 3. **Trang Public** - Tenant Registration, Login
@@ -43,11 +44,13 @@
 15. **Integration Testing** - Test với Backend
 
 #### Số Lượng Tasks
+
 - **Tổng tasks:** ~140 tasks
 - **Giai đoạn dài nhất:** Giai đoạn 6-9 (UI pages)
 - **Phần trăm:** ~25% của tổng công việc
 
 #### Đặc Điểm
+
 - ✅ Không liên quan trực tiếp đến database
 - ✅ Chủ yếu là UI/UX implementation
 - ✅ Phụ thuộc vào Backend API specs
@@ -55,6 +58,7 @@
 - ✅ Có thể làm song song với Backend từ W2 trở đi
 
 #### Điểm Rủi Ro
+
 - ❌ Nếu Backend API không ready → Frontend bị block (phụ thuộc)
 - ❌ CORS issues nếu Backend không cấu hình đúng
 - ❌ Token refresh flow phức tạp
@@ -66,7 +70,8 @@
 
 **⚙️ Tập Trung Vào:** API & Business Logic
 
-#### Giai Đoạn Chính (15 giai đoạn)
+#### Giai Đoạn Chính - Backend (15 giai đoạn)
+
 1. **Chuẩn bị & Thiết lập** - Node.js, Express, dependencies
 2. **Database Schema & Prisma** - Design, migrations
 3. **Express App & Middleware** - App setup, middlewares
@@ -83,19 +88,22 @@
 14. **Health Check & Monitoring** - Health endpoint
 15. **Docker & Environment** - Dockerfile, env setup
 
-#### Số Lượng Tasks
+#### Số Lượng Tasks - Backend
+
 - **Tổng tasks:** ~150 tasks
 - **Giai đoạn dài nhất:** Giai đoạn 5-12 (API endpoints, integrations)
 - **Phần trăm:** ~27% của tổng công việc
 
-#### Đặc Điểm
+#### Đặc Điểm - Backend
+
 - ✅ Critical path (Frontend phụ thuộc vào Backend)
 - ✅ Phức tạp nhất (14 endpoints, 2 external services)
 - ✅ Cần database connection (RDS từ W2)
 - ✅ Multi-tenant isolation phải đúng (bảo mật)
 - ✅ External service integration từ W3 trở đi
 
-#### Điểm Rủi Ro
+#### Điểm Rủi Ro - Backend
+
 - ❌ Database schema wrong → khó fix sau
 - ❌ Multi-tenant isolation leak → bảo mật (critical)
 - ❌ Twilio/SendGrid integration delay → block Frontend testing
@@ -109,6 +117,7 @@
 **☁️ Tập Trung Vào:** Cloud Setup & Deployment
 
 #### Giai Đoạn Chính (14 giai đoạn)
+
 1. **Docker Local Dev** - docker-compose, Dockerfiles
 2. **AWS Account & IAM** - AWS setup, user creation
 3. **Network Setup** - VPC, Security Groups
@@ -124,19 +133,22 @@
 13. **Infrastructure as Code** - CloudFormation/Terraform (optional)
 14. **Documentation** - Runbooks, architecture diagram
 
-#### Số Lượng Tasks
+#### Số Lượng Tasks - DevOps
+
 - **Tổng tasks:** ~130 tasks
 - **Giai đoạn dài nhất:** Giai đoạn 3-9 (AWS setup)
 - **Phần trăm:** ~23% của tổng công việc
 
-#### Đặc Điểm
+#### Đặc Điểm - DevOps
+
 - ✅ Không phụ thuộc vào code (độc lập)
 - ✅ Prerequisite cho deployment (W3+ cần infra)
 - ✅ Có thể parallelized (setup AWS độc lập)
 - ✅ Testing phụ thuộc vào Backend/Frontend binary
 - ✅ Monitoring quan trọng để catch issues sớm
 
-#### Điểm Rủi Ro
+#### Điểm Rủi Ro - DevOps
+
 - ❌ AWS costs overage (cần budget alerts)
 - ❌ Security groups config wrong → can't connect
 - ❌ RDS not accessible from ECS → all fails
@@ -150,6 +162,7 @@
 **📱 Tập Trung Vào:** SMS/Email Integration
 
 #### Giai Đoạn Chính (11 giai đoạn)
+
 1. **Twilio Account Setup** - Create account, phone number, credentials
 2. **SendGrid Account Setup** - Create account, verify email, credentials
 3. **Environment Variables** - Config secrets
@@ -162,19 +175,22 @@
 10. **Documentation & Support** - Setup guide, troubleshooting
 11. **Production Readiness** - Cost, failover, compliance
 
-#### Số Lượng Tasks
+#### Số Lượng Tasks - Services
+
 - **Tổng tasks:** ~110 tasks
 - **Giai đoạn dài nhất:** Giai đoạn 4-6 (SDK testing)
 - **Phần trăm:** ~20% của tổng công việc
 
-#### Đặc Điểm
+#### Đặc Điểm - Services
+
 - ✅ Phụ thuộc vào Backend implementation
 - ✅ Testing requires real credentials (not free)
 - ✅ Webhook testing cần ngrok (local) hoặc deployed (staging)
 - ✅ Critical cho core feature (SMS/Email)
 - ✅ Ongoing cost (Twilio, SendGrid charges)
 
-#### Điểm Rủi Ro
+#### Điểm Rủi Ro - Services
+
 - ❌ Twilio/SendGrid credentials leak → abuse (charge $$$)
 - ❌ Webhook signature verification wrong → accept spoofed webhooks
 - ❌ Rate limiting not tested → spam expensive messages
@@ -187,18 +203,20 @@
 
 ### Who Depends on Whom?
 
-```
+```plaintext
 Frontend ← Backend ← DevOps
   ↓         ↓         ↓
   └─────────Services──────┘
 ```
 
 **Frontend Developer:**
+
 - ⏳ Waits for: Backend API ready
 - 🚫 Blocks: Nothing (can mock API locally)
 - 📅 Can start: W1 (with mocked Backend)
 
 **Backend Developer:**
+
 - ⏳ Waits for: DevOps RDS setup (W2)
 - ⏳ Waits for: Services credentials (W1)
 - 🚫 Blocks: Frontend (W2+)
@@ -206,12 +224,14 @@ Frontend ← Backend ← DevOps
 - 📅 Can start: W1 (design, schema, local dev)
 
 **DevOps Engineer:**
+
 - ⏳ Waits for: Dockerfiles from Backend/Frontend
 - 🚫 Blocks: Production deployment (W4+)
 - 🚫 Blocks: Monitoring setup (W4+)
 - 📅 Can start: W1 (AWS setup, local docker-compose)
 
 **Services Engineer:**
+
 - ⏳ Waits for: Backend webhook implementation
 - ⏳ Waits for: DevOps webhook URL from ALB
 - 🚫 Blocks: Nothing (can test locally)
@@ -224,7 +244,7 @@ Frontend ← Backend ← DevOps
 ### W1: Setup & Preparation
 
 | Person | Task | Status | Output |
-|--------|------|--------|--------|
+| -------- | ------ | -------- | -------- |
 | **Frontend** | React setup, AntD config | ✅ Independent | Project ready |
 | **Backend** | Node setup, DB schema | ✅ Independent | Schema designed |
 | **DevOps** | AWS IAM, Local docker-compose | ✅ Independent | Local env working |
@@ -237,7 +257,7 @@ Frontend ← Backend ← DevOps
 ### W2: Core Development
 
 | Person | Task | Status | Depends On |
-|--------|------|--------|-----------|
+| -------- | ------ | -------- | ----------- |
 | **Frontend** | Auth pages, Dashboard | ⏳ Waiting | Backend auth endpoints |
 | **Backend** | Auth endpoints, Customers CRUD | ✅ Can work | RDS now available |
 | **DevOps** | RDS live, push to ECR | ✅ Can work | Backend Dockerfile |
@@ -250,13 +270,14 @@ Frontend ← Backend ← DevOps
 ### W3: Features & Integration
 
 | Person | Task | Status | Depends On |
-|--------|------|--------|-----------|
+| -------- | ------ | -------- | ----------- |
 | **Frontend** | Customers, Messaging UI | ✅ Can work | Backend endpoints |
 | **Backend** | Messaging endpoints, Twilio/SendGrid | 🔄 Integration | Services credentials |
 | **DevOps** | ECS backend deployed, ALB | ✅ Can work | Backend Docker image |
 | **Services** | SMS/Email testing, webhooks | 🔄 Integration | Backend webhook endpoints |
 
-**Blockers:** 
+**Blockers:**
+
 - Frontend blocked if Backend Messaging not ready
 - Services blocked if webhook endpoint not ready
 
@@ -265,7 +286,7 @@ Frontend ← Backend ← DevOps
 ### W4: Testing & Polish
 
 | Person | Task | Status | Depends On |
-|--------|------|--------|-----------|
+| -------- | ------ | -------- | ----------- |
 | **Frontend** | Logs page, forms polish | ✅ Depends | Backend working |
 | **Backend** | Integration test, DB migrations | ✅ Depends | DevOps & Services |
 | **DevOps** | Monitoring, CloudFront, S3 | ✅ Ready | Frontend binary |
@@ -278,7 +299,7 @@ Frontend ← Backend ← DevOps
 ### W5: Deployment & Documentation
 
 | Person | Task | Status | Depends On |
-|--------|------|--------|-----------|
+| -------- | ------ | -------- | ----------- |
 | **Frontend** | Docker build, responsive polish | ✅ Done | DevOps CloudFront |
 | **Backend** | Final tests, Docker, CI/CD | ✅ Done | DevOps ECR |
 | **DevOps** | Lambda, CI/CD, monitoring final | ✅ Done | All ready |
@@ -291,7 +312,7 @@ Frontend ← Backend ← DevOps
 ### W6: UAT & Demo
 
 | Person | Task | Status | Depends On |
-|--------|------|--------|-----------|
+| -------- | ------ | -------- | ----------- |
 | **Frontend** | Live testing on AWS | ✅ Done | AWS deployment |
 | **Backend** | Live testing on AWS | ✅ Done | AWS deployment |
 | **DevOps** | Final monitoring, alerts | ✅ Done | Production live |
@@ -305,7 +326,7 @@ Frontend ← Backend ← DevOps
 
 ### Total Tasks by Person
 
-```
+```plaintext
 Frontend:    ~140 tasks (27%)  ███████████
 Backend:     ~150 tasks (29%)  ███████████▌
 DevOps:      ~130 tasks (25%)  █████████▌
@@ -317,7 +338,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 ### Tasks by Category
 
 | Category | Frontend | Backend | DevOps | Services |
-|----------|----------|---------|--------|----------|
+| ---------- | ---------- | --------- | -------- | ---------- |
 | Planning/Setup | 15 | 10 | 20 | 8 |
 | Core Development | 80 | 100 | 50 | 40 |
 | Integration | 25 | 20 | 15 | 30 |
@@ -332,7 +353,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 ### Frontend ↔ Backend
 
 | Point | Frontend | Backend | Week |
-|-------|----------|---------|------|
+| ------- | ---------- | --------- | ------ |
 | API Spec | Build UI | Implement | W1-2 |
 | Register Tenant | Form | Endpoint | W2 |
 | Login | Form + Token storage | JWT generation | W2 |
@@ -347,7 +368,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 ### Backend ↔ DevOps
 
 | Point | Backend | DevOps | Week |
-|-------|---------|--------|------|
+| ------- | --------- | -------- | ------ |
 | Dockerfile | Provide | Review & push to ECR | W2-3 |
 | Env Variables | List needed | Configure in ECS | W3 |
 | Health Check | `/api/v1/health` | ALB target group | W3-4 |
@@ -361,7 +382,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 ### Backend ↔ Services
 
 | Point | Backend | Services | Week |
-|-------|---------|----------|------|
+| ------- | --------- | ---------- | ------ |
 | SMS Endpoint | Implement | Test with API | W3-4 |
 | Email Endpoint | Implement | Test with API | W3-4 |
 | Webhook Handler | Implement | Test callback | W4 |
@@ -375,7 +396,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 ### Frontend ↔ DevOps
 
 | Point | Frontend | DevOps | Week |
-|-------|----------|--------|------|
+| ------- | ---------- | -------- | ------ |
 | Build artifacts | `npm run build` | Upload to S3 | W4-5 |
 | Env variables | `.env.production` | CloudFront/nginx | W4 |
 | API URL | VITE_API_BASE_URL | ALB DNS or domain | W5 |
@@ -388,7 +409,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 ### Services ↔ DevOps
 
 | Point | Services | DevOps | Week |
-|-------|----------|--------|------|
+| ------- | ---------- | -------- | ------ |
 | Credentials | Provide values | AWS Secrets Manager | W1-2 |
 | Monitoring | Suggest metrics | Setup CloudWatch | W4-5 |
 | Webhooks | Test locally | Configure URL on ALB | W4-5 |
@@ -401,24 +422,28 @@ TOTAL:       ~530 tasks (100%) ████████████
 ## ⚠️ CRITICAL SUCCESS FACTORS
 
 ### For Frontend
+
 - [ ] **Biggest Risk:** Backend API delays → use mocks
 - [ ] **Mitigation:** Start with mock API, swap in real later
 - [ ] **Success:** All 7 pages fully functional, responsive
 - [ ] **Testing:** Full workflows work (register → login → CRUD → send → logs)
 
 ### For Backend
+
 - [ ] **Biggest Risk:** Database schema wrong → rewrites painful
 - [ ] **Mitigation:** Finalize schema by end W1, test early
 - [ ] **Success:** All 14 endpoints working, multi-tenant isolation tight
 - [ ] **Testing:** Each endpoint tested, Twilio/SendGrid working
 
 ### For DevOps
+
 - [ ] **Biggest Risk:** AWS security misconfiguration → compromised
 - [ ] **Mitigation:** Follow AWS best practices, minimal permissions
 - [ ] **Success:** All AWS resources deployed, monitored, backed up
 - [ ] **Testing:** Failover tested, cost within budget
 
 ### For Services
+
 - [ ] **Biggest Risk:** API keys leaked → unauthorized charges
 - [ ] **Mitigation:** Use AWS Secrets Manager, never commit .env
 - [ ] **Success:** SMS/Email working end-to-end, webhooks secure
@@ -431,36 +456,42 @@ TOTAL:       ~530 tasks (100%) ████████████
 ### Every Monday 10 AM
 
 #### Week 1 - Setup
+
 - [ ] Everyone: Project setup done? Any blockers?
 - [ ] Backend: DB schema finalized?
 - [ ] DevOps: AWS account ready?
 - [ ] Services: Twilio/SendGrid credentials obtained?
 
 #### Week 2 - Core Dev
+
 - [ ] Frontend: Auth pages ready?
 - [ ] Backend: Auth endpoints working?
 - [ ] DevOps: RDS up, can Backend connect?
 - [ ] Services: Local SDK testing success?
 
 #### Week 3 - Features
+
 - [ ] Frontend: Can call Backend API?
 - [ ] Backend: Messaging endpoints ready?
 - [ ] DevOps: ECS tasks deployed?
 - [ ] Services: Webhooks receiving callbacks?
 
 #### Week 4 - Integration
+
 - [ ] Frontend: All pages working?
 - [ ] Backend: All integrations tested?
 - [ ] DevOps: Monitoring configured?
 - [ ] Services: Load testing passed?
 
 #### Week 5 - Deployment
+
 - [ ] Frontend: Docker image pushed?
 - [ ] Backend: Docker image pushed?
 - [ ] DevOps: Infrastructure ready for prod?
 - [ ] Services: Documentation complete?
 
 #### Week 6 - UAT/Demo
+
 - [ ] Everyone: Live testing on AWS?
 - [ ] Everyone: All features working?
 - [ ] Everyone: Ready for final demo?
@@ -470,6 +501,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 ## 🎓 LEARNING OUTCOMES
 
 ### Frontend Developer Will Learn
+
 - React hooks, context API
 - Tailwind CSS or AntD component library
 - Form validation & error handling
@@ -480,6 +512,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 - Testing mindset
 
 ### Backend Developer Will Learn
+
 - Express.js REST API design
 - Prisma ORM & database modeling
 - Multi-tenant SaaS architecture (key learning!)
@@ -491,6 +524,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 - Docker containerization
 
 ### DevOps Engineer Will Learn
+
 - AWS infrastructure (VPC, RDS, ECS, S3, CloudFront)
 - Docker containerization & registry (ECR)
 - CI/CD automation (GitHub Actions)
@@ -501,6 +535,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 - Security best practices (IAM, Security Groups)
 
 ### Services Engineer Will Learn
+
 - Third-party API integration (Twilio, SendGrid)
 - Webhook handling & security
 - Load testing & performance optimization
@@ -517,6 +552,7 @@ TOTAL:       ~530 tasks (100%) ████████████
 The project is **COMPLETE** when:
 
 ### Frontend ✅
+
 - [ ] All 7 pages implemented & responsive
 - [ ] Can register tenant, login, create/read/update/delete customers
 - [ ] Can send SMS (single & batch) and see delivery
@@ -526,6 +562,7 @@ The project is **COMPLETE** when:
 - [ ] No console errors/warnings in production build
 
 ### Backend ✅
+
 - [ ] All 6 endpoint groups implemented (Tenants, Auth, Customers, Messaging, Logs, Health)
 - [ ] Multi-tenant isolation verified (user A ≠ user B)
 - [ ] Twilio SMS integration working (single & batch)
@@ -537,6 +574,7 @@ The project is **COMPLETE** when:
 - [ ] Docker image builds & runs on ECS
 
 ### DevOps ✅
+
 - [ ] VPC with proper subnets & security groups
 - [ ] RDS MySQL running & accessible
 - [ ] ECR repos with Backend & Frontend images
@@ -549,6 +587,7 @@ The project is **COMPLETE** when:
 - [ ] Cost under $150/month
 
 ### Services ✅
+
 - [ ] Twilio SMS: Single send, batch send, webhooks
 - [ ] SendGrid email: Single send, batch send, webhooks
 - [ ] Webhook signatures verified (not spoofed)
@@ -560,6 +599,7 @@ The project is **COMPLETE** when:
 - [ ] Documentation complete
 
 ### Integration ✅
+
 - [ ] Frontend ↔ Backend: Can register, login, CRUD, message
 - [ ] Backend ↔ DevOps: Container deployed, health checks passing
 - [ ] Backend ↔ Services: SMS/Email working, webhooks updating
@@ -593,4 +633,3 @@ The project is **COMPLETE** when:
    - Usage-based billing integration
    - Payment processing (Stripe)
    - Customer invoicing
-
