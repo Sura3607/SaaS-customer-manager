@@ -45,14 +45,31 @@ export function AuthProvider({ children }) {
     return { user: u, tenants: tenants || [] }
   }
 
-  async function selectTenant(tenantId) {
+  async function selectTenant(tenantId, { user: userOverride } = {}) {
     const res = await api.post('/auth/select-tenant', { tenantId })
     const { accessToken, tenant: t } = res.data.data
     setTenant(t)
-    const refreshToken = window.localStorage.getItem('refreshToken')
+
+    let parsed = {}
+    try {
+      const raw = window.localStorage.getItem('auth')
+      parsed = raw ? JSON.parse(raw) : {}
+    } catch (_) {
+      parsed = {}
+    }
+
+    const refreshToken = window.localStorage.getItem('refreshToken') || parsed.refreshToken || null
+    const stableUser = userOverride || user || parsed.user || null
+    const stableTenants = availableTenants.length ? availableTenants : (parsed.availableTenants || [])
+
     window.localStorage.setItem('accessToken', accessToken)
     window.localStorage.setItem('auth', JSON.stringify({
-      accessToken, refreshToken, user, tenant: t, availableTenants,
+      ...parsed,
+      accessToken,
+      refreshToken,
+      user: stableUser,
+      tenant: t,
+      availableTenants: stableTenants,
     }))
     return { tenant: t }
   }
