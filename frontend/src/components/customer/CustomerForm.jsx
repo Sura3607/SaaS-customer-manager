@@ -142,7 +142,6 @@ const CustomerForm = ({ visible, onCancel, onSuccess, initialValues, mode = 'cre
                 />
               </Form.Item>
             )}
-            placeholder="911943607 or 0911943607"
             style={inputStyle}
           />
         </Form.Item>
