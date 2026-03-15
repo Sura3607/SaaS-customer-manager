@@ -19,5 +19,6 @@ router.post('/register', validate(registerTenantSchema), tenantsController.regis
 router.get('/:id', authenticate, tenantIsolation, tenantsController.getById);
 router.put('/:id', authenticate, tenantIsolation, validate(updateTenantSchema), tenantsController.update);
 router.get('/:id/stats', authenticate, tenantIsolation, tenantsController.getStats);
+router.get('/:id/charts', authenticate, tenantIsolation, tenantsController.getCharts);
 
 module.exports = router;

@@ -34,6 +34,25 @@ async function register({ companyName, adminEmail, adminPassword, adminFullName,
   // Check if user already exists (globally unique email)
   const existingUser = await prisma.user.findUnique({ where: { email } });
 
+  // If email already exists, check if they also have a tenant with the same company name.
+  // That means both email AND company name match → reject as duplicate registration.
+  if (existingUser) {
+    // Prisma does not support mode:'insensitive' on nested relation filters.
+    // Fetch all memberships for this user, then compare companyName in JS.
+    const userMemberships = await prisma.tenantMembership.findMany({
+      where: { userId: existingUser.id },
+      include: { tenant: { select: { companyName: true } } },
+    });
+    const existingMembership = userMemberships.find(
+      (m) => m.tenant.companyName.toLowerCase() === companyName.toLowerCase()
+    );
+    if (existingMembership) {
+      throw new ConflictError(
+        'An account with this email and company name already exists. Please log in instead.'
+      );
+    }
+  }
+
   // Hash password (only needed for new users)
   const hashedPassword = existingUser
     ? null
@@ -171,4 +190,89 @@ async function getTenantStats(tenantId) {
   };
 }
 
-module.exports = { register, getTenant, updateTenant, getTenantStats };
+
+/**
+ * Get chart data for dashboard:
+ * - Monthly SMS + Email counts for the last 12 months
+ * - Daily SMS + Email breakdown for current month
+ */
+async function getChartData(tenantId) {
+  const now = new Date();
+
+  // ── 12-month range ──────────────────────────────────────────
+  const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+
+  // Fetch all messages in the last 12 months
+  const messages = await prisma.message.findMany({
+    where: {
+      tenantId,
+      createdAt: { gte: twelveMonthsAgo },
+    },
+    select: { type: true, createdAt: true },
+  });
+
+  // Build monthly buckets (last 12 months)
+  const monthlyMap = {};
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const label = d.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+    monthlyMap[key] = { month: label, SMS: 0, Email: 0 };
+  }
+
+  for (const msg of messages) {
+    const d = new Date(msg.createdAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    if (monthlyMap[key]) {
+      if (msg.type === 'SMS') monthlyMap[key].SMS++;
+      else if (msg.type === 'EMAIL') monthlyMap[key].Email++;
+    }
+  }
+
+  const monthly = Object.values(monthlyMap);
+
+  // ── Current month daily breakdown ───────────────────────────
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const currentMonthMessages = await prisma.message.findMany({
+    where: {
+      tenantId,
+      createdAt: { gte: monthStart },
+    },
+    select: { type: true, createdAt: true },
+  });
+
+  // Build daily buckets for current month
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const dailyMap = {};
+  for (let d = 1; d <= daysInMonth; d++) {
+    dailyMap[d] = { day: `${d}`, SMS: 0, Email: 0 };
+  }
+  for (const msg of currentMonthMessages) {
+    const day = new Date(msg.createdAt).getDate();
+    if (dailyMap[day]) {
+      if (msg.type === 'SMS') dailyMap[day].SMS++;
+      else if (msg.type === 'EMAIL') dailyMap[day].Email++;
+    }
+  }
+
+  // Return only days that have data OR compact to weeks
+  const daily = Object.values(dailyMap);
+
+  // Weekly summary for current month (cleaner for bar chart)
+  const weekly = [
+    { week: 'Week 1', SMS: 0, Email: 0 },
+    { week: 'Week 2', SMS: 0, Email: 0 },
+    { week: 'Week 3', SMS: 0, Email: 0 },
+    { week: 'Week 4+', SMS: 0, Email: 0 },
+  ];
+  for (const msg of currentMonthMessages) {
+    const day = new Date(msg.createdAt).getDate();
+    const weekIdx = Math.min(Math.floor((day - 1) / 7), 3);
+    if (msg.type === 'SMS') weekly[weekIdx].SMS++;
+    else if (msg.type === 'EMAIL') weekly[weekIdx].Email++;
+  }
+
+  return { monthly, weekly, currentMonth: now.toLocaleString('en-US', { month: 'long', year: 'numeric' }) };
+}
+
+module.exports = { register, getTenant, updateTenant, getTenantStats, getChartData };

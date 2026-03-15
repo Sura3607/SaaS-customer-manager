@@ -1,58 +1,58 @@
 /**
- * Parse API error response from backend
- * Backend returns: { error, code, details }
- * This function combines error message and validation details
+ * parseApiError — extract a human-readable English message from any API error.
  *
- * @param {Error} err - The error object from axios
- * @returns {string} - Formatted error message
+ * Backend response shape:  { error: "...", code: "..." }   ← operational errors
+ *                          { message: "..." }               ← some validation errors
+ *
+ * HTTP status fallback map covers the most common cases so we never show a
+ * blank or cryptic message to the user.
  */
-export function parseApiError(err) {
-  if (!err || !err.response) {
-    return 'An unexpected error occurred'
-  }
 
-  const { data, status } = err.response
-
-  // Get main error message
-  const backendError = data?.error || `Server error (HTTP ${status})`
-
-  // Get validation details if available
-  const details = data?.details
-  if (details && Array.isArray(details) && details.length > 0) {
-    // Handle both { field, message } and { message } formats
-    const fieldErrors = details
-      .map((d) => {
-        if (d.field) {
-          return `${d.field}: ${d.message}`
-        } else if (d.message) {
-          return d.message
-        }
-        return JSON.stringify(d)
-      })
-      .join(', ')
-    return `${backendError} (${fieldErrors})`
-  }
-
-  return backendError
+const STATUS_MESSAGES = {
+  400: 'Invalid request. Please check your input and try again.',
+  401: 'Incorrect credentials. Please check your email and password.',
+  403: 'You do not have permission to perform this action.',
+  404: 'The requested resource was not found.',
+  409: 'This record already exists.',
+  422: 'The data you submitted could not be processed.',
+  429: 'Too many requests. Please wait a moment and try again.',
+  500: 'An unexpected server error occurred. Please try again later.',
 }
 
-/**
- * Log detailed error information for debugging
- * @param {Error} err - The error object
- * @param {string} feature - Feature name (e.g., 'auth.login', 'customer.create')
- * @param {object} request - The request data (password should not be included)
- */
-export function logApiError(err, feature, request) {
-  const errorLog = {
-    feature,
-    httpStatus: err.response?.status,
-    backendCode: err.response?.data?.code,
-    backendError: err.response?.data?.error,
-    backendDetails: err.response?.data?.details,
-    request: request || {},
-    timestamp: new Date().toISOString(),
-  }
+// Map backend error codes to friendly messages
+const CODE_MESSAGES = {
+  UNAUTHORIZED:          'Incorrect credentials. Please check your email and password.',
+  VALIDATION_ERROR:      'Please check your input — some fields are invalid.',
+  CONFLICT:              'This record already exists.',
+  DUPLICATE_ENTRY:       'This record already exists.',
+  NOT_FOUND:             'The requested resource was not found.',
+  FORBIDDEN:             'You do not have permission to perform this action.',
+  RATE_LIMIT_EXCEEDED:   'Too many requests. Please wait a moment and try again.',
+  ROUTE_NOT_FOUND:       'API route not found.',
+}
 
-  console.error(`[${feature}]`, errorLog)
-  return errorLog
+export function parseApiError(err, fallback = 'Something went wrong. Please try again.') {
+  if (!err) return fallback
+
+  const status  = err.response?.status
+  const data    = err.response?.data || {}
+
+  // 1. Prefer server's own message (backend uses `error` key, some use `message`)
+  const serverMsg = data.error || data.message || ''
+
+  // 2. Map by error code
+  const codeMsg = data.code ? CODE_MESSAGES[data.code] : null
+
+  // 3. Map by HTTP status
+  const statusMsg = status ? STATUS_MESSAGES[status] : null
+
+  // Priority: serverMsg (if not generic) > codeMsg > statusMsg > fallback
+  // Avoid generic backend phrases like "Unauthorized" alone — replace with friendly text
+  const isGeneric = ['Unauthorized', 'Forbidden', 'Not Found', 'Internal Server Error']
+    .includes(serverMsg)
+
+  if (serverMsg && !isGeneric) return serverMsg
+  if (codeMsg) return codeMsg
+  if (statusMsg) return statusMsg
+  return fallback
 }

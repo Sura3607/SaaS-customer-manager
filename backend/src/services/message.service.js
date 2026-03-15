@@ -379,6 +379,27 @@ async function processSendgridWebhook(events) {
   return results;
 }
 
+
+/**
+ * Permanently delete a MessageLog and its parent Message.
+ * Removes from DB → won't appear in history or dashboard stats.
+ */
+async function deleteMessage(tenantId, logId) {
+  const log = await prisma.messageLog.findUnique({ where: { id: logId } });
+  if (!log || log.tenantId !== tenantId) {
+    throw new NotFoundError('MessageLog');
+  }
+  // Delete the log entry
+  await prisma.messageLog.delete({ where: { id: logId } });
+  // Delete parent Message only if no other logs reference it
+  const remaining = await prisma.messageLog.count({ where: { messageId: log.messageId } });
+  if (remaining === 0) {
+    await prisma.message.delete({ where: { id: log.messageId } });
+  }
+  logger.info('Message deleted', { logId, tenantId });
+  return { deleted: true };
+}
+
 module.exports = {
   sendSMS,
   sendBatchSMS,
@@ -388,4 +409,5 @@ module.exports = {
   getMessageLogById,
   processTwilioWebhook,
   processSendgridWebhook,
+  deleteMessage,
 };

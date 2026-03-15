@@ -3,6 +3,7 @@ import { Form, Input, Button, message, Space, Typography, Layout, Flex, Col, Row
 import { useNavigate } from 'react-router-dom'
 import { ArrowRightOutlined, EyeOutlined } from '@ant-design/icons'
 import api from '../services/api'
+import { parseApiError } from '../utils/parseApiError'
 
 const { Header, Content, Footer } = Layout
 const { Title, Text, Link } = Typography
@@ -33,10 +34,14 @@ export default function TenantRegister() {
       })
       message.success('Tenant created! Please log in.')
       navigate('/login')
-    } catch (err) {
-      console.error(err)
-      const msg = err.response?.data?.message || 'Registration failed'
-      message.error(msg)
+        } catch (err) {
+      const status = err.response?.status
+      const code   = err.response?.data?.code
+      if (status === 409 || code === 'CONFLICT' || code === 'DUPLICATE_ENTRY') {
+        message.error('An account with this email and company name already exists. Please log in instead.')
+      } else {
+        message.error(parseApiError(err, 'Registration failed. Please try again.'))
+      }
     } finally {
       setLoading(false)
     }

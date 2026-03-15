@@ -90,4 +90,18 @@ async function getStats(req, res, next) {
   }
 }
 
-module.exports = { register, getById, update, getStats };
+
+/**
+ * GET /api/v1/tenants/:id/charts  (protected + tenant isolation)
+ */
+async function getCharts(req, res, next) {
+  try {
+    ensureTenantAccess(req);
+    const data = await tenantService.getChartData(req.tenantId);
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { register, getById, update, getStats, getCharts };

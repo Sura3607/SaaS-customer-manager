@@ -255,4 +255,78 @@ async function getUsersByTenant(tenantId) {
   }));
 }
 
-module.exports = { login, selectTenant, refresh, logout, getMe, getUsersByTenant };
+
+/**
+ * Update user profile (fullName, email).
+ * If email changes, ensure it's not already taken by another user.
+ */
+async function updateUserProfile(userId, { fullName, email }) {
+  if (!fullName && !email) {
+    throw new ValidationError('At least one field (fullName or email) is required');
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new NotFoundError('User');
+
+  const updateData = {};
+
+  if (fullName !== undefined && fullName.trim()) {
+    updateData.fullName = fullName.trim();
+  }
+
+  if (email !== undefined && email.trim()) {
+    const normalised = email.toLowerCase().trim();
+    // Check email not taken by another user
+    if (normalised !== user.email) {
+      const existing = await prisma.user.findUnique({ where: { email: normalised } });
+      if (existing) throw new ValidationError('Email is already in use by another account');
+    }
+    updateData.email = normalised;
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    throw new ValidationError('No valid fields to update');
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    data: updateData,
+    select: { id: true, email: true, fullName: true },
+  });
+
+  logger.info('User profile updated', { userId });
+  return updated;
+}
+
+/**
+ * Change password for a user.
+ */
+async function changePassword(userId, currentPassword, newPassword) {
+  if (!userId || !currentPassword || !newPassword) {
+    throw new ValidationError('userId, currentPassword and newPassword are required');
+  }
+  if (newPassword.length < 8) throw new ValidationError('New password must be at least 8 characters');
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new NotFoundError('User');
+
+  const valid = await bcrypt.compare(currentPassword, user.password);
+  if (!valid) throw new UnauthorizedError('Current password is incorrect');
+
+  const hashed = await bcrypt.hash(newPassword, 10);
+  await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+
+  logger.info('Password changed', { userId });
+  return { success: true };
+}
+
+/**
+ * Invalidate all refresh tokens for a user (logout all devices).
+ */
+async function invalidateAllTokens(userId) {
+  await prisma.refreshToken.deleteMany({ where: { userId } });
+  logger.info('All tokens invalidated', { userId });
+  return { success: true };
+}
+
+module.exports = { login, selectTenant, refresh, logout, getMe, getUsersByTenant, updateUserProfile, changePassword, invalidateAllTokens };
