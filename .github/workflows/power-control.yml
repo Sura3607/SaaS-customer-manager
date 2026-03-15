@@ -1,0 +1,46 @@
+name: System Power Control (RDS & ECS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Select action:'
+        required: true
+        default: 'start'
+        type: choice
+        options:
+          - start
+          - stop
+
+jobs:
+  power-control:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check button trigger user
+        if: github.actor != 'Sura3607'
+        run: |
+          echo "You are not authorized to perform this action."
+          exit 1
+
+      - name: Login to AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.POWER_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.POWER_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Handle RDS
+        run: |
+          if [ "${{ github.event.inputs.action }}" == "start" ]; then
+            aws rds start-db-instance --db-instance-identifier saas-mysql-instance || true
+          else
+            aws rds stop-db-instance --db-instance-identifier saas-mysql-instance || true
+          fi
+
+      - name: Handle ECS
+        run: |
+          if [ "${{ github.event.inputs.action }}" == "start" ]; then
+            aws ecs update-service --cluster saas-cluster --service saas-backend-service --desired-count 1
+          else
+            aws ecs update-service --cluster saas-cluster --service saas-backend-service --desired-count 0
+          fi
