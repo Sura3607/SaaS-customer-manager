@@ -8,7 +8,7 @@ const IntegrationStatusCard = ({ integrations }) => {
   const integrationItems = [
     {
       label: 'SMS Provider',
-      provider: 'Twilio',
+      provider: 'SpeedSMS',
       connected: integrations?.sms?.connected || false,
     },
     {

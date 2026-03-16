@@ -227,7 +227,7 @@ export default function LandingPage() {
                 <Space direction="vertical" size="middle">
                   <MessageOutlined style={{ fontSize: 32, color: '#1f73f9' }} />
                   <Title level={4} style={{ color: '#fff' }}>
-                    Twilio SMS Integration
+                    SpeedSMS Integration
                   </Title>
                   <Paragraph style={{ color: '#8a92a6' }}>
                     Reliable global SMS delivery with built-in compliance tools. Reach customers instantly with

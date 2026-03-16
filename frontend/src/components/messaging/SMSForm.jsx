@@ -83,7 +83,7 @@ const SMSForm = ({ selectedCustomerIds = [] }) => {
 
         {/* From */}
         <Form.Item label={<Text style={labelStyle}>From</Text>}>
-          <Input value="Twilio SMS" disabled style={inputStyle} />
+          <Input value="SpeedSMS" disabled style={inputStyle} />
         </Form.Item>
 
         {/* Message content */}
@@ -149,7 +149,7 @@ const SMSForm = ({ selectedCustomerIds = [] }) => {
           </div>
           <Flex vertical gap={0}>
             <Text style={{ color: '#fff', fontWeight: 600, fontSize: 15 }}>SMS Preview</Text>
-            <Text style={{ color: '#8a92a6', fontSize: 12 }}>via Twilio · {segments} message{segments > 1 ? 's' : ''}</Text>
+            <Text style={{ color: '#8a92a6', fontSize: 12 }}>via SpeedSMS · {segments} message{segments > 1 ? 's' : ''}</Text>
           </Flex>
         </Flex>
 
@@ -174,7 +174,7 @@ const SMSForm = ({ selectedCustomerIds = [] }) => {
             {/* sender label */}
             <Flex justify="center" style={{ marginBottom: 12 }}>
               <Text style={{ color: '#8a92a6', fontSize: 11, background: '#1a1f2e', padding: '2px 12px', borderRadius: 99 }}>
-                Twilio SMS · Now
+                SpeedSMS · Now
               </Text>
             </Flex>
             {/* bubble */}

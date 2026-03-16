@@ -34,7 +34,7 @@ const Messaging = () => {
             ...(activeTab !== 'sms' && { background: '#1a1f2e', borderColor: '#2a3142', color: '#fff' }),
           }}
         >
-          SMS (via Twilio)
+          SMS (via SpeedSMS)
         </Button>
         <Button
           type={activeTab === 'email' ? 'primary' : 'default'}

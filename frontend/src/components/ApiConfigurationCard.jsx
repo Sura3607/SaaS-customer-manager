@@ -38,7 +38,7 @@ const ApiConfigurationCard = ({
     >
       <Alert
         message="API Keys Management"
-        description="Configure your Twilio and SendGrid credentials here. These keys are encrypted and stored securely."
+        description="Configure your SpeedSMS and SendGrid credentials here. These keys are encrypted and stored securely."
         type="error"
         showIcon
         style={{
@@ -52,37 +52,37 @@ const ApiConfigurationCard = ({
       />
 
       <Form layout="vertical" className="settings-form">
-        {/* Twilio Section */}
+        {/* SpeedSMS Section */}
         <div style={{ marginBottom: '24px' }}>
           <Text
             style={{ color: '#ffffff', fontSize: '14px', fontWeight: '600', marginBottom: '12px', display: 'block' }}
           >
-            Twilio Configuration
+            SpeedSMS Configuration
           </Text>
 
           <Row gutter={16}>
             <Col xs={24} sm={24} md={12}>
               <Form.Item
-                label={<Text style={{ color: '#8a92a6', fontSize: '13px' }}>Account SID</Text>}
+                label={<Text style={{ color: '#8a92a6', fontSize: '13px' }}>API Token</Text>}
                 style={{ marginBottom: '16px' }}
               >
                 <MaskedInputField
                   value={twilioAccountSid}
                   onChange={(e) => setTwilioAccountSid(e.target.value)}
-                  placeholder="Enter your Twilio Account SID"
+                  placeholder="Enter your SpeedSMS API token"
                 />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={24} md={12}>
               <Form.Item
-                label={<Text style={{ color: '#8a92a6', fontSize: '13px' }}>Auth Token</Text>}
+                label={<Text style={{ color: '#8a92a6', fontSize: '13px' }}>Sender Name (Optional)</Text>}
                 style={{ marginBottom: '16px' }}
               >
                 <MaskedInputField
                   value={twilioAuthToken}
                   onChange={(e) => setTwilioAuthToken(e.target.value)}
-                  placeholder="Enter your Twilio Auth Token"
+                  placeholder="Enter your SpeedSMS sender name"
                 />
               </Form.Item>
             </Col>
