@@ -27,34 +27,22 @@ async function checkDatabase() {
 }
 
 // ──────────────────────────────────────────────
-// Twilio probe (lightweight — just validates credentials)
+// SpeedSMS probe
 // ──────────────────────────────────────────────
 
 /**
- * Verify Twilio connectivity by fetching the account resource.
- * If credentials are dummy / missing, returns "not_configured".
+ * Verify SpeedSMS is configured for SMS delivery.
  * @returns {Promise<{status: string, latencyMs?: number}>}
  */
-async function checkTwilio() {
-  if (
-    !env.TWILIO_ACCOUNT_SID ||
-    !env.TWILIO_AUTH_TOKEN ||
-    env.TWILIO_ACCOUNT_SID.startsWith('AC_DUMMY') ||
-    env.TWILIO_ACCOUNT_SID === 'ACxxxxxxxxxxxxxxxxxxxxx'
-  ) {
+async function checkSpeedSMS() {
+  if (!env.SPEEDSMS_API_TOKEN || env.SPEEDSMS_API_TOKEN === 'your_access_token_here') {
     return { status: 'not_configured' };
   }
 
-  const start = Date.now();
-  try {
-    const twilio = require('twilio');
-    const client = twilio(env.TWILIO_ACCOUNT_SID, env.TWILIO_AUTH_TOKEN);
-    await client.api.accounts(env.TWILIO_ACCOUNT_SID).fetch();
-    return { status: 'reachable', latencyMs: Date.now() - start };
-  } catch (err) {
-    logger.warn('Health-check Twilio probe failed', { error: err.message });
-    return { status: 'unreachable', latencyMs: Date.now() - start, error: err.message };
-  }
+  return {
+    status: 'configured',
+    ...(env.SPEEDSMS_SENDER ? { sender: env.SPEEDSMS_SENDER } : {}),
+  };
 }
 
 // ──────────────────────────────────────────────
@@ -122,9 +110,9 @@ async function checkSendGrid() {
  * @returns {Promise<{healthy: boolean, payload: object}>}
  */
 async function getHealthStatus() {
-  const [db, twilio, sendgrid] = await Promise.all([
+  const [db, speedsms, sendgrid] = await Promise.all([
     checkDatabase(),
-    checkTwilio(),
+    checkSpeedSMS(),
     checkSendGrid(),
   ]);
 
@@ -140,7 +128,7 @@ async function getHealthStatus() {
       environment: env.NODE_ENV,
       database: db,
       services: {
-        twilio,
+        speedsms,
         sendgrid,
       },
     },

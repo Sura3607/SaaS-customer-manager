@@ -21,10 +21,9 @@ const env = {
   JWT_EXPIRE: process.env.JWT_EXPIRE || '15m',
   JWT_REFRESH_EXPIRE: process.env.JWT_REFRESH_EXPIRE || '7d',
 
-  // Twilio
-  TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
-  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
-  TWILIO_PHONE_NUMBER: process.env.TWILIO_PHONE_NUMBER,
+  // SpeedSMS
+  SPEEDSMS_API_TOKEN: process.env.SPEEDSMS_API_TOKEN,
+  SPEEDSMS_SENDER: process.env.SPEEDSMS_SENDER || '',
 
   // SendGrid
   SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
@@ -56,8 +55,8 @@ function validateEnv() {
   if (!env.DATABASE_URL) {
     warnings.push('DATABASE_URL is not set — database features will not work.');
   }
-  if (!env.TWILIO_ACCOUNT_SID) {
-    warnings.push('TWILIO_ACCOUNT_SID is not set — SMS features will not work.');
+  if (!env.SPEEDSMS_API_TOKEN) {
+    warnings.push('SPEEDSMS_API_TOKEN is not set — SMS features will not work.');
   }
   if (!env.SENDGRID_API_KEY) {
     warnings.push('SENDGRID_API_KEY is not set — Email features will not work.');

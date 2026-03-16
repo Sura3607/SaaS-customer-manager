@@ -4,7 +4,7 @@
  */
 
 const prisma = require('../config/db');
-const twilioService = require('./twilio.service');
+const speedsmsService = require('./speedsms.service');
 const sendgridService = require('./sendgrid.service');
 const customerService = require('./customer.service');
 const { paginatedResponse } = require('../utils/formatters');
@@ -70,13 +70,13 @@ async function sendSMS(tenantId, customerId, content) {
     },
   });
 
-  // 3. Call Twilio
+  // 3. Call SpeedSMS
   let providerResult;
   let finalStatus = 'FAILED';
   let errorReason = null;
 
   try {
-    providerResult = await twilioService.sendSMS(customer.phone, content);
+    providerResult = await speedsmsService.sendSMS(customer.phone, content);
     finalStatus = providerResult.status || 'SENT';
   } catch (err) {
     errorReason = err.message;
@@ -290,13 +290,13 @@ async function getMessageLogById(tenantId, logId) {
    ═══════════════════════════════════════════ */
 
 /**
- * Process Twilio status callback and update MessageLog.
+ * Process SpeedSMS status callback and update MessageLog.
  */
-async function processTwilioWebhook(payload) {
-  const parsed = twilioService.handleWebhook(payload);
+async function processSpeedsmsWebhook(payload) {
+  const parsed = speedsmsService.handleWebhook(payload);
 
   if (!parsed.providerMessageId) {
-    logger.warn('Twilio webhook: missing SID');
+    logger.warn('SpeedSMS webhook: missing tranId');
     return { updated: false };
   }
 
@@ -306,7 +306,7 @@ async function processTwilioWebhook(payload) {
   });
 
   if (!log) {
-    logger.warn('Twilio webhook: no matching MessageLog', { sid: parsed.providerMessageId });
+    logger.warn('SpeedSMS webhook: no matching MessageLog', { sid: parsed.providerMessageId });
     return { updated: false };
   }
 
@@ -329,7 +329,7 @@ async function processTwilioWebhook(payload) {
     }),
   ]);
 
-  logger.info('Twilio webhook processed', { logId: log.id, newStatus: parsed.status });
+  logger.info('SpeedSMS webhook processed', { logId: log.id, newStatus: parsed.status });
   return { updated: true, logId: log.id, status: parsed.status };
 }
 
@@ -441,7 +441,7 @@ module.exports = {
   sendBatchEmail,
   getMessageLogs,
   getMessageLogById,
-  processTwilioWebhook,
+  processSpeedsmsWebhook,
   processSendgridWebhook,
   deleteMessage,
 };

@@ -20,7 +20,7 @@ describe('Health Check Endpoints', () => {
       expect(res.body.database).toBeDefined();
       expect(res.body.database.status).toBe('connected');
       expect(res.body.services).toBeDefined();
-      expect(res.body.services.twilio).toBeDefined();
+      expect(res.body.services.speedsms).toBeDefined();
       expect(res.body.services.sendgrid).toBeDefined();
     });
   });
