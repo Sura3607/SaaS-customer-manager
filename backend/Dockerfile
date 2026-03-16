@@ -52,4 +52,4 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node healthcheck.js
 
-CMD npx prisma db push --accept-data-loss && node src/server.js
+CMD npx prisma db push --accept-data-loss --skip-generate && node src/server.js
