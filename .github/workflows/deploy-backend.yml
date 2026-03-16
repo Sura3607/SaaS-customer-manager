@@ -1,37 +1,68 @@
 name: Deploy Backend to ECS
 
 on:
+  push:
+    branches: [ main ]
+    paths: [ 'backend/**' ]
   workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: saas-backend
+  ECS_CLUSTER: saas-cluster
+  ECS_SERVICE: saas-backend-task-service
+  CONTAINER_NAME: backend-container 
 
 jobs:
   deploy-backend:
+    name: Build & Deploy Backend
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./backend
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Login to AWS
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cấu hình AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
+      - name: Đăng nhập vào Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build & Push to ECR (Overwrite latest)
+      - name: Build, Tag, và Push Docker Image lên ECR
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: saas-backend
-          IMAGE_TAG: latest
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          # Gắn thẻ (Tag) Image bằng mã SHA độc nhất của GitHub để chống Cache
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY -a
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Force ECS to Deploy New Version
+      - name: Tải Task Definition hiện tại về
         run: |
-          aws ecs update-service --cluster saas-cluster --service saas-backend-task-service --force-new-deployment
+          aws ecs describe-task-definition --task-definition saas-backend-task --query taskDefinition > task-def.json
+
+      - name: Cập nhật Image ID mới vào Task Definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: backend/task-def.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Triển khai lên Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
