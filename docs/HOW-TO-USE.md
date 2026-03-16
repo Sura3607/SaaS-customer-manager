@@ -12,7 +12,7 @@
 
 Workspace hiện có các file sau:
 
-```
+```plaintext
 SaaS-customer-manager/
 ├── 📋 TASK_DIVISION.md                 ← File tổng hợp ban đầu (4 checklists lớn)
 ├── 📄 ANALYSIS-4-CHECKLISTS.md        ← File phân tích chi tiết (TÂN TẠO)
@@ -38,6 +38,7 @@ SaaS-customer-manager/
 **File:** [CHECKLIST-1-FRONTEND.md](CHECKLIST-1-FRONTEND.md)
 
 **Trách nhiệm:**
+
 - Xây dựng giao diện web đầy đủ (7 pages)
 - Responsive design (mobile, tablet, desktop)
 - Tích hợp API từ Backend
@@ -45,16 +46,19 @@ SaaS-customer-manager/
 - Docker image cho Frontend
 
 **Công nghệ:**
+
 - React, Vite, Ant Design (AntD)
 - Axios, React Router, Context API
 
 **Đầu Ra:**
+
 - 7 pages hoàn chỉnh (Register, Login, Dashboard, Customers, Detail, Messaging, Logs)
 - Docker image: `frontend:v1`
 - Deployed to AWS CloudFront
 - All workflows tested
 
 **Thời gian:**
+
 - Tuần 1: Setup + Auth pages
 - Tuần 2-3: Core pages (Dashboard, Customers)
 - Tuần 4: Messaging + Logs
@@ -68,6 +72,7 @@ SaaS-customer-manager/
 **File:** [CHECKLIST-2-BACKEND.md](CHECKLIST-2-BACKEND.md)
 
 **Trách nhiệm:**
+
 - 14 RESTful API endpoints
 - Database schema (multi-tenant)
 - Authentication (JWT)
@@ -76,12 +81,14 @@ SaaS-customer-manager/
 - Error handling + logging
 
 **Công nghệ:**
+
 - Node.js, Express
 - Prisma ORM, MySQL
 - Twilio SDK, SendGrid SDK
 - JWT, bcrypt
 
 **Đầu Ra:**
+
 - 14 API endpoints (Tenants, Auth, Customers, Messaging, Logs, Health)
 - Twilio SMS integration (single + batch)
 - SendGrid Email integration (single + batch)
@@ -89,6 +96,7 @@ SaaS-customer-manager/
 - Deployed to ECS Fargate
 
 **Thời gian:**
+
 - Tuần 1: Setup + DB schema + Auth
 - Tuần 2: Customers CRUD
 - Tuần 3: Twilio + SendGrid integration
@@ -103,6 +111,7 @@ SaaS-customer-manager/
 **File:** [CHECKLIST-3-DEVOPS.md](CHECKLIST-3-DEVOPS.md)
 
 **Trách nhiệm:**
+
 - Docker local development (docker-compose)
 - AWS infrastructure setup (VPC, RDS, ECS, S3, CloudFront)
 - Container registry (ECR)
@@ -112,17 +121,20 @@ SaaS-customer-manager/
 - SSL/TLS certificates
 
 **Công nghệ:**
+
 - Docker, Docker Compose
 - AWS: VPC, RDS, ECS, S3, CloudFront, ALB, IAM, CloudWatch
 - GitHub Actions (optional CI/CD)
 
 **Đầu Ra:**
+
 - Local development: `docker-compose up` → everything works
 - AWS infrastructure: VPC, RDS, ECS, ALB, S3, CloudFront
 - Monitoring: CloudWatch dashboards + alarms
 - CI/CD: Automated deployment on git push (optional)
 
 **Thời gian:**
+
 - Tuần 1-2: Local docker-compose + AWS setup
 - Tuần 2: RDS database setup
 - Tuần 3: ECS backend + ALB + S3 frontend
@@ -137,6 +149,7 @@ SaaS-customer-manager/
 **File:** [CHECKLIST-4-SERVICES.md](CHECKLIST-4-SERVICES.md)
 
 **Trách nhiệm:**
+
 - Twilio account setup (SMS)
 - SendGrid account setup (Email)
 - SDK integration testing
@@ -147,12 +160,14 @@ SaaS-customer-manager/
 - Documentation + troubleshooting
 
 **Công nghệ:**
+
 - Twilio SDK (SMS)
 - SendGrid SDK (Email)
 - Webhook handlers
 - ngrok (local testing)
 
 **Đầu Ra:**
+
 - Twilio: SMS working (single + batch, webhooks)
 - SendGrid: Email working (single + batch, webhooks)
 - Monitoring dashboards + alerts
@@ -161,6 +176,7 @@ SaaS-customer-manager/
 - Compliance checked (GDPR, TCPA, CAN-SPAM)
 
 **Thời gian:**
+
 - Tuần 1: Account setup + credentials
 - Tuần 2-3: SDK testing (SMS + Email)
 - Tuần 4: Full workflow + load testing
@@ -174,30 +190,36 @@ SaaS-customer-manager/
 ### Tuần 1: Planning & Setup
 
 **Tất Cả Mọi Người:**
+
 - [ ] Đọc toàn bộ checklists của mình → Hiểu scope
 - [ ] Thiết lập workspace và tools cần thiết
 - [ ] Tạo file `.env.example` nếu cần
 - [ ] Join team communication channel (Slack, Discord, etc.)
 
 **Frontend Dev:**
+
 - [ ] Setup React + Vite project
 - [ ] Configure AntD theme
 
 **Backend Dev:**
+
 - [ ] Setup Node.js + Express project
 - [ ] Design Prisma schema
 
 **DevOps Engineer:**
+
 - [ ] Create AWS account + IAM users
 - [ ] Setup local docker-compose
 - [ ] Reserve resources (check free tier)
 
 **Services Engineer:**
+
 - [ ] Create Twilio account + phone number
 - [ ] Create SendGrid account + verify email
 - [ ] Get API credentials
 
 **Sync Meeting (Friday):**
+
 - ✅ Tất cả setup xong?
 - Có blockers không?
 - Confirm project structure
@@ -207,23 +229,28 @@ SaaS-customer-manager/
 ### Tuần 2: Core Development
 
 **Frontend Dev:**
+
 - [ ] Auth pages (Register, Login) ✓
 - [ ] Dashboard ✓
 
 **Backend Dev:**
+
 - [ ] Database schema ✓
 - [ ] Auth endpoints ✓
 - [ ] Customers CRUD ✓
 
 **DevOps Engineer:**
+
 - [ ] RDS MySQL running ✓
 - [ ] ECR repos created ✓
 
 **Services Engineer:**
+
 - [ ] Local SMS testing ✓
 - [ ] Local Email testing ✓
 
 **Sync Meeting (Friday):**
+
 - ✅ Frontend can call Backend API? (Check API integration)
 - RDS accessible from local? (Test connection)
 - SMS/Email SDK working? (Show proof)
@@ -233,23 +260,28 @@ SaaS-customer-manager/
 ### Tuần 3: Features & Integration
 
 **Frontend Dev:**
+
 - [ ] Customers list + CRUD ✓
 - [ ] Messaging pages ✓
 
 **Backend Dev:**
+
 - [ ] Twilio integration ✓
 - [ ] SendGrid integration ✓
 - [ ] Webhooks setup ✓
 
 **DevOps Engineer:**
+
 - [ ] ECS backend deployed ✓
 - [ ] S3 + CloudFront frontend setup ✓
 
 **Services Engineer:**
+
 - [ ] Webhook testing ✓
 - [ ] Full workflow testing ✓
 
 **Sync Meeting (Friday):**
+
 - ✅ Can send SMS from Frontend? (Test complete flow)
 - Can send Email? (Test complete flow)
 - Webhooks receiving callbacks? (Check logs)
@@ -259,23 +291,28 @@ SaaS-customer-manager/
 ### Tuần 4: Testing & Integration
 
 **Frontend Dev:**
+
 - [ ] Logs page ✓
 - [ ] Form validation ✓
 - [ ] Error handling ✓
 
 **Backend Dev:**
+
 - [ ] All endpoints tested ✓
 - [ ] Multi-tenant isolation verified ✓
 
 **DevOps Engineer:**
+
 - [ ] Monitoring setup ✓
 - [ ] Alarms configured ✓
 
 **Services Engineer:**
+
 - [ ] Load testing ✓
 - [ ] Webhook security verified ✓
 
 **Sync Meeting (Friday):**
+
 - ✅ End-to-end workflow working? (Full test from register to logs)
 - Any critical issues? (Prioritize fixes)
 - Ready for deployment? (Check all systems)
@@ -285,22 +322,27 @@ SaaS-customer-manager/
 ### Tuần 5: Deployment & Polish
 
 **Frontend Dev:**
+
 - [ ] Docker image push to ECR ✓
 - [ ] Responsive design final check ✓
 
 **Backend Dev:**
+
 - [ ] Docker image push to ECR ✓
 - [ ] Final bug fixes ✓
 
 **DevOps Engineer:**
+
 - [ ] CI/CD pipeline setup ✓
 - [ ] Cost monitoring configured ✓
 
 **Services Engineer:**
+
 - [ ] Documentation complete ✓
 - [ ] Monitoring alerts tested ✓
 
 **Sync Meeting (Friday):**
+
 - ✅ All components deployed? (Check AWS console)
 - All health checks passing? (Verify ALB targets)
 - Cost under budget? (Check AWS billing)
@@ -310,11 +352,13 @@ SaaS-customer-manager/
 ### Tuần 6: UAT & Final Demo
 
 **Tất Cả Mọi Người:**
+
 - [ ] Live testing on AWS
 - [ ] Verify all features working
 - [ ] Prepare demo for stakeholders
 
 **Demo Checklist:**
+
 - ✅ Register new tenant
 - ✅ Login as admin
 - ✅ Create customers
@@ -325,6 +369,7 @@ SaaS-customer-manager/
 - ✅ Show AWS infrastructure
 
 **Final Sync Meeting:**
+
 - ✅ Project ready for production?
 - Any critical bugs to fix?
 - Lessons learned?
@@ -335,7 +380,8 @@ SaaS-customer-manager/
 ## 📊 SO SÁNH 4 CHECKLISTS
 
 ### Complexity Level
-```
+
+```plaintext
 Backend:     ████████████ (12/10) - Phức tạp nhất
 Frontend:    ██████████░░ (10/10) - Phức tạp
 DevOps:      █████████░░░ (9/10)  - Phức tạp
@@ -343,7 +389,8 @@ Services:    ███████░░░░░ (7/10)  - Vừa phải
 ```
 
 ### Task Count
-```
+
+```plaintext
 Backend:     150 tasks (29%)  - Nhiều nhất
 Frontend:    140 tasks (27%)
 DevOps:      130 tasks (25%)
@@ -353,7 +400,8 @@ TOTAL:       530 tasks
 ```
 
 ### Dependencies (Who Does Other Person Wait For)
-```
+
+```plaintext
 Frontend  → Backend     (phụ thuộc API)
 Backend   → DevOps      (phụ thuộc RDS W2+)
 Backend   → Services    (phụ thuộc credentials W1)
@@ -363,7 +411,8 @@ DevOps    → Backend     (phụ thuộc Docker image W3+)
 ```
 
 ### Risks
-```
+
+```plaintext
 ⚠️  Backend:  Multi-tenant isolation leak (SECURITY)
 ⚠️  Frontend: API spec changes late (REWORK)
 ⚠️  DevOps:   AWS costs spike (FINANCIAL)
@@ -377,7 +426,8 @@ DevOps    → Backend     (phụ thuộc Docker image W3+)
 ### Cho Individual
 
 **Step 1:** Readt checklists riêng của mình
-```
+
+```plaintext
 Person 1: cd CHECKLIST-1-FRONTEND.md
 Person 2: cd CHECKLIST-2-BACKEND.md
 Person 3: cd CHECKLIST-3-DEVOPS.md
@@ -385,11 +435,13 @@ Person 4: cd CHECKLIST-4-SERVICES.md
 ```
 
 **Step 2:** Hiểu scope & timeline
+
 - Read "Giai Đoạn Chính"
 - Understand dependencies
 - Check "Notes for this person"
 
 **Step 3:** Start Week 1 tasks
+
 - Follow giai đoạn 1 exactly
 - Check off tasks as you complete them
 - Update team on progress
@@ -399,18 +451,21 @@ Person 4: cd CHECKLIST-4-SERVICES.md
 ### Cho Team Lead/Project Manager
 
 **Step 1:** Evaluate overall progress
-```
+
+```plaintext
 Open: ANALYSIS-4-CHECKLISTS.md
 Check: "Task Distribution", "Dependency Map"
 Monitor: Weekly sync points
 ```
 
 **Step 2:** Watch for blockers
+
 - Frontend blocked on Backend? → Escalate
 - Backend blocked on DevOps RDS? → Prioritize
 - Services blocked on webhook endpoint? → Sync Backend & Services
 
 **Step 3:** Adjust schedule if needed
+
 - Slip in one area → Balance with other areas
 - Use overtime or reduce scope
 
@@ -419,18 +474,21 @@ Monitor: Weekly sync points
 ### Cho Stakeholders
 
 **Step 1:** Monitor progress
-```
+
+```plaintext
 Read: ANALYSIS-4-CHECKLISTS.md
 Focus on: "SUCCESS CRITERIA" section
 Check: Weekly status updates
 ```
 
 **Step 2:** Understand risks
+
 - Review "Critical Success Factors"
 - Budget AWS costs
 - Plan for support/training
 
 **Step 3:** Prepare for demo
+
 - Week 5: Setup demo environment
 - Week 6: Rehearse demo flow
 - Prepare Q&A about architecture
@@ -442,6 +500,7 @@ Check: Weekly status updates
 ### For Each Person (End of Week 6)
 
 #### Frontend Developer
+
 - [ ] All 7 pages working on localhost
 - [ ] Can register, login, CRUD, message, view logs
 - [ ] Responsive design verified
@@ -451,6 +510,7 @@ Check: Weekly status updates
 - [ ] Documentation complete
 
 #### Backend Developer
+
 - [ ] All 14 API endpoints implemented
 - [ ] Multi-tenant isolation tested
 - [ ] Twilio SMS working (single + batch)
@@ -462,6 +522,7 @@ Check: Weekly status updates
 - [ ] Health check passing
 
 #### DevOps Engineer
+
 - [ ] Local docker-compose fully working
 - [ ] RDS MySQL accessible
 - [ ] ECR with Backend & Frontend images
@@ -474,6 +535,7 @@ Check: Weekly status updates
 - [ ] Disaster recovery tested
 
 #### Services Engineer
+
 - [ ] Twilio SMS verified on real phone
 - [ ] SendGrid Email verified in inbox
 - [ ] Webhooks secure (signature verified)
@@ -517,12 +579,14 @@ Check: Weekly status updates
 ## 📞 COMMUNICATION
 
 ### Team Channels
+
 - **Daily:** Slack #engineering channel (async updates)
 - **Weekly:** Sync meeting (Friday 10 AM, 1 hour)
 - **Issues:** GitHub Issues or dedicated tracker
 - **Docs:** Shared Google Drive or wiki
 
 ### Escalation Path
+
 1. Raise in Slack channel (peer help first)
 2. Escalate to person's manager if stuck 2+ days
 3. Project lead makes decision on scope/timeline changes
@@ -532,6 +596,7 @@ Check: Weekly status updates
 ## 🏆 SUCCESS METRICS
 
 ### By End of Week 6
+
 - ✅ 100% of tasks completed
 - ✅ All features working end-to-end
 - ✅ System deployed & live on AWS
@@ -539,6 +604,7 @@ Check: Weekly status updates
 - ✅ Documentation ready for handoff
 
 ### During Deployment (Week 5-6)
+
 - ✅ No critical bugs blocking demo
 - ✅ Response time < 500ms
 - ✅ Uptime 99%+ during testing
@@ -550,6 +616,7 @@ Check: Weekly status updates
 ## 📝 NOTES
 
 ### Important Reminders
+
 - **Start early:** Don't wait for dependencies, use mocks
 - **Test constantly:** Integration issues caught early = less rework
 - **Communicate:** Weekly sync = problems surface quickly
@@ -558,6 +625,7 @@ Check: Weekly status updates
 - **Cost:** Monitor AWS spending daily, not weekly
 
 ### Common Pitfalls to Avoid
+
 - ❌ Backend schema redesign in W4 (finalize by W1)
 - ❌ Frontend waiting for perfect Backend (use mock API)
 - ❌ DevOps security group config wrong (test connectivity early)
@@ -570,6 +638,7 @@ Check: Weekly status updates
 ## 📞 SUPPORT
 
 If you have questions about:
+
 - **Frontend path:** Contact Frontend Developer or check [CHECKLIST-1-FRONTEND.md](CHECKLIST-1-FRONTEND.md)
 - **Backend path:** Contact Backend Developer or check [CHECKLIST-2-BACKEND.md](CHECKLIST-2-BACKEND.md)
 - **DevOps path:** Contact DevOps Engineer or check [CHECKLIST-3-DEVOPS.md](CHECKLIST-3-DEVOPS.md)
@@ -581,7 +650,7 @@ If you have questions about:
 ## 📚 Full File List
 
 | File | Purpose | For Whom |
-|------|---------|----------|
+| ------ | --------- | ---------- |
 | [CHECKLIST-1-FRONTEND.md](CHECKLIST-1-FRONTEND.md) | Detailed tasks for Frontend Dev | Frontend Developer |
 | [CHECKLIST-2-BACKEND.md](CHECKLIST-2-BACKEND.md) | Detailed tasks for Backend Dev | Backend Developer |
 | [CHECKLIST-3-DEVOPS.md](CHECKLIST-3-DEVOPS.md) | Detailed tasks for DevOps Eng | DevOps Engineer |
@@ -592,7 +661,6 @@ If you have questions about:
 
 ---
 
-**Good luck with the project! 🚀**
+### Good luck with the project! 🚀
 
 Hãy ghi nhớ: Communicate often, test frequently, document as you go!
-

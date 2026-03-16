@@ -41,6 +41,10 @@ jobs:
         run: |
           if [ "${{ github.event.inputs.action }}" == "start" ]; then
             aws ecs update-service --cluster saas-cluster --service saas-backend-task-service --desired-count 1
+
+            aws ecs update-service --cluster saas-cluster --service saas-frontend-svc --desired-count 1
           else
             aws ecs update-service --cluster saas-cluster --service saas-backend-task-service --desired-count 0
+
+            aws ecs update-service --cluster saas-cluster --service saas-frontend-svc --desired-count 0
           fi

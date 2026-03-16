@@ -19,6 +19,7 @@ Realizamos uma auditoria de segurança complete sobre como Dashboard e Logs faze
 **Status:** ✅ CORRECT
 
 **Finding:**
+
 ```javascript
 const { tenant } = useAuth()  // Correto: pega tenant do AuthContext
 
@@ -30,7 +31,8 @@ const loadStats = async () => {
 ```
 
 **Fluxo de Dados:**
-```
+
+```plaintext
 AuthContext.jsx
   ↓ (localStorage + state management)
   ↓
@@ -50,12 +52,14 @@ API call: /tenants/{tenant.id}/stats
 **Status:** ⚠️ PARTIALLY CORRECT (Improved)
 
 **Finding:**
+
 - ❌ Logs.jsx **NÃO importa useAuth()** mas chama `/messages/logs`
 - ✅ Funciona porque Backend usa tenant isolation via token JWT
 - ✅ Token é automaticamente anexado via API interceptor
 
 **Request Flow:**
-```
+
+```plaintext
 Logs.jsx
   ↓
 fetchLogs() → api.get('/messages/logs', { params })
@@ -78,6 +82,7 @@ Response com dados filtrados por tenant
 ### 3. Error Handling for 401/403 - BEFORE ❌
 
 **Dashboard.jsx - loadStats():**
+
 ```javascript
 catch (err) {
   setError(err.response?.data?.message || err.message)
@@ -86,6 +91,7 @@ catch (err) {
 ```
 
 **Dashboard.jsx - loadRecent():**
+
 ```javascript
 catch (err) {
   console.error('Failed to fetch recent messages', err)
@@ -95,6 +101,7 @@ catch (err) {
 ```
 
 **Logs.jsx - fetchLogs():**
+
 ```javascript
 catch (err) {
   const backendError = err.response?.data?.error || err.message
@@ -110,6 +117,7 @@ catch (err) {
 #### Dashboard.jsx - loadStats()
 
 **BEFORE:**
+
 ```javascript
 catch (err) {
   setError(err.response?.data?.message || err.message)
@@ -117,6 +125,7 @@ catch (err) {
 ```
 
 **AFTER:**
+
 ```javascript
 catch (err) {
   const status = err.response?.status
@@ -137,6 +146,7 @@ catch (err) {
 #### Dashboard.jsx - loadRecent()
 
 **BEFORE:**
+
 ```javascript
 catch (err) {
   console.error('Failed to fetch recent messages', err)
@@ -145,6 +155,7 @@ catch (err) {
 ```
 
 **AFTER:**
+
 ```javascript
 catch (err) {
   console.error('Failed to fetch recent messages', err)
@@ -163,6 +174,7 @@ catch (err) {
 #### Logs.jsx - fetchLogs()
 
 **BEFORE:**
+
 ```javascript
 catch (err) {
   const backendError = err.response?.data?.error || err.message
@@ -172,6 +184,7 @@ catch (err) {
 ```
 
 **AFTER:**
+
 ```javascript
 catch (err) {
   const status = err.response?.status
@@ -232,7 +245,8 @@ api.interceptors.response.use(
 ```
 
 **Flow de Segurança:**
-```
+
+```plaintext
 API returns 401
   ↓
 Global interceptor catches
@@ -250,7 +264,7 @@ Component catches error
 
 ## 🔄 Complete Auth Flow with Error Handling
 
-```
+```plaintext
 1. LOGIN
    User -> /login endpoint
    ↓
@@ -289,7 +303,7 @@ Component catches error
 ## 📊 Changes Summary
 
 | Component | Function | Issue | Fix | Status |
-|-----------|----------|-------|-----|--------|
+| ----------- | ---------- | ------- | ----- | -------- |
 | Dashboard.jsx | loadStats() | No specific 401/403 handling | Added status check + login redirect | ✅ FIXED |
 | Dashboard.jsx | loadRecent() | Errors silently ignored | Added error message + auto-redirect | ✅ FIXED |
 | Logs.jsx | fetchLogs() | No specific 401/403 handling | Added status check + message | ✅ FIXED |
@@ -301,21 +315,24 @@ Component catches error
 ## ✅ Error Messages Shown to Users
 
 ### Dashboard.jsx (loadStats)
-```
+
+```plaintext
 "Your session has expired. Please log in to continue."
 ↓ (after 2s)
 Redirect to /login
 ```
 
 ### Dashboard.jsx (loadRecent)
-```
+
+```plaintext
 Toast: "Session expired. Please log in again."
 ↓ (after 1.5s)
 Redirect to /login
 ```
 
 ### Logs.jsx (fetchLogs)
-```
+
+```plaintext
 Alert: "Your session has expired. Please log in to continue."
 Toast: "Your session has expired. Please log in to continue."
 ↓ (after 1.5s)
@@ -327,7 +344,8 @@ Redirect to /login
 ## 🧪 Testing Scenarios
 
 ### Scenario 1: Valid Session
-```
+
+```plaintext
 [ ] Dashboard loads with stats
 [ ] Logs load with data
 [ ] No errors shown
@@ -335,7 +353,8 @@ Redirect to /login
 ```
 
 ### Scenario 2: Expired Token (401)
-```
+
+```plaintext
 [ ] Any page makes API call
 [ ] API interceptor tries refresh
 [ ] If refresh fails:
@@ -350,7 +369,8 @@ Redirect to /login
 ```
 
 ### Scenario 3: Forbidden Access (403)
-```
+
+```plaintext
 [ ] User tries to access another tenant's data
 [ ] API returns 403 Forbidden
 [ ] Component error handler catches it
@@ -359,7 +379,8 @@ Redirect to /login
 ```
 
 ### Scenario 4: Network Error
-```
+
+```plaintext
 [ ] Internet connection lost
 [ ] API call fails
 [ ] Error message shown (generic)
@@ -385,7 +406,8 @@ Redirect to /login
 
 ## 📝 Implementation Details
 
-### Files Modified:
+### Files Modified
+
 1. `frontend/src/pages/Dashboard.jsx`
    - Added `message` import from antd
    - Updated `loadStats()` catch block
@@ -396,7 +418,8 @@ Redirect to /login
    - Added `useNavigate` import from react-router-dom
    - Updated `fetchLogs()` catch block
 
-### No Changes Needed:
+### No Changes Needed
+
 - `frontend/src/services/api.js` - Already secure
 - `frontend/src/context/AuthContext.jsx` - Already secure
 - `frontend/src/hooks/useAuth.js` - Already correct
@@ -408,6 +431,7 @@ Redirect to /login
 ✅ **Ready for Production**
 
 All error handling improvements are:
+
 - ✅ Non-breaking changes
 - ✅ Backward compatible
 - ✅ Enhanced UX without changing functionality
@@ -419,6 +443,7 @@ All error handling improvements are:
 ## 📞 Support
 
 **If users report:**
+
 - "I got logged out suddenly" → Now shows proper message + redirect
 - "API errors aren't clear" → Now shows specific auth vs generic errors
 - "Dashboard stops loading silently" → Recent messages error now visible

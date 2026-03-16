@@ -1,0 +1,74 @@
+name: Deploy Frontend to ECS
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'frontend/**' ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: saas-frontend
+  ECS_CLUSTER: saas-cluster
+  ECS_SERVICE: saas-frontend-svc
+  CONTAINER_NAME: frontend-container
+
+jobs:
+  deploy:
+    name: Build & Deploy Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Cấu hình AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Đăng nhập vào Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, Tag, và Push Docker Image lên ECR
+      id: build-image
+      working-directory: ./frontend
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+        # ĐÂY LÀ CHỖ CỰC KỲ QUAN TRỌNG: Trỏ thẳng Frontend gọi vào tên miền Backend
+        API_URL: "https://api.group-02.compsci.studio/api/v1"
+      run: |
+        # Sinh file .env để Vite lấy link API lúc build
+        echo "VITE_API_BASE_URL=$API_URL" > .env
+        echo "VITE_APP_NAME=Customer Manager SaaS" >> .env
+        
+        # Build image Nginx + Frontend
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        
+        # Đẩy image lên kho ECR
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY -a
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Tải Task Definition hiện tại về
+      run: |
+        aws ecs describe-task-definition --task-definition saas-frontend-task --query taskDefinition > task-def.json
+
+    - name: Cập nhật Image ID mới vào Task Definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-def.json
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Triển khai lên Amazon ECS
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true

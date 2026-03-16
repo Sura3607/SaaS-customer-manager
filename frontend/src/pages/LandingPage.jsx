@@ -13,6 +13,9 @@ import {
   RocketOutlined,
   SafetyOutlined,
 } from '@ant-design/icons'
+import avatar1 from '../assets/avatars/avatar1.jpg'
+import avatar2 from '../assets/avatars/avatar2.jpg'
+import avatar3 from '../assets/avatars/avatar3.jpg'
 
 const { Title, Paragraph, Text } = Typography
 
@@ -125,10 +128,22 @@ export default function LandingPage() {
 
           <Flex justify="center" align="center">
             <Avatar.Group>
-              <Avatar style={{ backgroundColor: '#475569' }} />
-              <Avatar style={{ backgroundColor: '#64748b' }} />
-              <Avatar style={{ backgroundColor: '#94a3b8' }} />
-            </Avatar.Group>
+             <Avatar
+               src={avatar1}
+               size={40}
+               style={{ border: '2px solid #1a1f2e' }}
+            />
+            <Avatar
+              src={avatar2}
+              size={40}
+              style={{ border: '2px solid #1a1f2e' }}
+            />
+            <Avatar
+              src={avatar3}
+              size={40}
+              style={{ border: '2px solid #1a1f2e' }}
+            />
+</Avatar.Group>
             <Text style={{ marginLeft: '12px', color: '#8a92a6' }}>Trusted by 10,000+ developers</Text>
           </Flex>
         </div>

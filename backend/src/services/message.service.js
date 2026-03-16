@@ -333,6 +333,19 @@ async function processTwilioWebhook(payload) {
   return { updated: true, logId: log.id, status: parsed.status };
 }
 
+/* ───── Trọng số trạng thái (State Machine Weights) ───── */
+const STATUS_WEIGHT = {
+  'PENDING': 0,
+  'SENT': 1,
+  'DELIVERED': 2,
+  'OPENED': 3,
+  'CLICKED': 4,
+  'BOUNCED': 5,
+  'FAILED': 5,
+  'SPAM': 5,
+  'UNSUBSCRIBED': 5
+};
+
 /**
  * Process SendGrid event webhook and update MessageLog(s).
  */
@@ -343,7 +356,6 @@ async function processSendgridWebhook(events) {
   for (const parsed of parsedEvents) {
     if (!parsed.providerMessageId) continue;
 
-    // SendGrid sg_message_id can have ".filter..." suffix — use startsWith
     const cleanId = parsed.providerMessageId.split('.')[0];
 
     const log = await prisma.messageLog.findFirst({
@@ -355,11 +367,31 @@ async function processSendgridWebhook(events) {
       continue;
     }
 
+    const currentWeight = STATUS_WEIGHT[log.status] || 0;
+    const newWeight = STATUS_WEIGHT[parsed.status] || 0;
+
+    // Nếu event gửi về có trọng số nhỏ hơn trạng thái hiện tại (vd: đang OPENED mà đòi update thành SENT) -> Bỏ qua
+    if (newWeight < currentWeight) {
+      logger.info('Skipping outdated webhook event', {
+        sgMessageId: parsed.providerMessageId,
+        current: log.status,
+        received: parsed.status,
+      });
+      results.push({ logId: log.id, updated: false, reason: 'Outdated event' });
+      continue;
+    }
+
+    // XỬ LÝ MAPPING TRẠNG THÁI CHO BẢNG MESSAGE GỐC
+    let parentMessageStatus = parsed.status;
+    if (['BOUNCED', 'SPAM', 'UNSUBSCRIBED', 'FAILED'].includes(parsed.status)) {
+      parentMessageStatus = 'FAILED'; // Gom các lỗi ngắt liên lạc thành FAILED
+    }
+
     await prisma.$transaction([
       prisma.messageLog.update({
         where: { id: log.id },
         data: {
-          status: parsed.status,
+          status: parsed.status, // Lưu chi tiết (SPAM, OPENED, BOUNCED...) ở Log
           errorReason: parsed.reason,
           providerResponse: parsed.rawPayload,
         },
@@ -367,7 +399,9 @@ async function processSendgridWebhook(events) {
       prisma.message.update({
         where: { id: log.messageId },
         data: {
-          status: parsed.status === 'BOUNCED' ? 'FAILED' : parsed.status,
+          status: parentMessageStatus, // Lưu tổng quát ở bảng gốc
+          // Ghi nhận thời gian Delivered (nếu có)
+          sentAt: parsed.status === 'DELIVERED' ? new Date() : undefined,
         },
       }),
     ]);

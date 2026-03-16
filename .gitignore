@@ -3,6 +3,7 @@ node_modules/
 
 # Temp files
 .commitmsg
+ngrok.exe
 
 # Environment variables
 .env

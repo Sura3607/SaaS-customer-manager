@@ -10,6 +10,7 @@
 ## 📋 GIAI ĐOẠN 1: Docker Local Development Setup (Tuần 1-2)
 
 ### Backend Dockerfile Review & Setup
+
 - [ ] Review Backend Dockerfile (created by Backend dev):
   - [ ] Multi-stage build present?
   - [ ] Production-only dependencies (npm ci --only=production)?
@@ -26,6 +27,7 @@
   - [ ] Stop container
 
 ### Frontend Dockerfile Review & Setup
+
 - [ ] Review Frontend Dockerfile (created by Frontend dev):
   - [ ] Multi-stage build: Node for build, Nginx for serve?
   - [ ] Build stage: npm install, npm run build?
@@ -38,12 +40,13 @@
   - [ ] Check image size (~150MB acceptable for Nginx?)
 - [ ] Test run:
   - [ ] `docker run -p 3000:80 frontend:v1`
-  - [ ] Open http://localhost:3000 in browser
+  - [ ] Open <http://localhost:3000> in browser
   - [ ] Should see frontend UI
   - [ ] Check console for any errors
   - [ ] Stop container
 
 ### nginx.conf for Frontend
+
 - [ ] Review `frontend/nginx.conf` (created by Frontend dev):
   - [ ] Gzip compression enabled?
   - [ ] Static asset caching configured?
@@ -55,7 +58,9 @@
   - [ ] Navigation to React routes works without 404
 
 ### docker-compose.yml for Local Development
+
 - [ ] Create `docker-compose.yml` in root:
+
   ```yaml
   version: '3.8'
   
@@ -126,6 +131,7 @@
   ```
 
 ### Test Local Environment
+
 - [ ] Copy `.env.example` to `.env` and fill with test values:
   - [ ] Twilio credentials
   - [ ] SendGrid credentials
@@ -134,9 +140,9 @@
   - [ ] Check all containers running: `docker-compose ps`
   - [ ] Check no errors: `docker-compose logs`
 - [ ] Test connectivity:
-  - [ ] Frontend: http://localhost:3000 → UI loads
-  - [x] Backend: http://localhost:5000/api/v1/health → OK response
-  - [ ] MySQL: Connect via phpmyadmin http://localhost:8080
+  - [ ] Frontend: <http://localhost:3000> → UI loads
+  - [x] Backend: <http://localhost:5000/api/v1/health> → OK response
+  - [ ] MySQL: Connect via phpmyadmin <http://localhost:8080>
 - [ ] Test workflow:
   - [ ] Register tenant on Frontend → calls Backend
   - [ ] Backend creates DB records → visible in phpmyadmin
@@ -154,6 +160,7 @@
 ## 📋 GIAI ĐOẠN 2: AWS Account & IAM Setup (Tuần 1-2)
 
 ### AWS Account Setup
+
 - [x] Login to AWS Console (or create account)
 - [x] Verify region: `us-east-1` (or choose closest region)
 - [ ] Enable billing alerts:
@@ -163,6 +170,7 @@
   - [ ] CloudWatch Alarm threshold: $100 (or lower)
 
 ### IAM User for CI/CD/Deployment
+
 - [x] Create IAM user: `github-actions-user` (or `deployment-user`)
 - [x] Attach policies:
   - [x] `AmazonEC2ContainerRegistryPowerUser` (for ECR)
@@ -177,6 +185,7 @@
   - [x] Store in password manager or GitHub Secrets later
 
 ### IAM Role for EC2/ECS
+
 - [x] Create IAM role: `ecs-task-execution-role`
 - [x] Trust entity: ECS Tasks
 - [x] Permissions:
@@ -186,6 +195,7 @@
   - [x] `AmazonEC2ContainerRegistryReadOnly`
 
 ### Store Secrets Securely
+
 - [ ] Use AWS Secrets Manager (not environment variables in Git):
   - [ ] Create secret: `saas/database`
     - [ ] Value: `mysql://saas_user:pass@host:3306/saas_db`
@@ -197,6 +207,7 @@
 ## 📋 GIAI ĐOẠN 3: Network Setup - VPC & Security Groups (Tuần 2)
 
 ### VPC Setup (Use Default VPC or Create Custom)
+
 - [ ] Choose: Use default VPC (easier for testing) or create custom VPC
 - [ ] If custom VPC:
   - [ ] CIDR: `10.0.0.0/16`
@@ -207,6 +218,7 @@
   - [ ] Route tables configured correctly
 
 ### Security Groups
+
 - [x] **RDS Security Group** (`rds-sg`):
   - [x] Inbound: MySQL (3306) from Backend SG only
   - [ ] Outbound: None (default allow all is OK)
@@ -233,6 +245,7 @@
 ## 📋 GIAI ĐOẠN 4: Database Setup - RDS MySQL (Tuần 2)
 
 ### Create RDS MySQL Instance
+
 - [x] Go to RDS > Create database
 - [x] Engine: MySQL 8.0 (latest 8.0.x)
 - [x] Template: Free tier (or production for real use)
@@ -261,14 +274,17 @@
 - [x] Create database
 
 ### RDS Connection Details
+
 - [ ] Wait for instance to be "Available" (~10-15 min)
 - [ ] Copy endpoint: `saas-mysql-instance.c9akciq32.us-east-1.rds.amazonaws.com`
 - [ ] Save connection string template:
-  ```
+
+  ```env
   DATABASE_URL=mysql://admin:password@saas-mysql-instance.c9akciq32.us-east-1.rds.amazonaws.com:3306/saas_db
   ```
 
 ### Initialize Database with Prisma
+
 - [ ] Connect from local (temporarily):
   - [ ] Get your public IP: `curl ifconfig.me`
   - [ ] Add temporary inbound rule to RDS SG: MySQL (3306) from your IP
@@ -282,6 +298,7 @@
 - [ ] Remove your IP from RDS SG (security)
 
 ### Database Backups
+
 - [ ] Enable automated backups (done on creation)
 - [ ] Configure backup retention: 7 days
 - [ ] Manual backup: Take snapshot before major changes
@@ -291,6 +308,7 @@
 ## 📋 GIAI ĐOẠN 5: Container Registry - ECR (Tuần 2-3)
 
 ### Create ECR Repositories
+
 - [x] Go to ECR > Create repository
 - [x] Create repo 1: `saas-backend`
   - [ ] Tag immutability: Disable
@@ -301,29 +319,40 @@
 - [ ] Note registry URL: `123456789012.dkr.ecr.us-east-1.amazonaws.com`
 
 ### Configure Local Docker for ECR
+
 - [ ] Login to ECR:
+
   ```bash
   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
   ```
+
 - [ ] Verify login successful
 
 ### Tag & Push Backend Image
+
 - [ ] Build image locally:
+
   ```bash
   cd backend
   docker build -t backend:v1 .
   ```
+
 - [ ] Tag for ECR:
+
   ```bash
   docker tag backend:v1 123456789012.dkr.ecr.us-east-1.amazonaws.com/saas-backend:v1
   ```
+
 - [ ] Push to ECR:
+
   ```bash
   docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/saas-backend:v1
   ```
+
 - [ ] Verify in ECR console
 
 ### Tag & Push Frontend Image
+
 - [ ] Similar process for frontend
 - [ ] Verify in ECR console
 
@@ -332,6 +361,7 @@
 ## 📋 GIAI ĐOẠN 6: Backend Deployment - ECS Fargate (Tuần 3)
 
 ### Create ECS Cluster
+
 - [ ] Go to ECS > Create cluster
 - [ ] Cluster name: `saas-cluster`
 - [ ] Infrastructure: **Fargate** (serverless, no EC2 management)
@@ -341,6 +371,7 @@
 - [ ] Create cluster
 
 ### Create Task Definition
+
 - [ ] Go to Task Definitions > Create new
 - [ ] Task family: `saas-backend-task`
 - [ ] Infrastructure requirements:
@@ -377,6 +408,7 @@
 - [ ] Create task definition
 
 ### Create Application Load Balancer (ALB)
+
 - [x] Go to EC2 > Load Balancers > Create
 - [x] Load balancer type: Application Load Balancer
 - [x] Name: `saas-alb`
@@ -405,6 +437,7 @@
 - [ ] Record ALB DNS: `saas-alb-123456.us-east-1.elb.amazonaws.com`
 
 ### Create ECS Service
+
 - [ ] Go to ECS > Cluster > Create service
 - [ ] Compute options: Fargate
 - [ ] Task definition: saas-backend-task:1
@@ -427,18 +460,23 @@
 - [ ] Create service
 
 ### Test Backend Deployment
+
 - [ ] Wait for tasks to be "Running" (~2 min)
 - [ ] Test health endpoint:
+
   ```bash
   curl http://saas-alb-123456.us-east-1.elb.amazonaws.com/api/v1/health
   ```
+
 - [ ] Should return `{ status: "ok" }`
 - [ ] Test database connection:
+
   ```bash
   curl http://saas-alb-123456.us-east-1.elb.amazonaws.com/api/v1/tenants/register -X POST \
     -H "Content-Type: application/json" \
     -d '{"companyName":"Test","adminEmail":"test@test.com","adminPassword":"pass123","phone":"123"}'
   ```
+
 - [ ] Should create tenant in RDS
 
 ---
@@ -446,6 +484,7 @@
 ## 📋 GIAI ĐOẠN 7: Frontend Deployment - S3 + CloudFront (Tuần 3-4)
 
 ### Create S3 Bucket
+
 - [ ] Go to S3 > Create bucket
 - [ ] Bucket name: `saas-frontend-abc123def456` (must be globally unique)
 - [ ] Region: us-east-1
@@ -458,21 +497,28 @@
 - [ ] Create bucket
 
 ### Upload Frontend Build
+
 - [ ] Build frontend locally:
+
   ```bash
   cd frontend
   npm run build  # generates dist/ folder
   ```
+
 - [ ] Sync to S3:
+
   ```bash
   aws s3 sync dist s3://saas-frontend-abc123def456/ --delete
   ```
+
 - [ ] Or use AWS Console: Upload dist files
 - [ ] Verify files in S3 console
 
 ### S3 Bucket Policy (for CloudFront)
+
 - [ ] Go to bucket > Permissions > Bucket policy
 - [ ] Add policy to allow CloudFront OAI only:
+
   ```json
   {
     "Version": "2012-10-17",
@@ -490,6 +536,7 @@
   ```
 
 ### Create CloudFront Distribution
+
 - [ ] Go to CloudFront > Create distribution
 - [ ] Origin:
   - [ ] Origin domain: saas-frontend-abc123def456.s3.us-east-1.amazonaws.com
@@ -516,14 +563,16 @@
 - [ ] Wait for status to be "Deployed" (~15-30 min)
 
 ### Test CloudFront Distribution
+
 - [ ] Get distribution domain: `d123abc.cloudfront.net`
-- [ ] Open http://d123abc.cloudfront.net in browser
+- [ ] Open <http://d123abc.cloudfront.net> in browser
 - [ ] Should see frontend UI
 - [ ] Test navigation (React Router)
 - [ ] Check DevTools > Network > gzip compression enabled
 - [ ] Check cache headers
 
 ### Custom Domain (Optional)
+
 - [ ] Register domain (Route 53 or external registrar)
 - [ ] Add CNAME record: `app.example.com` → `d123abc.cloudfront.net`
 - [ ] Request SSL certificate in ACM
@@ -535,6 +584,7 @@
 ## 📋 GIAI ĐOẠN 8: SSL/TLS Certificates (Tuần 3-4)
 
 ### Request SSL Certificate from ACM
+
 - [ ] Go to AWS Certificate Manager > Request certificate
 - [ ] Domain name: `api.example.com` (for backend ALB)
 - [ ] Add alternative domain: `example.com`, `app.example.com`, etc.
@@ -544,6 +594,7 @@
 - [ ] Attach to ALB listener (HTTPS port 443)
 
 ### Update ALB Listener for HTTPS
+
 - [ ] Go to EC2 > Load Balancers > saas-alb
 - [ ] Add listener:
   - [ ] Protocol: HTTPS
@@ -559,6 +610,7 @@
 ## 📋 GIAI ĐOẠN 9: Monitoring & Logging - CloudWatch (Tuần 4)
 
 ### CloudWatch Log Groups
+
 - [ ] Already created by ECS: `/ecs/saas-backend`
 - [ ] Create additional groups if needed:
   - [ ] `/rds/saas-mysql` (if RDS logs enabled)
@@ -566,12 +618,14 @@
   - [ ] `/aws/lambda/...` (if using Lambda)
 
 ### View Logs
+
 - [ ] Go to CloudWatch > Log groups > `/ecs/saas-backend`
 - [ ] View log streams (one per task)
 - [ ] Search logs: Filter by keyword (ERROR, WARN)
 - [ ] Insights: Run queries on logs
 
 ### CloudWatch Dashboards
+
 - [ ] Go to CloudWatch > Dashboards > Create
 - [ ] Add widgets:
   - [ ] **ECS metrics:**
@@ -595,6 +649,7 @@
     - [ ] Response time distribution
 
 ### CloudWatch Alarms
+
 - [ ] Create alarms for:
   - [ ] **ECS CPU > 80%** → SNS notification
   - [ ] **ECS Memory > 80%** → SNS notification
@@ -605,10 +660,11 @@
   - [ ] **API response time > 5 seconds** → SNS notification (if available in ALB metrics)
 
 ### SNS Topic for Notifications
+
 - [ ] Create SNS topic: `saas-alerts`
 - [ ] Create subscription:
   - [ ] Type: Email
-  - [ ] Endpoint: devops@example.com (or team emails)
+  - [ ] Endpoint: <devops@example.com> (or team emails)
 - [ ] Subscribe to alarms
 - [ ] Verify email subscription
 
@@ -617,7 +673,9 @@
 ## 📋 GIAI ĐOẠN 10: CI/CD Pipeline (Tuần 4-5)
 
 ### GitHub Actions for Automated Deployment (if using GitHub)
+
 - [ ] Create `.github/workflows/deploy.yml`:
+
   ```yaml
   name: Deploy to AWS
 
@@ -675,13 +733,16 @@
   ```
 
 ### Setup GitHub Secrets
+
 - [ ] Go to GitHub repo > Settings > Secrets
 - [ ] Add secrets:
   - [ ] `AWS_ACCESS_KEY_ID` - from IAM user
   - [ ] `AWS_SECRET_ACCESS_KEY` - from IAM user
 
 ### Manual Deployment (Alternative)
+
 - [ ] If not using CI/CD, deploy manually:
+
   ```bash
   # Backend
   aws ecr get-login-password | docker login --username AWS --password-stdin <ECR_URL>
@@ -702,24 +763,28 @@
 ## 📋 GIAI ĐOẠN 11: Database Backup & Disaster Recovery (Tuần 4-5)
 
 ### RDS Automated Backups
+
 - [ ] Already configured on RDS creation:
   - [ ] Retention: 7 days
   - [ ] Backup window: 03:00-04:00 UTC
   - [ ] Multi-AZ: (optional for HA)
 
 ### Manual Snapshots
+
 - [ ] Go to RDS > Snapshots > Manual
 - [ ] Create snapshot before major changes
 - [ ] Name: `saas-db-backup-<date>`
 - [ ] Copy snapshot to different region (optional, for DR)
 
 ### RDS Backup Testing
+
 - [ ] Periodically restore from backup to test DB:
   - [ ] Restore snapshot
   - [ ] Connect & verify data
   - [ ] Delete test DB
 
 ### S3 Versioning & Lifecycle
+
 - [ ] S3 versioning: Already enabled
 - [ ] Lifecycle policy (optional):
   - [ ] Transition old versions to Glacier (30 days)
@@ -727,6 +792,7 @@
 - [ ] Test restore from old versions
 
 ### Disaster Recovery Runbook
+
 - [ ] Document steps:
   1. If RDS fails: Restore from latest snapshot (< 1 hour RTO)
   2. If backend fails: Tasks auto-restart, ALB health checks ensure availability
@@ -740,6 +806,7 @@
 ## 📋 GIAI ĐOẠN 12: Cost Optimization (Tuần 5)
 
 ### Analyze Current Costs
+
 - [ ] Go to AWS Billing > Cost Explorer
 - [ ] Review costs by service:
   - [ ] RDS: typically $20-30/month (t3.micro)
@@ -750,6 +817,7 @@
   - [ ] Total estimate: $50-100/month for dev/test
 
 ### Cost Optimization Tips
+
 - [ ] Use t3.micro for database (free tier eligible)
 - [ ] Scale down tasks during off-hours (optional, requires Lambda/automation)
 - [ ] Use reserved instances if long-term (saves ~30%)
@@ -758,6 +826,7 @@
 - [ ] Set up budget alerts: AWS Billing > Budgets
 
 ### Cost Tracking
+
 - [ ] Tag all resources with:
   - [ ] `Project: SaaS-Customer-Manager`
   - [ ] `Environment: dev/test/prod`
@@ -769,6 +838,7 @@
 ## 📋 GIAI ĐOẠN 13: Infrastructure as Code (IaC) - Optional (Tuần 5)
 
 ### CloudFormation or Terraform
+
 - [ ] Option 1: CloudFormation (native AWS)
   - [ ] Create stack templates for VPC, RDS, ECS, ALB, etc.
   - [ ] Store in `infra/cloudformation/` directory
@@ -781,6 +851,7 @@
   - [ ] Backend: S3 + DynamoDB for state locking
 
 ### IaC Benefits
+
 - [ ] Reproducible infrastructure (dev ≈ prod)
 - [ ] Easy disaster recovery (recreate from code)
 - [ ] Version history
@@ -791,6 +862,7 @@
 ## 📋 GIAI ĐOẠN 14: Documentation & Runbooks (Tuần 5)
 
 ### Architecture Diagram
+
 - [ ] Create diagram showing:
   - [ ] VPC layout with subnets, routing
   - [ ] RDS (private subnet)
@@ -804,6 +876,7 @@
 - [ ] Save as PNG/PDF in `docs/architecture.md`
 
 ### Infrastructure Runbook
+
 - [ ] How to deploy manually:
   - [ ] Build Docker images
   - [ ] Push to ECR
@@ -826,6 +899,7 @@
   - [ ] Restore frontend files from S3 version
 
 ### Deployment Guide (for team)
+
 - [ ] Step-by-step how to deploy:
   1. Setup AWS CLI credentials
   2. Build images: `docker build ...`
@@ -842,8 +916,8 @@
 ## ✅ SUCCESS CRITERIA FOR DEVOPS
 
 - [ ] Docker Compose local environment fully working
-  - [ ] Frontend at http://localhost:3000
-  - [x] Backend at http://localhost:5000
+  - [ ] Frontend at <http://localhost:3000>
+  - [x] Backend at <http://localhost:5000>
   - [ ] MySQL at localhost:3306
   - [ ] Can perform end-to-end workflows
   
@@ -910,11 +984,10 @@
 ## 📅 WEEK-BY-WEEK BREAKDOWN
 
 | Week | Focus | Output | Sync Point |
-|------|-------|--------|-----------|
+| ------ | ------- | -------- | ----------- |
 | W1 | Docker local compose, AWS account setup | Local env working with docker-compose up | Backend/Frontend Dockerfiles ready? |
 | W2 | AWS infrastructure (VPC, RDS, ECR) | RDS accessible, images pushed to ECR | Infrastructure costs estimated? |
 | W3 | ECS backend, ALB, CloudFront frontend | Backend running at ALB DNS, frontend at CloudFront | All services accessible? |
 | W4 | Monitoring, logging, alarms | CloudWatch dashboards, email alerts working | Are metrics showing correctly? |
 | W5 | CI/CD, cost optimization, documentation | Automated deployment working, docs complete | Ready for UAT? |
 | W6 | Testing, troubleshooting, final setup | All systems tested, disaster recovery verified | Ready for production demo? |
-
