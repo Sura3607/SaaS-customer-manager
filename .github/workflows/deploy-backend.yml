@@ -11,7 +11,7 @@ env:
   ECR_REPOSITORY: saas-backend
   ECS_CLUSTER: saas-cluster
   ECS_SERVICE: saas-backend-task-service
-  CONTAINER_NAME: backend-container 
+  CONTAINER_NAME: backend
 
 jobs:
   deploy-backend:
