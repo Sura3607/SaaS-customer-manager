@@ -72,16 +72,16 @@ async function getLogById(req, res, next) {
 
 /* ───── Webhooks (public, no auth) ───── */
 
-async function twilioWebhook(req, res, next) {
-  // Respond 200 IMMEDIATELY — Twilio retries on non-2xx or timeout
+async function speedsmsWebhook(req, res, next) {
+  // Respond 200 IMMEDIATELY — SpeedSMS retries on non-2xx or timeout
   res.status(200).json({ received: true });
 
   // Process asynchronously (fire-and-forget)
   try {
-    await messageService.processTwilioWebhook(req.body);
+    await messageService.processSpeedsmsWebhook(req.body);
   } catch (error) {
     // Log but don't affect the already-sent response
-    logger.error('Twilio webhook async processing failed', { error: error.message });
+    logger.error('SpeedSMS webhook async processing failed', { error: error.message });
   }
 }
 
@@ -115,7 +115,7 @@ module.exports = {
   sendBatchEmail,
   getLogs,
   getLogById,
-  twilioWebhook,
+  speedsmsWebhook,
   sendgridWebhook,
   deleteMessage,
 };

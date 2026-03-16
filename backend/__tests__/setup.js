@@ -7,6 +7,19 @@
  * avoid polluting seed data, and clean up after themselves.
  */
 
+const DEFAULT_TEST_DATABASE_URL = 'mysql://saas_user:saas_password123@localhost:3306/saas_db';
+const PLACEHOLDER_DATABASE_URLS = new Set([
+  'mysql://user:password@localhost:3306/saas_db',
+]);
+
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'test';
+}
+
+if (!process.env.DATABASE_URL || PLACEHOLDER_DATABASE_URLS.has(process.env.DATABASE_URL)) {
+  process.env.DATABASE_URL = DEFAULT_TEST_DATABASE_URL;
+}
+
 const request = require('supertest');
 const app = require('../src/app');
 const prisma = require('../src/config/db');

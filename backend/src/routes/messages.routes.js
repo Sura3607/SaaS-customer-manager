@@ -2,7 +2,7 @@
  * @file messages.routes.js
  * @description Messaging routes (SMS, Email, Webhooks).
  * Endpoints: POST /sms, POST /email, POST /sms/batch, POST /email/batch
- *            POST /twilio/webhook, POST /sendgrid/webhook
+ * POST /speedsms/webhook, POST /sendgrid/webhook
  */
 
 const { Router } = require('express');
@@ -18,7 +18,6 @@ const {
   batchEmailSchema,
 } = require('../validators/message.validator');
 const {
-  verifyTwilioSignature,
   verifySendgridSignature,
   logWebhookRequest,
 } = require('../middlewares/webhook.middleware');
@@ -32,7 +31,7 @@ router.post('/email', authenticate, tenantIsolation, messagingLimiter, validate(
 router.post('/email/batch', authenticate, tenantIsolation, messagingLimiter, validate(batchEmailSchema), messagesController.sendBatchEmail);
 
 // Public webhooks (no auth — providers call these, secured via signature verification)
-router.post('/twilio/webhook', logWebhookRequest('Twilio'), verifyTwilioSignature, messagesController.twilioWebhook);
+router.post('/speedsms/webhook', logWebhookRequest('SpeedSMS'), messagesController.speedsmsWebhook);
 router.post('/sendgrid/webhook', logWebhookRequest('SendGrid'), verifySendgridSignature, messagesController.sendgridWebhook);
 
 module.exports = router;

@@ -1,70 +1,11 @@
 /**
  * @file webhook.middleware.js
- * @description Webhook signature verification middleware for Twilio & SendGrid.
+ * @description Webhook signature verification middleware for SpeedSMS & SendGrid.
  * Phase 9 — Webhook Security & Processing.
  */
 
 const { env } = require('../config/env');
 const logger = require('../utils/logger');
-
-/* ═══════════════════════════════════════════
-   TWILIO SIGNATURE VERIFICATION
-   ═══════════════════════════════════════════
-   Twilio signs every request using the auth token.
-   Reference: https://www.twilio.com/docs/usage/security#validating-requests
-*/
-
-/**
- * Middleware: verify Twilio webhook request signature.
- * In development or if TWILIO_AUTH_TOKEN is not set, skip verification with a warning.
- */
-function verifyTwilioSignature(req, res, next) {
-  const authToken = env.TWILIO_AUTH_TOKEN;
-
-  // If no auth token configured, skip verification (dev mode)
-  if (!authToken || authToken === 'your_auth_token_here') {
-    logger.warn('Twilio webhook signature verification SKIPPED — TWILIO_AUTH_TOKEN not configured');
-    return next();
-  }
-
-  try {
-    // Lazy-require twilio to avoid loading if not needed
-    const twilio = require('twilio');
-
-    const signature = req.headers['x-twilio-signature'];
-    if (!signature) {
-      logger.warn('Twilio webhook: missing x-twilio-signature header');
-      return res.status(403).json({ error: 'Missing Twilio signature' });
-    }
-
-    // Build the full URL Twilio used to sign the request
-    // Must match exactly what Twilio sees (protocol + host + path)
-    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
-    const host = req.headers['x-forwarded-host'] || req.headers.host;
-    const fullUrl = `${protocol}://${host}${req.originalUrl}`;
-
-    // Twilio sends form-encoded body for status callbacks
-    const params = req.body || {};
-
-    const isValid = twilio.validateRequest(authToken, signature, fullUrl, params);
-
-    if (!isValid) {
-      logger.warn('Twilio webhook: INVALID signature', {
-        url: fullUrl,
-        signature,
-        ip: req.ip,
-      });
-      return res.status(403).json({ error: 'Invalid Twilio signature' });
-    }
-
-    logger.debug('Twilio webhook signature verified', { url: fullUrl });
-    next();
-  } catch (error) {
-    logger.error('Twilio signature verification error', { error: error.message });
-    // In case of verification error, reject the request
-    return res.status(403).json({ error: 'Twilio signature verification failed' });
-  }
-}
 
 /* ═══════════════════════════════════════════
    SENDGRID WEBHOOK SIGNATURE VERIFICATION
@@ -147,7 +88,6 @@ function logWebhookRequest(provider) {
 }
 
 module.exports = {
-  verifyTwilioSignature,
   verifySendgridSignature,
   logWebhookRequest,
 };

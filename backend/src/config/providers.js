@@ -1,23 +1,10 @@
 /**
  * @file providers.js
- * @description External service providers configuration (Twilio & SendGrid).
+ * @description External service providers configuration.
  * Lazy-initialized to avoid errors when credentials are not yet configured.
  */
 
 const { env } = require('./env');
-
-/**
- * Get configured Twilio client.
- * @returns {import('twilio').Twilio|null}
- */
-function getTwilioClient() {
-  if (!env.TWILIO_ACCOUNT_SID || !env.TWILIO_AUTH_TOKEN) {
-    console.warn('[PROVIDERS] Twilio credentials not configured.');
-    return null;
-  }
-  const twilio = require('twilio');
-  return twilio(env.TWILIO_ACCOUNT_SID, env.TWILIO_AUTH_TOKEN);
-}
 
 /**
  * Get configured SendGrid mail client.
@@ -34,8 +21,6 @@ function getSendGridClient() {
 }
 
 module.exports = {
-  getTwilioClient,
   getSendGridClient,
-  TWILIO_PHONE_NUMBER: env.TWILIO_PHONE_NUMBER,
   SENDGRID_FROM_EMAIL: env.SENDGRID_FROM_EMAIL,
 };
