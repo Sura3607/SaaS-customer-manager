@@ -29,22 +29,36 @@ jobs:
           aws-secret-access-key: ${{ secrets.POWER_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Handle RDS
+      # ==========================================
+      # KỊCH BẢN BẬT 
+      # ==========================================
+      - name: Start Environment
+        if: github.event.inputs.action == 'start'
         run: |
-          if [ "${{ github.event.inputs.action }}" == "start" ]; then
-            aws rds start-db-instance --db-instance-identifier saas-mysql-instance || true
-          else
-            aws rds stop-db-instance --db-instance-identifier saas-mysql-instance || true
-          fi
+          echo "1. Đang gửi lệnh bật RDS Database..."
+          aws rds start-db-instance --db-instance-identifier saas-mysql-instance || true
 
-      - name: Handle ECS
+          echo "2. Đang chờ RDS khởi động hoàn tất (Có thể mất 2-5 phút)..."
+          # Lệnh này cực kỳ quan trọng: Bắt hệ thống chờ đến khi DB trạng thái 'Available'
+          aws rds wait db-instance-available --db-instance-identifier saas-mysql-instance
+
+          echo "3. RDS đã sẵn sàng! Tiến hành bật Backend và Frontend..."
+          aws ecs update-service --cluster saas-cluster --service saas-backend-task-service --desired-count 1
+          aws ecs update-service --cluster saas-cluster --service saas-frontend-svc --desired-count 1
+          
+          echo "BẬT HỆ THỐNG THÀNH CÔNG!"
+
+      # ==========================================
+      # KỊCH BẢN TẮT 
+      # ==========================================
+      - name: Stop Environment
+        if: github.event.inputs.action == 'stop'
         run: |
-          if [ "${{ github.event.inputs.action }}" == "start" ]; then
-            aws ecs update-service --cluster saas-cluster --service saas-backend-task-service --desired-count 1
+          echo "1. Đang tắt Frontend và Backend (Ngăn chặn lỗi Crash)..."
+          aws ecs update-service --cluster saas-cluster --service saas-frontend-svc --desired-count 0
+          aws ecs update-service --cluster saas-cluster --service saas-backend-task-service --desired-count 0
 
-            aws ecs update-service --cluster saas-cluster --service saas-frontend-svc --desired-count 1
-          else
-            aws ecs update-service --cluster saas-cluster --service saas-backend-task-service --desired-count 0
-
-            aws ecs update-service --cluster saas-cluster --service saas-frontend-svc --desired-count 0
-          fi
+          echo "2. Đang tắt RDS Database..."
+          aws rds stop-db-instance --db-instance-identifier saas-mysql-instance || true
+          
+          echo "TẮT HỆ THỐNG THÀNH CÔNG!"
