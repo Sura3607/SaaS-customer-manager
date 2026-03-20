@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏢 SaaS Customer Manager
+# SaaS Customer Manager
 
 **Hệ thống SaaS quản lý khách hàng đa tổ chức – gửi SMS & Email tự động, triển khai trên AWS.**
 
@@ -17,21 +17,21 @@
 
 ---
 
-## ✨ Tính năng chính
+## Tính năng chính
 
 | Tính năng | Mô tả |
 |---|---|
-| 🏢 **Multi-tenant** | Nhiều tổ chức hoạt động độc lập, dữ liệu hoàn toàn cách ly |
-| 👥 **Quản lý khách hàng** | CRUD: họ tên, địa chỉ, số điện thoại, email |
-| 📱 **Gửi SMS** | Tích hợp SpeedSMS API |
-| 📧 **Gửi Email** | Tích hợp SendGrid với webhook tracking |
-| 📊 **Dashboard** | Thống kê tỷ lệ gửi thành công / thất bại |
-| 🕓 **Lịch sử tin nhắn** | Tra cứu trạng thái từng lần gửi |
-| 🔐 **Bảo mật** | JWT (2 bước: login → chọn tenant) + tenant isolation |
+| **Multi-tenant** | Nhiều tổ chức hoạt động độc lập, dữ liệu hoàn toàn cách ly |
+| **Quản lý khách hàng** | CRUD: họ tên, địa chỉ, số điện thoại, email |
+| **Gửi SMS** | Tích hợp SpeedSMS API |
+| **Gửi Email** | Tích hợp SendGrid với webhook tracking |
+| **Dashboard** | Thống kê tỷ lệ gửi thành công / thất bại |
+| **Lịch sử tin nhắn** | Tra cứu trạng thái từng lần gửi |
+| **Bảo mật** | JWT (2 bước: login → chọn tenant) + tenant isolation |
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 [![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white&style=flat-square)](https://nodejs.org/)
@@ -64,7 +64,7 @@
 | Axios | HTTP client |
 | Recharts | Biểu đồ dashboard |
 
-### ☁️ AWS Infrastructure
+### AWS Infrastructure
 [![AWS ECS](https://img.shields.io/badge/ECS_Fargate-FF9900?logo=amazonaws&logoColor=white&style=flat-square)](https://aws.amazon.com/ecs/)
 [![AWS S3](https://img.shields.io/badge/S3-569A31?logo=amazons3&logoColor=white&style=flat-square)](https://aws.amazon.com/s3/)
 [![AWS RDS](https://img.shields.io/badge/RDS_MySQL-527FFF?logo=amazonrds&logoColor=white&style=flat-square)](https://aws.amazon.com/rds/)
@@ -81,7 +81,7 @@
 
 ---
 
-## 📁 Cấu trúc dự án
+## Cấu trúc dự án
 
 ```text
 SaaS-customer-manager/
@@ -108,11 +108,11 @@ SaaS-customer-manager/
 
 ---
 
-## 🚀 Chạy Local (Development)
+## Chạy Local (Development)
 
 > **Yêu cầu:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (khuyến nghị) hoặc Node.js 20+ & MySQL 8.0
 
-### ▶️ Cách 1 – Docker Compose (Nhanh nhất)
+### Cách 1 – Docker Compose (Nhanh nhất)
 
 ```bash
 # 1. Clone repo
@@ -135,13 +135,13 @@ docker compose down
 
 | Service | URL |
 |---|---|
-| 🌐 Frontend | http://localhost:3000 |
-| ⚙️ Backend API | http://localhost:5000/api/v1 |
-| 🗄️ MySQL | localhost:3306 |
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:5000/api/v1 |
+| MySQL | localhost:3306 |
 
 ---
 
-### ▶️ Cách 2 – Chạy thủ công (Manual)
+### Cách 2 – Chạy thủ công (Manual)
 
 #### Bước 1 – Khởi động MySQL
 
@@ -210,7 +210,7 @@ npm run build
 
 ---
 
-## ⚙️ Biến môi trường quan trọng
+## Biến môi trường quan trọng
 
 ### Backend (`backend/.env`)
 
@@ -230,7 +230,7 @@ npm run build
 
 ---
 
-## 🧪 Chạy Tests
+## Chạy Tests
 
 ```bash
 # Backend tests (Jest)
@@ -244,17 +244,17 @@ npm test
 
 ---
 
-## 📚 Tài liệu
+## Tài liệu
 
-- [📋 API Endpoints](docs/endpoints.md) – Danh sách đầy đủ các endpoint
-- [🏗️ Project Structure](docs/project-structure.md) – Chi tiết cấu trúc thư mục
-- [🚀 Deployment Guide](docs/plan.md) – Hướng dẫn triển khai AWS
-- [🔒 API Security Audit](docs/API_SECURITY_AUDIT.md) – Báo cáo bảo mật
-- [🖥️ UI Usage Guide](docs/UI-USAGE-GUIDE.md) – Hướng dẫn sử dụng giao diện
+- [API Endpoints](docs/endpoints.md) – Danh sách đầy đủ các endpoint
+- [Project Structure](docs/project-structure.md) – Chi tiết cấu trúc thư mục
+- [Deployment Guide](docs/plan.md) – Hướng dẫn triển khai AWS
+- [API Security Audit](docs/API_SECURITY_AUDIT.md) – Báo cáo bảo mật
+- [UI Usage Guide](docs/UI-USAGE-GUIDE.md) – Hướng dẫn sử dụng giao diện
 
 ---
 
-## 🤝 Đóng góp
+## Đóng góp
 
 1. Fork repository
 2. Tạo nhánh mới: `git checkout -b feature/ten-tinh-nang`
@@ -264,7 +264,7 @@ npm test
 
 ---
 
-## 📄 License
+## License
 
 Dự án này được phân phối theo giấy phép **MIT**. Xem file [LICENSE](./LICENSE) để biết thêm chi tiết.
 
@@ -273,7 +273,7 @@ Dự án này được phân phối theo giấy phép **MIT**. Xem file [LICENSE
 ---
 
 <div align="center">
-  Made with ❤️ using
+  Made with love using
   <img src="https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white&style=flat-square" alt="Node.js"/>
   <img src="https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=white&style=flat-square" alt="React"/>
   <img src="https://img.shields.io/badge/AWS-FF9900?logo=amazonaws&logoColor=white&style=flat-square" alt="AWS"/>
